@@ -1,0 +1,70 @@
+<div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow mb-8">
+  <h2 class="text-lg font-medium text-gray-800 dark:text-white mb-3">Nieuwe taak</h2>
+  
+  <form [formGroup]="taskForm" (ngSubmit)="onSubmit()" class="space-y-4">
+    <div>
+      <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Titel</label>
+      <input 
+        type="text"
+        id="title"
+        formControlName="title"
+        class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+        placeholder="Voer een titel in">
+      @if (taskForm.get('title')?.touched && taskForm.get('title')?.errors) {
+        <div class="mt-1 text-sm text-red-600 dark:text-red-400">
+          {{ getErrorMessage('title') }}
+        </div>
+      }
+    </div>
+
+    <div>
+      <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Beschrijving</label>
+      <textarea 
+        id="description"
+        formControlName="description"
+        rows="3"
+        class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+        placeholder="Voer een beschrijving in"></textarea>
+    </div>
+
+    <div>
+      <label for="priority" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Prioriteit</label>
+      <select 
+        id="priority"
+        formControlName="priority"
+        class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+        <option value="high">Hoog</option>
+        <option value="medium">Gemiddeld</option>
+        <option value="low">Laag</option>
+      </select>
+    </div>
+
+    <div>
+      <label for="project" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Project</label>
+      <input 
+        type="text"
+        id="project"
+        formControlName="project"
+        class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+        placeholder="Voer een projectnaam in">
+    </div>
+
+    <div>
+      <label for="dueDate" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Vervaldatum</label>
+      <input 
+        type="date"
+        id="dueDate"
+        formControlName="dueDate"
+        class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+    </div>
+
+    <div class="flex justify-end">
+      <button 
+        type="submit"
+        [disabled]="!taskForm.valid"
+        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+        Taak toevoegen
+      </button>
+    </div>
+  </form>
+</div>

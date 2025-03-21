@@ -1,0 +1,18 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../out-tsc/app",
+    "types": [],
+    "baseUrl": "src",
+    "paths": {
+      "@tododay/*": ["*"]
+    }
+  },
+  "files": [
+    "src/main.ts"
+  ],
+  "include": [
+    "src/**/*.d.ts",
+    "src/**/*.ts"
+  ]
+} 

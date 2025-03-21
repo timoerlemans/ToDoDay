@@ -1,0 +1,32 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+**Angular Code Quality Standards**
+
+- **Use namespace imports** instead of relative paths (use `@tododay` with an alias pointing to `projects/tododay/src/app`). There\'s an exception for all the files that are directly in the `projects/tododay/src` folder, like main.ts.
+- **Prefer Reactive Forms** (`new FormControl()`, `new FormGroup()`) over the FormBuilder service.
+- **Adopt the new template syntax** (`@if { } @else { }`) instead of legacy `*ngIf`.
+- \*\*Use \*\***`destroyRef`** instead of managing destruction manually with `destroy$` subject or subscriptions.
+- **Use the new ********`input()`******** decorator** instead of the legacy `@Input()` decorator.
+- **Add ********`takeUntilDestroyed()`******** operator** to every subscription.
+- **Use constructor-based injection** instead of `inject()` function.
+- **Store sensitive data and API keys in ********`.env`******** files**; avoid hard-coding credentials or sensitive settings.
+- **Always use separate files** for templates (`.html`) and styles (`.scss` or `.css`) instead of inline definitions.
+- **Create standalone components** only when they are shared across multiple modules/components; otherwise, declare them in their respective modules.
+
+**Additional Recommended Standards:**
+
+- **Enforce strict typing** and avoid usage of `any`.
+- **Always handle errors gracefully** in HTTP requests using interceptors or centralized services.
+- **Split complex logic into small, reusable services** to improve readability and maintainability.
+- **Adopt OnPush Change Detection strategy** for performance optimization, unless explicitly required otherwise.
+- **Consistently name files** using kebab-case (`todo-list.component.ts`) and classes using PascalCase (`TodoListComponent`).
+- **Use Angular CLI commands** to generate components, services, modules, and pipes to ensure consistent project structure.
+- **Avoid nested subscriptions** by properly chaining observables with operators like `switchMap`, `mergeMap`, or `combineLatest`.
+- **Implement automated testing** (unit and integration tests) using Jest or Karma/Jasmine to ensure code robustness and quality.
+- **Use ESLint with recommended Angular rules** and Prettier for consistent formatting and code quality across the project.
+- **Document public APIs of components, services, and methods clearly** using JSDoc or inline comments where necessary.
+- **Ensure accessibility standards are met** by using semantic HTML and ARIA attributes appropriately.
+
