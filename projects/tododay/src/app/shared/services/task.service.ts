@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { Task } from '@tododay/shared/models/task.model';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { Task, TaskFormData, TaskStatus, TaskPriority } from '../models/task.model';
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +15,19 @@ export class TaskService {
     if (savedTasks) {
       this.tasks.next(JSON.parse(savedTasks));
     }
+
+    // TODO: Implement actual API calls
+    this.tasks.next([
+      {
+        id: '1',
+        title: 'Test Task',
+        description: 'This is a test task',
+        status: TaskStatus.TODO,
+        priority: TaskPriority.MEDIUM,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+    ]);
   }
 
   private saveTasks(tasks: Task[]): void {
@@ -25,26 +38,51 @@ export class TaskService {
     return this.tasks$;
   }
 
-  addTask(task: Task): void {
+  createTask(taskData: TaskFormData): Observable<Task> {
+    const task: Task = {
+      ...taskData,
+      id: Math.random().toString(36).substring(7),
+      status: TaskStatus.TODO,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
     const currentTasks = this.tasks.value;
     this.tasks.next([...currentTasks, task]);
     this.saveTasks(this.tasks.value);
+    return of(task);
   }
 
-  updateTask(task: Task): void {
+  updateTask(taskId: string, updates: Partial<Task>): Observable<Task> {
     const currentTasks = this.tasks.value;
-    const index = currentTasks.findIndex(t => t.id === task.id);
-    if (index !== -1) {
-      currentTasks[index] = { ...task, updatedAt: new Date() };
-      this.tasks.next([...currentTasks]);
-      this.saveTasks(this.tasks.value);
+    const taskIndex = currentTasks.findIndex(task => task.id === taskId);
+    if (taskIndex === -1) {
+      throw new Error('Task not found');
     }
+    const updatedTask = {
+      ...currentTasks[taskIndex],
+      ...updates,
+      updatedAt: new Date()
+    };
+    const updatedTasks = [
+      ...currentTasks.slice(0, taskIndex),
+      updatedTask,
+      ...currentTasks.slice(taskIndex + 1)
+    ];
+    this.tasks.next(updatedTasks);
+    this.saveTasks(updatedTasks);
+    return of(updatedTask);
   }
 
-  deleteTask(taskId: string): void {
+  deleteTask(taskId: string): Observable<void> {
     const currentTasks = this.tasks.value;
-    this.tasks.next(currentTasks.filter(task => task.id !== taskId));
-    this.saveTasks(this.tasks.value);
+    const taskIndex = currentTasks.findIndex(task => task.id === taskId);
+    if (taskIndex === -1) {
+      throw new Error('Task not found');
+    }
+    const updatedTasks = currentTasks.filter(task => task.id !== taskId);
+    this.tasks.next(updatedTasks);
+    this.saveTasks(updatedTasks);
+    return of(void 0);
   }
 
   getTaskById(taskId: string): Task | undefined {

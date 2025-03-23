@@ -10,13 +10,16 @@ export enum TaskStatus {
   DONE = 'DONE'
 }
 
-export interface Task {
-  id: string;
+export interface TaskFormData {
   title: string;
   description?: string;
+  priority: TaskPriority;
   project?: string;
   dueDate?: Date;
-  priority: TaskPriority;
+}
+
+export interface Task extends TaskFormData {
+  id: string;
   status: TaskStatus;
   createdAt: Date;
   updatedAt: Date;

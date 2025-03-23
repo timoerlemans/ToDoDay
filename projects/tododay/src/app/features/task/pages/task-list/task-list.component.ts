@@ -2,19 +2,27 @@ import { ChangeDetectionStrategy, Component, inject, isDevMode } from '@angular/
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Task, TaskStatus, TaskFormData } from '@tododay/app/core/models/task';
-import { TaskService } from '@tododay/app/core/services/task.service';
-import { NotificationService } from '@tododay/app/core/services/notification.service';
-import { AuthService } from '@tododay/app/core/services/auth.service';
-import { TaskFormComponent } from '@tododay/app/shared/components/task-form/task-form.component';
-import { TaskItemComponent } from '@tododay/app/shared/components/task-item/task-item.component';
-import { ThemeToggleComponent } from '@tododay/app/shared/components/theme-toggle/theme-toggle.component';
+import { Task, TaskStatus, TaskFormData } from '../../../../shared/models/task.model';
+import { TaskService } from '../../../../shared/services/task.service';
+import { NotificationService } from '../../../../shared/services/notification.service';
+import { AuthService } from '../../../../shared/services/auth.service';
+import { TaskFormComponent } from '../../../../shared/components/task-form/task-form.component';
+import { TaskItemComponent } from '../../../../shared/components/task-item/task-item.component';
+import { ThemeToggleComponent } from '../../../../shared/components/theme-toggle/theme-toggle.component';
+import { User } from '../../../../shared/models/user.model';
 
 @Component({
-    selector: 'app-task-list',
+    selector: 'tododay-task-list',
     templateUrl: './task-list.component.html',
     styleUrls: ['./task-list.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: true,
+    imports: [
+        CommonModule,
+        TaskFormComponent,
+        TaskItemComponent,
+        ThemeToggleComponent
+    ]
 })
 export class TaskListComponent {
   protected activeTasks: Task[] = [];
@@ -29,7 +37,7 @@ export class TaskListComponent {
   constructor() {
     this.authService.currentUser$
       .pipe(takeUntilDestroyed())
-      .subscribe(user => {
+      .subscribe((user: User | null) => {
         if (!user) {
           this.router.navigate(['/login']);
         }
@@ -40,7 +48,7 @@ export class TaskListComponent {
     this.taskService.getTasks()
       .pipe(takeUntilDestroyed())
       .subscribe({
-        next: (tasks) => {
+        next: (tasks: Task[]) => {
           this.activeTasks = tasks.filter(task => task.status !== TaskStatus.DONE);
           this.completedTasks = tasks.filter(task => task.status === TaskStatus.DONE);
           this.availableProjects = [...new Set(tasks
@@ -48,10 +56,10 @@ export class TaskListComponent {
             .filter((project): project is string => project !== undefined)
           )];
         },
-        error: (err) => {
+        error: (error: Error) => {
           this.notificationService.show('Er is een fout opgetreden bij het laden van de taken', 'error');
           if (isDevMode()) {
-            console.error('Error loading tasks:', err);
+            console.error('Error loading tasks:', error);
           }
         }
       });
@@ -65,10 +73,10 @@ export class TaskListComponent {
           this.notificationService.show('Taak succesvol toegevoegd', 'success');
           this.loadTasks();
         },
-        error: (err) => {
+        error: (error: Error) => {
           this.notificationService.show('Er is een fout opgetreden bij het toevoegen van de taak', 'error');
           if (isDevMode()) {
-            console.error('Error creating task:', err);
+            console.error('Error creating task:', error);
           }
         }
       });
@@ -82,10 +90,10 @@ export class TaskListComponent {
           this.notificationService.show('Taakstatus bijgewerkt', 'success');
           this.loadTasks();
         },
-        error: (err) => {
+        error: (error: Error) => {
           this.notificationService.show('Er is een fout opgetreden bij het bijwerken van de taakstatus', 'error');
           if (isDevMode()) {
-            console.error('Error updating task status:', err);
+            console.error('Error updating task status:', error);
           }
         }
       });
@@ -99,10 +107,10 @@ export class TaskListComponent {
           this.notificationService.show('Taak verwijderd', 'success');
           this.loadTasks();
         },
-        error: (err) => {
+        error: (error: Error) => {
           this.notificationService.show('Er is een fout opgetreden bij het verwijderen van de taak', 'error');
           if (isDevMode()) {
-            console.error('Error deleting task:', err);
+            console.error('Error deleting task:', error);
           }
         }
       });
