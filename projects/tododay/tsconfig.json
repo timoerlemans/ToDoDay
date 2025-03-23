@@ -1,11 +1,11 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "outDir": "../../out-tsc/app",
+    "outDir": "../../dist/out-tsc/app",
     "types": [],
     "baseUrl": "src",
     "paths": {
-      "@tododay/*": ["*"]
+      "@tododay/*": ["projects/tododay/src/app/*"]
     }
   },
   "files": [
