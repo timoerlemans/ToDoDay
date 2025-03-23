@@ -18,11 +18,12 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/tododay",
+            "outputPath": {
+              "base": "dist/tododay"
+            },
             "index": "projects/tododay/src/index.html",
-            "main": "projects/tododay/src/main.ts",
             "polyfills": [
               "zone.js"
             ],
@@ -45,9 +46,7 @@
             "allowedCommonJsDependencies": [
               "@supabase/supabase-js"
             ],
-            "buildOptimizer": true,
             "optimization": true,
-            "vendorChunk": true,
             "extractLicenses": false,
             "sourceMap": true,
             "namedChunks": true,
@@ -56,8 +55,8 @@
                 "projects/tododay/src/styles"
               ]
             },
-            "serviceWorker": true,
-            "ngswConfigPath": "projects/tododay/ngsw-config.json"
+            "serviceWorker": "projects/tododay/ngsw-config.json",
+            "browser": "projects/tododay/src/main.ts"
           },
           "configurations": {
             "production": {
@@ -73,8 +72,6 @@
               "namedChunks": false,
               "aot": true,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "budgets": [
                 {
                   "type": "initial",
