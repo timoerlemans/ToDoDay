@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+dist/
+
+# Build output
+build/
+out/
+
+# Generated files
+*.generated.ts
+*.generated.html
+*.generated.scss
+
+# Test files
+*.spec.ts
+*.e2e-spec.ts
+
+# Environment files
+.env*
+!.env.example
+
+# IDE files
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Git files
+.git/
+.gitignore
+
+# Cache files
+.cache/
+.temp/

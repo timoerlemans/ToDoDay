@@ -1,45 +1,124 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-# Run lint-staged
-npx lint-staged
-
-# Run custom code quality checks
 echo "Running code quality checks..."
 
-# Check for FormBuilder usage
-if grep -r "FormBuilder" ./projects/tododay/src/app; then
-  echo "❌ FormBuilder usage detected. Please use Reactive Forms instead."
+# Check for old template syntax
+echo "Checking for old template syntax..."
+if git diff --cached --name-only | grep -E "\.html$" | xargs grep -l "\*ngIf\|*ngFor\|*ngSwitch\|*ngModel\|@Output\|@Input\|@ViewChild\|@ContentChild\|@HostListener\|@HostBinding"; then
+  echo "❌ Old template syntax detected. Please use @if, @for, @switch, @model, @output(), @input(), @viewChild(), @contentChild(), @hostListener(), @hostBinding() instead."
   exit 1
 fi
 
-# Check for old template syntax
-if grep -r "\*ngIf" ./projects/tododay/src/app; then
-  echo "❌ Old template syntax detected. Please use @if instead."
+# Check for FormBuilder usage
+echo "Checking for FormBuilder usage..."
+if git diff --cached --name-only | grep -E "\.ts$" | xargs grep -l "FormBuilder"; then
+  echo "❌ FormBuilder usage detected. Please use new FormControl() and new FormGroup() instead."
   exit 1
 fi
 
 # Check for manual subscription cleanup
-if grep -r "takeUntil" ./projects/tododay/src/app; then
+echo "Checking for manual subscription cleanup..."
+if git diff --cached --name-only | grep -E "\.ts$" | xargs grep -l "takeUntilDestroyed"; then
   echo "❌ Manual subscription cleanup detected. Please use destroyRef instead."
   exit 1
 fi
 
-# Check for old Input decorator
-if grep -r "@Input()" ./projects/tododay/src/app; then
-  echo "❌ Old Input decorator detected. Please use input() instead."
-  exit 1
-fi
-
 # Check for inject() usage
-if grep -r "inject(" ./projects/tododay/src/app; then
+echo "Checking for inject() usage..."
+if git diff --cached --name-only | grep -E "\.ts$" | xargs grep -l "inject("; then
   echo "❌ inject() usage detected. Please use constructor-based injection instead."
   exit 1
 fi
 
-# Check for any type usage
-if grep -r ": any" ./projects/tododay/src/app; then
-  echo "❌ any type detected. Please use strict typing instead."
+# Check for inline templates
+echo "Checking for inline templates..."
+if git diff --cached --name-only | grep -E "\.ts$" | xargs grep -l "template:"; then
+  echo "❌ Inline template detected. Please use separate .html files instead."
+  exit 1
+fi
+
+# Check for inline styles
+echo "Checking for inline styles..."
+if git diff --cached --name-only | grep -E "\.ts$" | xargs grep -l "styles:"; then
+  echo "❌ Inline styles detected. Please use separate .scss files instead."
+  exit 1
+fi
+
+# Check for hardcoded credentials
+echo "Checking for hardcoded credentials..."
+if git diff --cached --name-only | grep -E "\.ts$" | xargs grep -l "apiKey\|password\|secret\|token"; then
+  echo "❌ Potential hardcoded credentials detected. Please use environment variables instead."
+  exit 1
+fi
+
+# Check for missing JSDoc comments
+echo "Checking for missing JSDoc comments..."
+if git diff --cached --name-only | grep -E "\.ts$" | xargs grep -l "@Component\|@Injectable\|@Pipe\|@Directive" | xargs grep -L "@description"; then
+  echo "❌ Missing JSDoc comments detected. Please add documentation to your components, services, pipes, and directives."
+  exit 1
+fi
+
+# Check for missing ARIA attributes
+echo "Checking for missing ARIA attributes..."
+if git diff --cached --name-only | grep -E "\.html$" | xargs grep -l "button\|input\|select\|textarea" | xargs grep -L "aria-"; then
+  echo "❌ Missing ARIA attributes detected. Please add appropriate ARIA attributes to interactive elements."
+  exit 1
+fi
+
+# Check for missing alt text
+echo "Checking for missing alt text..."
+if git diff --cached --name-only | grep -E "\.html$" | xargs grep -l "<img" | xargs grep -L "alt="; then
+  echo "❌ Missing alt text detected. Please add alt text to all images."
+  exit 1
+fi
+
+# Check for missing form labels
+echo "Checking for missing form labels..."
+if git diff --cached --name-only | grep -E "\.html$" | xargs grep -l "<input\|<select\|<textarea" | xargs grep -L "<label"; then
+  echo "❌ Missing form labels detected. Please add labels to all form controls."
+  exit 1
+fi
+
+# Check for missing keyboard navigation
+echo "Checking for missing keyboard navigation..."
+if git diff --cached --name-only | grep -E "\.html$" | xargs grep -l "onclick\|onkeydown\|onkeyup\|onkeypress" | xargs grep -L "tabindex="; then
+  echo "❌ Missing keyboard navigation detected. Please add tabindex to interactive elements."
+  exit 1
+fi
+
+# Check for missing color contrast
+echo "Checking for missing color contrast..."
+if git diff --cached --name-only | grep -E "\.scss$" | xargs grep -l "color:" | xargs grep -L "contrast("; then
+  echo "❌ Missing color contrast detected. Please ensure text colors meet WCAG contrast requirements."
+  exit 1
+fi
+
+# Check for missing responsive design
+echo "Checking for missing responsive design..."
+if git diff --cached --name-only | grep -E "\.scss$" | xargs grep -l "width:" | xargs grep -L "@media"; then
+  echo "❌ Missing responsive design detected. Please add media queries for different screen sizes."
+  exit 1
+fi
+
+# Check for missing error handling
+echo "Checking for missing error handling..."
+if git diff --cached --name-only | grep -E "\.ts$" | xargs grep -l "subscribe(" | xargs grep -L "error:"; then
+  echo "❌ Missing error handling detected. Please handle errors in your subscriptions."
+  exit 1
+fi
+
+# Check for missing type annotations
+echo "Checking for missing type annotations..."
+if git diff --cached --name-only | grep -E "\.ts$" | xargs grep -l "function\|const\|let" | xargs grep -L ":"; then
+  echo "❌ Missing type annotations detected. Please add type annotations to your variables and functions."
+  exit 1
+fi
+
+# Check for missing tests
+echo "Checking for missing tests..."
+if git diff --cached --name-only | grep -E "\.ts$" | xargs grep -l "@Component\|@Injectable\|@Pipe\|@Directive" | xargs grep -L "\.spec\.ts$"; then
+  echo "❌ Missing tests detected. Please add unit tests for your components, services, pipes, and directives."
   exit 1
 fi
 

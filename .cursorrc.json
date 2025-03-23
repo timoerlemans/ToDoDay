@@ -1,0 +1,46 @@
+{
+  "rules": {
+    "angular-imports": {
+      "enabled": true,
+      "severity": "error"
+    },
+    "angular-forms": {
+      "enabled": true,
+      "severity": "error"
+    },
+    "angular-templates": {
+      "enabled": true,
+      "severity": "error"
+    },
+    "angular-performance": {
+      "enabled": true,
+      "severity": "error"
+    },
+    "angular-security": {
+      "enabled": true,
+      "severity": "error"
+    },
+    "angular-testing": {
+      "enabled": true,
+      "severity": "warning"
+    },
+    "angular-accessibility": {
+      "enabled": true,
+      "severity": "error"
+    },
+    "angular-styling": {
+      "enabled": true,
+      "severity": "warning"
+    },
+    "angular-documentation": {
+      "enabled": true,
+      "severity": "warning"
+    }
+  },
+  "autoFix": true,
+  "validateOnSave": true,
+  "validateOnType": true,
+  "showInlineHints": true,
+  "showProblems": true,
+  "ignorePatterns": ["**/node_modules/**", "**/dist/**", "**/.git/**"]
+}
