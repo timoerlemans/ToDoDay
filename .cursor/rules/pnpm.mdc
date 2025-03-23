@@ -3,7 +3,298 @@ description:
 globs: 
 alwaysApply: true
 ---
+# PNPM Package Manager Standard
 
-# Your rule content
+## Description
+This rule enforces the use of PNPM as the exclusive package manager for this project to ensure consistent dependency management and optimal disk space usage.
 
-- Always use pnpm, never use npm
+## Glob Pattern
+```json
+["**/package.json", "**/pnpm-lock.yaml", "**/pnpm-workspace.yaml"]
+```
+
+## Parameters
+```json
+{
+  "alwaysApply": true
+}
+```
+
+## Rules
+
+### Package Installation
+
+- Always use PNPM for package management
+- Never use NPM or Yarn
+- Maintain a single `pnpm-lock.yaml` file
+- Use strict version numbers
+
+✅ Good:
+```bash
+# Install all dependencies
+pnpm install
+
+# Add a new package
+pnpm add @angular/material
+
+# Add a dev dependency
+pnpm add -D typescript@5.0.0
+
+# Global installation
+pnpm add -g @angular/cli
+```
+
+❌ Bad:
+```bash
+# Never use npm
+npm install
+
+# Never use yarn
+yarn add @angular/material
+
+# Never use package managers without version control
+npm install typescript --save-dev
+```
+
+### Workspace Configuration
+
+- Use PNPM workspaces for monorepo structure
+- Configure workspace in `pnpm-workspace.yaml`
+- Maintain consistent versioning across packages
+
+✅ Good:
+```yaml
+# pnpm-workspace.yaml
+packages:
+  - 'packages/*'
+  - 'apps/*'
+  - '!**/test/**'
+```
+
+✅ Good:
+```json
+// package.json
+{
+  "name": "my-project",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "preinstall": "npx only-allow pnpm"
+  }
+}
+```
+
+❌ Bad:
+```json
+// package.json without pnpm enforcement
+{
+  "name": "my-project",
+  "version": "1.0.0"
+}
+```
+
+### Scripts and Commands
+
+- Use PNPM run for script execution
+- Define scripts in package.json
+- Use workspace-specific commands when needed
+
+✅ Good:
+```json
+{
+  "scripts": {
+    "start": "pnpm run build && pnpm run serve",
+    "build": "ng build",
+    "test": "jest",
+    "lint": "eslint .",
+    "format": "prettier --write ."
+  }
+}
+```
+
+✅ Good:
+```bash
+# Run script in specific workspace
+pnpm --filter @myapp/frontend run build
+
+# Run script in all workspaces
+pnpm -r run test
+```
+
+❌ Bad:
+```bash
+# Don't use npm scripts
+npm run build
+
+# Don't use yarn scripts
+yarn test
+```
+
+### Dependency Management
+
+- Use exact versions for dependencies
+- Regularly update dependencies
+- Clean install in CI environments
+- Use peer dependencies appropriately
+
+✅ Good:
+```json
+{
+  "dependencies": {
+    "@angular/core": "16.0.0",
+    "@angular/material": "16.0.0"
+  },
+  "devDependencies": {
+    "typescript": "5.0.0",
+    "jest": "29.0.0"
+  }
+}
+```
+
+✅ Good:
+```bash
+# Update dependencies
+pnpm update
+
+# Clean install in CI
+pnpm install --frozen-lockfile
+```
+
+❌ Bad:
+```json
+{
+  "dependencies": {
+    "@angular/core": "^16.0.0",
+    "@angular/material": "~16.0.0"
+  }
+}
+```
+
+### Performance Optimization
+
+- Use PNPM's store for efficient storage
+- Enable hoisting when needed
+- Configure .npmrc appropriately
+- Use shared cache in CI
+
+✅ Good:
+```ini
+# .npmrc
+shared-workspace-lockfile=true
+save-exact=true
+auto-install-peers=true
+```
+
+✅ Good:
+```yaml
+# CI configuration
+steps:
+  - uses: actions/setup-node@v3
+    with:
+      node-version: '18'
+  - uses: pnpm/action-setup@v2
+    with:
+      version: 8
+      run_install: |
+        - args: [--frozen-lockfile]
+```
+
+❌ Bad:
+```ini
+# Don't disable pnpm features
+hoist=false
+save-exact=false
+```
+
+### Security
+
+- Use PNPM audit for security checks
+- Keep lockfile up to date
+- Review dependency licenses
+- Use trusted sources only
+
+✅ Good:
+```bash
+# Check for vulnerabilities
+pnpm audit
+
+# Update packages securely
+pnpm update --interactive
+
+# Check licenses
+pnpm licenses list
+```
+
+❌ Bad:
+```bash
+# Don't skip security checks
+pnpm install --no-audit
+
+# Don't use untrusted sources
+pnpm install some-package --registry http://untrusted-registry
+```
+
+## Resources
+
+- [PNPM Documentation](https://pnpm.io/motivation)
+- [PNPM Workspaces](https://pnpm.io/workspaces)
+- [PNPM CLI](https://pnpm.io/cli/add)
+- [PNPM vs NPM/Yarn](https://pnpm.io/feature-comparison)
+
+## Examples
+
+### Workspace Setup
+
+```yaml
+# pnpm-workspace.yaml
+packages:
+  - 'apps/*'  # All applications
+  - 'libs/*'  # Shared libraries
+  - 'tools/*' # Development tools
+  - '!**/dist/**' # Exclude build outputs
+  - '!**/coverage/**' # Exclude test coverage
+```
+
+### Package Scripts
+
+```json
+{
+  "scripts": {
+    "start": "pnpm run build && pnpm run serve",
+    "build": "ng build --configuration production",
+    "test": "jest --coverage",
+    "lint": "eslint . --fix",
+    "format": "prettier --write .",
+    "prepare": "husky install",
+    "preinstall": "npx only-allow pnpm"
+  }
+}
+```
+
+### CI Pipeline
+
+```yaml
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run build
+      - run: pnpm run test
+```
