@@ -1,24 +1,19 @@
 ---
 description: 
 globs: 
-alwaysApply: false
----
----
-description: 
-globs: 
 alwaysApply: true
 ---
 ---
-description:
-globs:
+description: Required technology stack for the project
+globs: ['**/*']
 alwaysApply: true
 ---
 
-# Verplichte Technologie Stack
+# Required Technology Stack
 
-## Beschrijving
+## Description
 
-Deze regels definiëren de verplichte technologie stack voor dit project. Afwijkingen zijn alleen toegestaan na expliciete documentatie en goedkeuring.
+These rules define the required technology stack for this project. Deviations are only allowed after explicit documentation and approval.
 
 ## Glob Pattern
 
@@ -38,10 +33,10 @@ Deze regels definiëren de verplichte technologie stack voor dit project. Afwijk
 
 ### Framework
 
-- **Angular v19** verplicht voor alle frontend ontwikkeling
-- Gebruik van standalone componenten alleen wanneer strikt noodzakelijk (bijv. voor gedeelde componenten)
-- Implementeer lazy loading voor feature modules
-- Volg Angular style guide en best practices
+- **Angular v19** required for all frontend development
+- Use standalone components only when strictly necessary (e.g., for shared components)
+- Implement lazy loading for feature modules
+- Follow Angular style guide and best practices
 
 ✅ Good:
 
@@ -71,9 +66,9 @@ export class HomeComponent {}
 
 ### Styling
 
-- **Tailwind CSS** voor utility-first styling
-- **SCSS** voor custom componenten en theming
-- Responsive design is verplicht voor alle componenten
+- **Tailwind CSS** for utility-first styling
+- **SCSS** for custom components and theming
+- Responsive design is required for all components
 
 ✅ Good:
 
@@ -88,18 +83,18 @@ export class HomeComponent {}
 ❌ Bad:
 
 ```html
-<!-- Niet-responsive layout of geen gebruik van Tailwind -->
+<!-- Non-responsive layout or no use of Tailwind -->
 <div style="width: 1200px; margin: 0 auto;">
-  <!-- Vaste breedte zonder responsiveness -->
+  <!-- Fixed width without responsiveness -->
 </div>
 ```
 
-### Taal
+### Language
 
-- **TypeScript** verplicht voor alle code
+- **TypeScript** required for all code
 - Strict mode enabled
-- Geen gebruik van `any` type
-- Expliciete return types
+- No use of `any` type
+- Explicit return types
 
 ✅ Good:
 
@@ -118,7 +113,7 @@ function getUser(id: string): Promise<User> {
 ❌ Bad:
 
 ```typescript
-// Gebruik van any of impliciete types
+// Use of any or implicit types
 function getUser(id) {
   return this.http.get('/api/users/' + id);
 }
@@ -126,10 +121,10 @@ function getUser(id) {
 
 ### Database/Backend
 
-- **Supabase** voor database en backend services
-- Gebruik type-safe database queries
-- Implementeer row level security
-- Gebruik Supabase realtime features waar relevant
+- **Supabase** for database and backend services
+- Use type-safe database queries
+- Implement row level security
+- Use Supabase realtime features where relevant
 
 ✅ Good:
 
@@ -155,16 +150,16 @@ async function getTasks(): Promise<Task[]> {
 ❌ Bad:
 
 ```typescript
-// Gebruik van andere databases of directe SQL queries
+// Use of other databases or direct SQL queries
 const tasks = await db.query('SELECT * FROM tasks');
 ```
 
 ### State Management
 
-- **RxJS** voor reactive programming
-- **NgRx signals** voor component state
-- Gebruik appropriate RxJS operators
-- Implementeer proper cleanup
+- **RxJS** for reactive programming
+- **NgRx signals** for component state
+- Use appropriate RxJS operators
+- Implement proper cleanup
 
 ✅ Good:
 
@@ -190,16 +185,16 @@ export class TaskListComponent {
 ❌ Bad:
 
 ```typescript
-// Gebruik van andere state management oplossingen
+// Use of other state management solutions
 import { Store } from 'redux';
 ```
 
-### API Integratie
+### API Integration
 
-- **OpenAI API** voor AI functionaliteit
-- Implementeer rate limiting
-- Error handling voor API calls
-- Caching waar mogelijk
+- **OpenAI API** for AI functionality
+- Implement rate limiting
+- Error handling for API calls
+- Caching where possible
 
 ✅ Good:
 
@@ -233,22 +228,22 @@ export class OpenAIService {
 ❌ Bad:
 
 ```typescript
-// Direct API calls zonder error handling of rate limiting
+// Direct API calls without error handling or rate limiting
 fetch('https://api.openai.com/v1/completions', {...});
 ```
 
 ### Testing
 
-- **Jest** voor unit tests
-- **Cypress** voor end-to-end tests
+- **Jest** for unit tests
+- **Cypress** for end-to-end tests
 - 80% minimum code coverage
-- Test beschrijvingen in het Nederlands
+- Test descriptions in Dutch
 
 ✅ Good:
 
 ```typescript
 describe('TaskService', () => {
-  it('moet een nieuwe taak aanmaken', () => {
+  it('should create a new task', () => {
     const service = TestBed.inject(TaskService);
     const task = { title: 'Test Task' };
 
@@ -259,13 +254,13 @@ describe('TaskService', () => {
 });
 
 // cypress/e2e/tasks.cy.ts
-describe('Taken beheer', () => {
-  it('moet een nieuwe taak kunnen aanmaken', () => {
+describe('Task Management', () => {
+  it('should be able to create a new task', () => {
     cy.visit('/tasks');
     cy.get('[data-cy=new-task-button]').click();
-    cy.get('[data-cy=task-title]').type('Nieuwe taak');
+    cy.get('[data-cy=task-title]').type('New Task');
     cy.get('[data-cy=save-task]').click();
-    cy.get('[data-cy=task-list]').should('contain', 'Nieuwe taak');
+    cy.get('[data-cy=task-list]').should('contain', 'New Task');
   });
 });
 ```
@@ -273,23 +268,23 @@ describe('Taken beheer', () => {
 ❌ Bad:
 
 ```typescript
-// Geen tests of gebruik van andere test frameworks
+// No tests or use of other test frameworks
 import { expect } from 'chai';
 ```
 
 ### Package Manager
 
-- **PNPM** verplicht voor alle package management
-- Gebruik van pnpm workspaces voor monorepo
-- Vergrendel dependencies met pnpm-lock.yaml
+- **PNPM** required for all package management
+- Use of pnpm workspaces for monorepo
+- Lock dependencies with pnpm-lock.yaml
 
 ✅ Good:
 
 ```bash
-# Installeer dependencies
+# Install dependencies
 pnpm install
 
-# Voeg nieuwe package toe
+# Add new package
 pnpm add @angular/material
 
 # Update packages
@@ -299,39 +294,39 @@ pnpm update
 ❌ Bad:
 
 ```bash
-# Gebruik van npm of yarn
+# Use of npm or yarn
 npm install
 yarn add @angular/material
 ```
 
-## Afwijkingen
+## Deviations
 
-Als afwijking van deze stack noodzakelijk is:
+If deviation from this stack is necessary:
 
-1. Documenteer de afwijking in `DEVIATIONS.md`:
+1. Document the deviation in `DEVIATIONS.md`:
 
    ```markdown
-   ## [Datum] - [Technologie]
+   ## [Date] - [Technology]
 
-   ### Afwijking
+   ### Deviation
 
-   Beschrijf de afwijking van de standaard stack
+   Describe the deviation from the standard stack
 
-   ### Reden
+   ### Reason
 
-   Leg uit waarom deze afwijking noodzakelijk is
+   Explain why this deviation is necessary
 
-   ### Alternatieven
+   ### Alternatives
 
-   Welke alternatieven zijn overwogen
+   Which alternatives were considered
 
    ### Impact
 
-   Beschrijf de impact op het project
+   Describe the impact on the project
    ```
 
-2. Krijg goedkeuring van het team
-3. Update relevante documentatie
+2. Get approval from the team
+3. Update relevant documentation
 
 ## Resources
 

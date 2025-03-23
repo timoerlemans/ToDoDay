@@ -1,33 +1,31 @@
 ---
-description: 
-globs: 
-alwaysApply: false
----
----
-description: 
-globs: 
+description:
+globs:
 alwaysApply: true
 ---
+
 ---
+
 description: Angular security standards and best practices
 globs: ['**/*.ts', '**/*.html']
 alwaysApply: true
+
 ---
 
 # Angular Security Standards
 
 ## Overview
 
-Implementeer veilige Angular applicaties door best practices te volgen voor XSS preventie, authenticatie, autorisatie en data sanitization.
+Implement secure Angular applications by following best practices for XSS prevention, authentication, authorization, and data sanitization.
 
 ## Rules
 
 ### Cross-Site Scripting (XSS) Prevention
 
-- Gebruik Angular's ingebouwde sanitization
-- Vermijd `bypassSecurityTrustHtml` tenzij absoluut noodzakelijk
-- Valideer user input
-- Gebruik Content Security Policy (CSP)
+- Use Angular's built-in sanitization
+- Avoid `bypassSecurityTrustHtml` unless absolutely necessary
+- Validate user input
+- Use Content Security Policy (CSP)
 
 ✅ Good:
 
