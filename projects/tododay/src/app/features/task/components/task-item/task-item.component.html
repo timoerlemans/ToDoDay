@@ -1,23 +1,26 @@
 <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-4">
   <div class="flex items-start justify-between">
     <div class="flex-1">
-      <h3 id="task-title-{{task.id}}" class="text-lg font-medium text-gray-900 dark:text-white">
-        {{task.title}}
+      <h3 id="task-title-{{ task.id }}" class="text-lg font-medium text-gray-900 dark:text-white">
+        {{ task.title }}
       </h3>
       @if (task.description) {
         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          {{task.description}}
+          {{ task.description }}
         </p>
       }
       <div class="mt-2 flex flex-wrap gap-2">
         @if (task.project) {
-          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200" role="status">
-            {{task.project}}
+          <span
+            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+            role="status"
+          >
+            {{ task.project }}
           </span>
         }
         @if (task.dueDate) {
           <span class="text-sm text-gray-500 dark:text-gray-400" role="status">
-            Deadline: {{task.dueDate | date:'mediumDate'}}
+            Deadline: {{ task.dueDate | date: 'mediumDate' }}
           </span>
         }
       </div>
@@ -25,7 +28,7 @@
     <div class="ml-4 flex items-center space-x-2">
       <select
         [value]="task.status"
-        (change)="onStatusChange($event)"
+        (change)="onStatusChange($any($event.target).value)"
         class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm"
       >
         <option [value]="TaskStatus.TODO">Todo</option>
@@ -38,7 +41,12 @@
         aria-label="Delete task"
       >
         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+          />
         </svg>
       </button>
     </div>

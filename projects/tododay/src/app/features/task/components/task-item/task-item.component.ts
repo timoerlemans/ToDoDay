@@ -1,31 +1,28 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Task, TaskStatus } from '../../../core/models/task';
+import { Task, TaskStatus } from '../../../../core/models/task';
 
 @Component({
-  selector: 'tododay-task-item',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
+  selector: 'app-task-item',
   templateUrl: './task-item.component.html',
   styleUrls: ['./task-item.component.scss']
 })
 export class TaskItemComponent {
-  @Input({ required: true }) task!: Task;
-  @Output() statusChange = new EventEmitter<{ taskId: string; status: TaskStatus }>();
+  @Input() task!: Task;
+  @Output() statusChange = new EventEmitter<{ status: TaskStatus }>();
   @Output() delete = new EventEmitter<string>();
+  @Output() edit = new EventEmitter<Task>();
 
-  protected readonly TaskStatus = TaskStatus;
+  TaskStatus = TaskStatus;
 
-  onStatusChange(event: Event): void {
-    const select = event.target as HTMLSelectElement;
-    this.statusChange.emit({
-      taskId: this.task.id,
-      status: select.value as TaskStatus
-    });
+  onStatusChange(status: string): void {
+    this.statusChange.emit({ status: status as TaskStatus });
   }
 
   onDelete(): void {
     this.delete.emit(this.task.id);
+  }
+
+  onEdit(): void {
+    this.edit.emit(this.task);
   }
 }
