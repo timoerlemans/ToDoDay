@@ -1,15 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { TaskService } from '@tododay/shared/services/task.service';
-import { Task, TaskPriority } from '@tododay/shared/models/task.model';
+import { TaskFormData, TaskPriority } from '../../models/task.model';
 
 @Component({
-    selector: 'app-task-form',
-    imports: [ReactiveFormsModule],
-    templateUrl: './task-form.component.html',
-    styleUrls: ['./task-form.component.scss']
+  selector: 'tododay-task-form',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
+  templateUrl: './task-form.component.html',
+  styleUrls: ['./task-form.component.scss']
 })
 export class TaskFormComponent implements OnInit {
+  @Output() submitTask = new EventEmitter<TaskFormData>();
+
   taskForm = new FormGroup({
     title: new FormControl('', [Validators.required]),
     description: new FormControl(''),
@@ -18,22 +21,15 @@ export class TaskFormComponent implements OnInit {
     priority: new FormControl(TaskPriority.MEDIUM)
   });
 
-  TaskPriority = TaskPriority;
+  protected readonly TaskPriority = TaskPriority;
 
-  constructor(private taskService: TaskService) {}
+  constructor() {}
 
   ngOnInit(): void {}
 
   onSubmit(): void {
     if (this.taskForm.valid) {
-      const task: Task = {
-        ...this.taskForm.value,
-        id: Date.now().toString(),
-        status: 'TODO',
-        createdAt: new Date(),
-        updatedAt: new Date()
-      };
-      this.taskService.addTask(task);
+      this.submitTask.emit(this.taskForm.value as TaskFormData);
       this.taskForm.reset({ priority: TaskPriority.MEDIUM });
     }
   }
