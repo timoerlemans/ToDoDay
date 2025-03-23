@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { createClient, SupabaseClient, AuthResponse, User } from '@supabase/supabase-js';
-import { environment } from '@tododay/environments/environment';
-import { Task, TaskFormData } from '@tododay/app/core/models/task';
+import { environment } from '../../../environments/environment';
 import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
@@ -9,8 +8,7 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class SupabaseService {
   private supabase: SupabaseClient;
-  private currentUserSubject = new BehaviorSubject<User | null>(null);
-  currentUser$ = this.currentUserSubject.asObservable();
+  private currentUser = new BehaviorSubject<User | null>(null);
 
   constructor() {
     this.supabase = createClient(
@@ -18,108 +16,55 @@ export class SupabaseService {
       environment.supabase.key,
       {
         auth: {
-          persistSession: true,
-          autoRefreshToken: true,
-          detectSessionInUrl: true,
           storage: {
-            getItem: (key) => localStorage.getItem(key),
-            setItem: (key, value) => localStorage.setItem(key, value),
-            removeItem: (key) => localStorage.removeItem(key)
-          }
-        },
-        global: {
-          headers: {
-            'Access-Control-Allow-Origin': environment.production ? 'https://jouw-domein.nl' : 'http://localhost:4200',
-            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE',
-            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-            'X-Frame-Options': 'DENY',
-            'X-Content-Type-Options': 'nosniff',
-            'Strict-Transport-Security': 'max-age=31536000; includeSubDomains'
-          }
+            getItem: (key: string) => localStorage.getItem(key),
+            setItem: (key: string, value: string) => localStorage.setItem(key, value),
+            removeItem: (key: string) => localStorage.removeItem(key)
+          },
+          persistSession: true,
+          autoRefreshToken: true
         }
       }
     );
 
-    // Initialiseer de huidige gebruiker
-    this.supabase.auth.getSession().then(({ data: { session } }) => {
-      this.currentUserSubject.next(session?.user ?? null);
-    });
+    // Probeer de huidige sessie te laden
+    this.loadSession();
 
     // Luister naar auth state changes
+    this.setupAuthListener();
+  }
+
+  private async loadSession(): Promise<void> {
+    const { data: { session } } = await this.supabase.auth.getSession();
+    if (session?.user) {
+      this.currentUser.next(session.user);
+    }
+  }
+
+  private setupAuthListener(): void {
     this.supabase.auth.onAuthStateChange((_event, session) => {
-      this.currentUserSubject.next(session?.user ?? null);
+      this.currentUser.next(session?.user ?? null);
     });
   }
 
-  // Auth methods
+  get currentUser$() {
+    return this.currentUser.asObservable();
+  }
+
+  async signIn(email: string, password: string): Promise<AuthResponse> {
+    return this.supabase.auth.signInWithPassword({ email, password });
+  }
+
   async signUp(email: string, password: string): Promise<AuthResponse> {
     return this.supabase.auth.signUp({ email, password });
   }
 
-  async signInWithPassword(email: string, password: string): Promise<AuthResponse> {
-    return this.supabase.auth.signInWithPassword({ email, password });
+  async signOut(): Promise<void> {
+    await this.supabase.auth.signOut();
+    this.currentUser.next(null);
   }
 
-  async signOut(): Promise<{ error: Error | null }> {
-    return this.supabase.auth.signOut();
-  }
-
-  async resetPasswordForEmail(email: string): Promise<{ error: Error | null }> {
-    return this.supabase.auth.resetPasswordForEmail(email);
-  }
-
-  async updateUser(updates: { password?: string }): Promise<{ error: Error | null }> {
-    return this.supabase.auth.updateUser(updates);
-  }
-
-  async getSession(): Promise<{ data: { session: any }, error: Error | null }> {
-    return this.supabase.auth.getSession();
-  }
-
-  onAuthStateChange(callback: (event: string, session: any) => void) {
-    return this.supabase.auth.onAuthStateChange(callback);
-  }
-
-  // Task methods
-  async getTasks(): Promise<Task[]> {
-    const { data, error } = await this.supabase
-      .from('tasks')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (error) throw error;
-    return data;
-  }
-
-  async createTask(taskData: TaskFormData): Promise<Task> {
-    const { data, error } = await this.supabase
-      .from('tasks')
-      .insert([taskData])
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data;
-  }
-
-  async updateTask(taskId: string, updates: Partial<Task>): Promise<Task> {
-    const { data, error } = await this.supabase
-      .from('tasks')
-      .update(updates)
-      .eq('id', taskId)
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data;
-  }
-
-  async deleteTask(taskId: string): Promise<void> {
-    const { error } = await this.supabase
-      .from('tasks')
-      .delete()
-      .eq('id', taskId);
-
-    if (error) throw error;
+  getClient(): SupabaseClient {
+    return this.supabase;
   }
 } 
