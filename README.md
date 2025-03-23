@@ -1,133 +1,52 @@
 # TodoDay
 
-Een moderne todo-applicatie gebouwd met Angular en Supabase.
-
-🌍 [English version below](#english)
+A modern todo application built with Angular and Supabase, featuring real-time task management and a beautiful user interface.
 
 ## Features
 
-- 🔐 Authenticatie met Supabase
-- 📱 Responsive design
-- 🌙 Dark mode support
-- ⚡ Snelle en moderne UI met Tailwind CSS
-- 📝 CRUD operaties voor taken
-- 🔄 Real-time updates
-- 🎯 Taak prioriteiten en categorieën
-- 📅 Deadline management
-- 🔍 Zoek en filter functionaliteit
-
-## Technologieën
-
-- Angular 17
-- Supabase
-- Tailwind CSS
-- TypeScript
-- RxJS
-- NgRx Signals
-- Jest (Unit Tests)
-- Cypress (E2E Tests)
-
-## Ontwikkeling
-
-### Vereisten
-
-- Node.js (v18 of hoger)
-- pnpm (v8 of hoger)
-- Angular CLI
-- Git
-
-### Installatie
-
-1. Clone de repository:
-
-```bash
-git clone https://github.com/[jouw-username]/tododay.git
-cd tododay
-```
-
-2. Installeer dependencies:
-
-```bash
-pnpm install
-```
-
-3. Maak een `.env` bestand aan in de root van het project:
-
-```env
-SUPABASE_URL=jouw-supabase-url
-SUPABASE_ANON_KEY=jouw-supabase-anon-key
-OPENAI_API_KEY=jouw-openai-api-key
-```
-
-4. Start de development server:
-
-```bash
-pnpm start
-```
-
-De applicatie is nu beschikbaar op `http://localhost:4200`.
-
-### Scripts
-
-- `pnpm start` - Start de development server
-- `pnpm build` - Bouw de applicatie voor productie
-- `pnpm test` - Voer unit tests uit
-- `pnpm e2e` - Voer end-to-end tests uit
-- `pnpm lint` - Controleer code kwaliteit
-- `pnpm format` - Format de code met Prettier
-
-## Deployment
-
-1. Bouw de applicatie:
-
-```bash
-pnpm build
-```
-
-2. De gebouwde applicatie bevindt zich in de `dist` map
-
-## Bijdragen
-
-1. Fork het project
-2. Maak een feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit je changes (`git commit -m 'feat: Add some AmazingFeature'`)
-4. Push naar de branch (`git push origin feature/AmazingFeature`)
-5. Open een Pull Request
-
-## Licentie
-
-Dit project is gelicenseerd onder de MIT licentie - zie het [LICENSE](LICENSE) bestand voor details.
-
----
-
-<a name="english"></a>
-
-# TodoDay (English)
-
-A modern todo application built with Angular and Supabase.
-
-## Features
-
-- 🔐 Authentication with Supabase
-- 📱 Responsive design
-- 🌙 Dark mode support
+- 🔐 Secure authentication with Supabase
+- 📱 Responsive design with mobile-first approach
+- 🌙 Dark mode support with system preference detection
 - ⚡ Fast and modern UI with Tailwind CSS
-- 📝 CRUD operations for tasks
-- 🔄 Real-time updates
-- 🎯 Task priorities and categories
-- 📅 Deadline management
-- 🔍 Search and filter functionality
+- 📝 Advanced task management:
+  - Create, read, update, and delete tasks
+  - Task status tracking (Todo, In Progress, Done)
+  - Priority levels (High, Medium, Low)
+  - Project organization
+  - Custom labels
+  - Due dates and start dates
+  - Reminder notifications
+- 🔄 Real-time updates with Supabase subscriptions
+- 🎯 Task organization:
+  - Project categorization
+  - Label-based filtering
+  - Priority-based sorting
+  - Status-based grouping (Active/Completed)
+- 📅 Date management:
+  - Due date tracking
+  - Start date scheduling
+  - Reminder notifications
+- 🔍 Smart task filtering and organization
+- 🎨 Modern UI components:
+  - Responsive grid layout
+  - Interactive task cards
+  - Status indicators
+  - Priority badges
+  - Project tags
+  - Label chips
 
 ## Technologies
 
-- Angular 17
-- Supabase
-- Tailwind CSS
-- TypeScript
-- RxJS
-- NgRx Signals
-- Jest (Unit Tests)
-- Cypress (E2E Tests)
+- Angular 17 with standalone components
+- Supabase for backend and real-time features
+- Tailwind CSS for styling
+- TypeScript for type safety
+- RxJS for reactive programming
+- Angular Signals for state management
+- Jest for unit testing
+- Cypress for end-to-end testing
+- Angular Material for UI components
+- Font Awesome for icons
 
 ## Development
 
@@ -158,7 +77,6 @@ pnpm install
 ```env
 SUPABASE_URL=your-supabase-url
 SUPABASE_ANON_KEY=your-supabase-anon-key
-OPENAI_API_KEY=your-openai-api-key
 ```
 
 4. Start the development server:
@@ -177,6 +95,21 @@ The application is now available at `http://localhost:4200`.
 - `pnpm e2e` - Run end-to-end tests
 - `pnpm lint` - Check code quality
 - `pnpm format` - Format code with Prettier
+
+## Project Structure
+
+```
+tododay/
+├── src/
+│   ├── app/
+│   │   ├── core/           # Core services, guards, and models
+│   │   │   ├── auth/      # Authentication
+│   │   │   └── task/      # Task management
+│   │   └── shared/        # Shared components and utilities
+│   └── assets/            # Static assets
+├── projects/              # Monorepo projects
+└── tests/                # Test files
+```
 
 ## Deployment
 
