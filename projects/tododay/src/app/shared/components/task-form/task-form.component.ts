@@ -1,7 +1,7 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { TaskFormData, TaskPriority } from '../../models/task.model';
+import { Task, TaskPriority } from '../../../core/models/task';
 
 @Component({
   selector: 'tododay-task-form',
@@ -11,7 +11,7 @@ import { TaskFormData, TaskPriority } from '../../models/task.model';
   styleUrls: ['./task-form.component.scss']
 })
 export class TaskFormComponent implements OnInit {
-  @Output() submitTask = new EventEmitter<TaskFormData>();
+  @Output() submitTask = new EventEmitter<Task>();
 
   taskForm = new FormGroup({
     title: new FormControl('', [Validators.required]),
@@ -29,7 +29,7 @@ export class TaskFormComponent implements OnInit {
 
   onSubmit(): void {
     if (this.taskForm.valid) {
-      this.submitTask.emit(this.taskForm.value as TaskFormData);
+      this.submitTask.emit(this.taskForm.value as Task);
       this.taskForm.reset({ priority: TaskPriority.MEDIUM });
     }
   }

@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy, inject, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ThemeService, Theme } from '../../services/theme.service';
+import { ThemeService, Theme } from '../../../core/services/theme.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({

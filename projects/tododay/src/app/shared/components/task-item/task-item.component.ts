@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Task, TaskStatus } from '../../models/task.model';
+import { Task, TaskStatus } from '../../../core/models/task';
 
 @Component({
   selector: 'tododay-task-item',
