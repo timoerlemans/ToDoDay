@@ -1,23 +1,34 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TaskRoutingModule } from './task-routing.module';
+import { ReactiveFormsModule } from '@angular/forms';
 import { TaskListComponent } from './components/task-list/task-list.component';
 import { TaskItemComponent } from './components/task-item/task-item.component';
 import { TaskFormComponent } from './components/task-form/task-form.component';
-import { TaskEditDialogComponent } from './components/task-edit-dialog/task-edit-dialog.component';
-import { ReactiveFormsModule } from '@angular/forms';
+import { TaskService } from '../../core/services/task.service';
+import { NotificationService } from '../../core/services/notification.service';
+import { AuthService } from '../../core/services/auth.service';
+import { SharedModule } from '../../shared/shared.module';
 
 @NgModule({
   declarations: [
     TaskListComponent,
     TaskItemComponent,
-    TaskFormComponent,
-    TaskEditDialogComponent
+    TaskFormComponent
   ],
   imports: [
     CommonModule,
-    TaskRoutingModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    SharedModule
+  ],
+  providers: [
+    TaskService,
+    NotificationService,
+    AuthService
+  ],
+  exports: [
+    TaskListComponent,
+    TaskItemComponent,
+    TaskFormComponent
   ]
 })
 export class TaskModule { }
