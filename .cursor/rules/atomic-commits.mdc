@@ -1,0 +1,78 @@
+---
+description: Use atomic commits with commitizen for consistent commit messages
+globs: ['**/*']
+alwaysApply: true
+---
+
+# Atomic Commits
+
+## Installation
+
+```bash
+# Install commitizen and the conventional changelog adapter
+pnpm add -D commitizen cz-conventional-changelog
+
+# Add the following to package.json:
+{
+  "scripts": {
+    "commit": "git-cz"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
+}
+```
+
+## Usage
+
+```bash
+# Use the commit script instead of git commit
+pnpm commit
+```
+
+## Commit Types
+
+- `feat`: New feature
+- `fix`: Bug fix
+- `docs`: Documentation changes
+- `style`: Code style changes (formatting, etc)
+- `refactor`: Code refactoring
+- `perf`: Performance improvements
+- `test`: Adding or modifying tests
+- `build`: Build system or external dependencies
+- `ci`: CI configuration changes
+- `chore`: General maintenance tasks
+
+## Commit Message Structure
+
+```
+type(scope?): subject
+
+body
+
+footer
+```
+
+## Examples
+
+```
+feat(auth): add login functionality
+
+- Add login form component
+- Add authentication service
+- Add login page routing
+
+Closes #123
+```
+
+```
+fix(task): resolve task status update issue
+
+- Fix task status not updating in database
+- Add error handling for failed updates
+- Update task list refresh logic
+
+Fixes #456
+```
