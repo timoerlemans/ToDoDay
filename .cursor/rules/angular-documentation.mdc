@@ -1,1 +1,414 @@
- 
+---
+description: Angular documentation standards and best practices
+globs: ['**/*.ts']
+alwaysApply: true
+---
+
+# Angular Documentation Standards
+
+## Overview
+
+Maintain clear and consistent documentation across the Angular codebase to improve maintainability and onboarding experience.
+
+## Rules
+
+### JSDoc Comments
+
+- Document all public methods, properties, and classes
+- Include parameter types and return types
+- Describe side effects and exceptions
+- Add examples for complex functionality
+
+✅ Good:
+
+```typescript
+/**
+ * Manages user authentication state and operations.
+ */
+@Injectable({
+  providedIn: 'root',
+})
+export class AuthService {
+  /**
+   * Attempts to log in a user with the provided credentials.
+   * @param email The user's email address
+   * @param password The user's password
+   * @returns An Observable that emits the user's profile on success
+   * @throws AuthenticationError if credentials are invalid
+   */
+  login(email: string, password: string): Observable<UserProfile> {
+    // Implementation
+  }
+}
+```
+
+❌ Bad:
+
+```typescript
+@Injectable({
+  providedIn: 'root',
+})
+export class AuthService {
+  login(email: string, password: string) {
+    // Implementation without documentation
+  }
+}
+```
+
+### Component Documentation
+
+- Document inputs and outputs
+- Explain component lifecycle hooks
+- Document component responsibilities
+- Include usage examples
+
+✅ Good:
+
+```typescript
+/**
+ * Displays a paginated list of tasks with filtering and sorting capabilities.
+ *
+ * @example
+ * <task-list
+ *   [tasks]="tasks"
+ *   [pageSize]="10"
+ *   (taskSelected)="onTaskSelect($event)">
+ * </task-list>
+ */
+@Component({
+  selector: 'task-list',
+  templateUrl: './task-list.component.html',
+})
+export class TaskListComponent {
+  /** The list of tasks to display */
+  @Input() tasks: Task[] = [];
+
+  /** Number of items to show per page */
+  @Input() pageSize = 20;
+
+  /** Emits when a task is selected */
+  @Output() taskSelected = new EventEmitter<Task>();
+}
+```
+
+❌ Bad:
+
+```typescript
+@Component({
+  selector: 'task-list',
+  templateUrl: './task-list.component.html',
+})
+export class TaskListComponent {
+  @Input() tasks: Task[] = [];
+  @Input() pageSize = 20;
+  @Output() taskSelected = new EventEmitter<Task>();
+}
+```
+
+### Interface and Type Documentation
+
+- Document all interfaces and types
+- Explain property constraints
+- Include usage examples
+- Document generic type parameters
+
+✅ Good:
+
+```typescript
+/**
+ * Represents a task in the system.
+ * @template T The type of the task's custom metadata
+ */
+interface Task<T = unknown> {
+  /** Unique identifier for the task */
+  id: string;
+
+  /** The task's title (max 100 characters) */
+  title: string;
+
+  /** Current status of the task */
+  status: 'todo' | 'in-progress' | 'done';
+
+  /** Custom metadata associated with the task */
+  metadata?: T;
+}
+```
+
+❌ Bad:
+
+```typescript
+interface Task {
+  id: string;
+  title: string;
+  status: string;
+  metadata?: any;
+}
+```
+
+### README Documentation
+
+- Include setup instructions
+- Document available scripts
+- List dependencies and requirements
+- Provide troubleshooting guides
+
+✅ Good:
+
+```markdown
+# Task Management App
+
+## Setup
+
+1. Install dependencies: `pnpm install`
+2. Configure environment: `cp .env.example .env`
+3. Start development server: `pnpm start`
+
+## Available Scripts
+
+- `pnpm start`: Start development server
+- `pnpm test`: Run unit tests
+- `pnpm build`: Build production bundle
+
+## Environment Variables
+
+- `API_URL`: Base URL for the API
+- `AUTH_KEY`: Authentication key for external services
+```
+
+❌ Bad:
+
+```markdown
+# Task App
+
+Run `pnpm install` and `pnpm start` to run the app.
+```
+
+## Resources
+
+- [JSDoc Documentation](https://jsdoc.app/)
+- [Angular Style Guide](https://angular.io/guide/styleguide)
+- [TypeDoc](https://typedoc.org/)
+
+## Code Documentation
+
+- Use JSDoc comments for classes, methods, and properties
+- Document public APIs thoroughly
+- Include type information
+- Document side effects
+
+## Component Documentation
+
+- Document inputs and outputs
+- Document component lifecycle hooks
+- Document component dependencies
+- Document component usage examples
+
+## Service Documentation
+
+- Document service methods
+- Document service dependencies
+- Document observable streams
+- Document error handling
+
+## Examples
+
+### Good Component Documentation
+
+````typescript
+/**
+ * Displays a list of tasks with filtering and sorting capabilities.
+ *
+ * @example
+ * ```html
+ * <app-task-list
+ *   [tasks]="tasks"
+ *   [sortBy]="'dueDate'"
+ *   (taskDeleted)="onTaskDeleted($event)"
+ * ></app-task-list>
+ * ```
+ */
+@Component({
+  selector: 'app-task-list',
+  templateUrl: './task-list.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class TaskListComponent implements OnInit {
+  /**
+   * The list of tasks to display.
+   * Updates will trigger a re-render of the list.
+   */
+  @Input() tasks: Task[] = [];
+
+  /**
+   * The field to sort tasks by.
+   * @default 'createdAt'
+   */
+  @Input() sortBy: keyof Task = 'createdAt';
+
+  /**
+   * Emits when a task is deleted.
+   * Emits the ID of the deleted task.
+   */
+  @Output() taskDeleted = new EventEmitter<string>();
+
+  /**
+   * Initializes the component by setting up subscriptions
+   * and loading initial data.
+   */
+  ngOnInit(): void {
+    // Implementation
+  }
+
+  /**
+   * Tracks tasks in ngFor by their ID for better performance.
+   *
+   * @param index - The current index in the iteration
+   * @param task - The current task object
+   * @returns The task's unique identifier
+   */
+  trackByTaskId(_: number, task: Task): string {
+    return task.id;
+  }
+}
+````
+
+### Good Service Documentation
+
+````typescript
+/**
+ * Manages task-related operations including CRUD operations
+ * and task status updates.
+ *
+ * @remarks
+ * This service handles all task-related API calls and maintains
+ * a local cache of tasks for better performance.
+ */
+@Injectable({
+  providedIn: 'root',
+})
+export class TaskService {
+  /**
+   * Observable stream of all tasks.
+   * Updates when tasks are added, modified, or deleted.
+   */
+  readonly tasks$ = this.tasksSubject.asObservable();
+
+  /**
+   * Creates a new task.
+   *
+   * @param task - The task data to create
+   * @returns An observable that emits the created task
+   * @throws {ApiError} When the API request fails
+   *
+   * @example
+   * ```typescript
+   * taskService.createTask({
+   *   title: 'New Task',
+   *   description: 'Task description'
+   * }).subscribe(
+   *   task => console.log('Created task:', task),
+   *   error => console.error('Failed to create task:', error)
+   * );
+   * ```
+   */
+  createTask(task: CreateTaskDto): Observable<Task> {
+    return this.http.post<Task>('/api/tasks', task).pipe(
+      tap(newTask => {
+        const currentTasks = this.tasksSubject.value;
+        this.tasksSubject.next([...currentTasks, newTask]);
+      }),
+      catchError(this.handleError)
+    );
+  }
+
+  /**
+   * Updates a task's status.
+   *
+   * @param taskId - The ID of the task to update
+   * @param status - The new status
+   * @returns An observable that emits the updated task
+   * @throws {ApiError} When the API request fails
+   * @throws {NotFoundError} When the task is not found
+   */
+  updateTaskStatus(taskId: string, status: TaskStatus): Observable<Task> {
+    return this.http.patch<Task>(`/api/tasks/${taskId}/status`, { status }).pipe(
+      tap(updatedTask => {
+        const currentTasks = this.tasksSubject.value;
+        const taskIndex = currentTasks.findIndex(t => t.id === taskId);
+        if (taskIndex !== -1) {
+          const updatedTasks = [...currentTasks];
+          updatedTasks[taskIndex] = updatedTask;
+          this.tasksSubject.next(updatedTasks);
+        }
+      }),
+      catchError(this.handleError)
+    );
+  }
+
+  /**
+   * Handles API errors by transforming them into user-friendly errors.
+   *
+   * @param error - The error from the API
+   * @returns An observable that errors with a transformed error
+   * @internal
+   */
+  private handleError(error: HttpErrorResponse): Observable<never> {
+    if (error.status === 404) {
+      return throwError(() => new NotFoundError('Task not found'));
+    }
+    return throwError(() => new ApiError('Failed to process request'));
+  }
+}
+````
+
+### Good Interface Documentation
+
+```typescript
+/**
+ * Represents a task in the system.
+ *
+ * @remarks
+ * Tasks are the core entity of the application and are used
+ * to track user activities and progress.
+ */
+export interface Task {
+  /** Unique identifier for the task */
+  id: string;
+
+  /** The task's title */
+  title: string;
+
+  /** Optional detailed description of the task */
+  description?: string;
+
+  /** Current status of the task */
+  status: TaskStatus;
+
+  /** When the task was created */
+  createdAt: string;
+
+  /** When the task was last updated */
+  updatedAt: string;
+
+  /** Optional due date for the task */
+  dueDate?: string;
+}
+
+/**
+ * Represents the possible states of a task.
+ *
+ * @remarks
+ * Tasks follow a simple workflow from TODO to DONE,
+ * with an optional IN_PROGRESS state.
+ */
+export enum TaskStatus {
+  /** Task has not been started */
+  TODO = 'TODO',
+
+  /** Task is currently being worked on */
+  IN_PROGRESS = 'IN_PROGRESS',
+
+  /** Task has been completed */
+  DONE = 'DONE',
+}
+```

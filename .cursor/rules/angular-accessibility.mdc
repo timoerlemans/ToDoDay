@@ -1,1 +1,350 @@
- 
+---
+description: Angular accessibility (a11y) standards and best practices
+globs: ['**/*.ts', '**/*.html']
+alwaysApply: true
+---
+
+# Angular Accessibility Standards
+
+## Overview
+
+Ensure all Angular components meet WCAG 2.1 accessibility guidelines and provide an inclusive user experience.
+
+## Rules
+
+### Semantic HTML
+
+- Use semantic HTML elements (`<nav>`, `<main>`, `<article>`, etc.) instead of generic `<div>` elements
+- Ensure proper heading hierarchy (h1-h6)
+- Use lists (`<ul>`, `<ol>`) for related items
+
+✅ Good:
+
+```html
+<nav>
+  <ul>
+    <li><a href="/home">Home</a></li>
+    <li><a href="/about">About</a></li>
+  </ul>
+</nav>
+```
+
+❌ Bad:
+
+```html
+<div class="nav">
+  <div class="nav-item"><a href="/home">Home</a></div>
+  <div class="nav-item"><a href="/about">About</a></div>
+</div>
+```
+
+### ARIA Attributes
+
+- Add `aria-label` to elements without visible text
+- Use `aria-expanded` for expandable elements
+- Include `aria-live` regions for dynamic content
+
+✅ Good:
+
+```html
+<button aria-label="Close dialog" aria-expanded="false" (click)="toggleMenu()">
+  <svg>...</svg>
+</button>
+```
+
+❌ Bad:
+
+```html
+<button (click)="toggleMenu()">
+  <svg>...</svg>
+</button>
+```
+
+### Focus Management
+
+- Ensure keyboard navigation works
+- Implement focus traps for modals
+- Provide visible focus indicators
+
+✅ Good:
+
+```typescript
+@Component({
+  template: `
+    <div
+      class="modal"
+      [attr.tabindex]="-1"
+      (keydown.escape)="close()"
+      cdkTrapFocus>
+      <!-- Modal content -->
+    </div>
+  `
+})
+```
+
+❌ Bad:
+
+```typescript
+@Component({
+  template: `
+    <div class="modal">
+      <!-- Modal content without keyboard support -->
+    </div>
+  `
+})
+```
+
+### Form Accessibility
+
+- Always use labels with form controls
+- Provide error messages with `aria-describedby`
+- Use fieldsets and legends for form groups
+
+✅ Good:
+
+```html
+<form>
+  <fieldset>
+    <legend>Personal Information</legend>
+    <div>
+      <label for="name">Name</label>
+      <input id="name" type="text" [attr.aria-describedby]="nameError ? 'name-error' : null" />
+      <span *ngIf="nameError" id="name-error" role="alert"> {{ nameError }} </span>
+    </div>
+  </fieldset>
+</form>
+```
+
+❌ Bad:
+
+```html
+<form>
+  <div>
+    <input type="text" placeholder="Enter name" />
+    <span *ngIf="nameError">{{ nameError }}</span>
+  </div>
+</form>
+```
+
+### Color and Contrast
+
+- Maintain minimum contrast ratio of 4.5:1
+- Don't rely on color alone to convey information
+- Provide sufficient color contrast for text and UI elements
+
+✅ Good:
+
+```scss
+.error-message {
+  color: #d32f2f; // Passes contrast check
+  &::before {
+    content: '⚠ '; // Additional visual indicator
+  }
+}
+```
+
+❌ Bad:
+
+```scss
+.error-message {
+  color: #ff0000; // Poor contrast
+}
+```
+
+## Testing
+
+- Include accessibility tests in your test suite
+- Use tools like axe-core for automated testing
+- Perform manual keyboard navigation testing
+
+✅ Good:
+
+```typescript
+describe('MyComponent', () => {
+  it('should be accessible', async () => {
+    const results = await axe(fixture.nativeElement);
+    expect(results.violations.length).toBe(0);
+  });
+});
+```
+
+## Resources
+
+- [WCAG 2.1 Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)
+- [Angular CDK a11y](https://material.angular.io/cdk/a11y/overview)
+- [axe-core Testing Library](https://github.com/dequelabs/axe-core)
+
+## Examples
+
+### Good Accessibility Practices
+
+```typescript
+// task-item.component.ts
+@Component({
+  selector: 'app-task-item',
+  template: `
+    <div role="listitem" class="task-item" [attr.aria-label]="'Task: ' + task.title">
+      <h3 class="task-title">{{ task.title }}</h3>
+
+      <button
+        (click)="onDelete()"
+        class="delete-btn"
+        [attr.aria-label]="'Delete task: ' + task.title"
+      >
+        <span class="sr-only">Delete</span>
+        <svg aria-hidden="true"><!-- icon --></svg>
+      </button>
+
+      <div role="status" [attr.aria-live]="'polite'">
+        {{ task.status }}
+      </div>
+    </div>
+  `,
+})
+export class TaskItemComponent {
+  @Input() task!: Task;
+  @Output() delete = new EventEmitter<string>();
+
+  @HostListener('keydown.delete', ['$event'])
+  onDeleteKeyPress(event: KeyboardEvent): void {
+    event.preventDefault();
+    this.onDelete();
+  }
+
+  onDelete(): void {
+    this.delete.emit(this.task.id);
+  }
+}
+```
+
+### Accessible Forms
+
+```typescript
+// task-form.component.ts
+@Component({
+  selector: 'app-task-form',
+  template: `
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" role="form" aria-label="Create new task">
+      <div class="form-group">
+        <label for="title" class="form-label">
+          Task Title
+          <span class="required" aria-hidden="true">*</span>
+          <span class="sr-only">Required</span>
+        </label>
+
+        <input
+          id="title"
+          type="text"
+          formControlName="title"
+          [attr.aria-invalid]="isFieldInvalid('title')"
+          [attr.aria-describedby]="isFieldInvalid('title') ? 'title-error' : null"
+        />
+
+        <div *ngIf="isFieldInvalid('title')" id="title-error" class="error-message" role="alert">
+          {{ getErrorMessage('title') }}
+        </div>
+      </div>
+
+      <button type="submit" [disabled]="form.invalid" [attr.aria-busy]="isSubmitting">
+        {{ isSubmitting ? 'Creating...' : 'Create Task' }}
+      </button>
+    </form>
+  `,
+})
+export class TaskFormComponent {
+  form = new FormGroup({
+    title: new FormControl('', {
+      validators: [Validators.required],
+      nonNullable: true,
+    }),
+  });
+
+  isSubmitting = false;
+
+  isFieldInvalid(fieldName: string): boolean {
+    const field = this.form.get(fieldName);
+    return field ? field.invalid && field.touched : false;
+  }
+
+  getErrorMessage(fieldName: string): string {
+    const field = this.form.get(fieldName);
+    if (!field || !field.errors) return '';
+
+    if (field.errors['required']) {
+      return `${fieldName} is required`;
+    }
+    return 'Invalid value';
+  }
+}
+```
+
+### Accessible Dialog
+
+```typescript
+// task-dialog.component.ts
+@Component({
+  selector: 'app-task-dialog',
+  template: `
+    <div
+      role="dialog"
+      aria-labelledby="dialog-title"
+      aria-describedby="dialog-description"
+      class="dialog"
+      (keydown.escape)="close()"
+    >
+      <h2 id="dialog-title" class="dialog-title">
+        {{ title }}
+      </h2>
+
+      <div id="dialog-description" class="sr-only">
+        {{ description }}
+      </div>
+
+      <div class="dialog-content">
+        <ng-content></ng-content>
+      </div>
+
+      <div class="dialog-actions">
+        <button (click)="close()" class="btn-secondary" aria-label="Close dialog">Cancel</button>
+        <button (click)="confirm()" class="btn-primary" [attr.aria-busy]="isProcessing">
+          {{ confirmText }}
+        </button>
+      </div>
+    </div>
+  `,
+  host: {
+    '(document:keydown.escape)': 'close()',
+    role: 'dialog',
+    'aria-modal': 'true',
+  },
+})
+export class TaskDialogComponent implements AfterViewInit {
+  @Input() title!: string;
+  @Input() description!: string;
+  @Input() confirmText = 'Confirm';
+  @Output() closed = new EventEmitter<void>();
+  @Output() confirmed = new EventEmitter<void>();
+
+  isProcessing = false;
+  private previouslyFocusedElement?: HTMLElement;
+
+  ngAfterViewInit(): void {
+    this.previouslyFocusedElement = document.activeElement as HTMLElement;
+    this.trapFocus();
+  }
+
+  ngOnDestroy(): void {
+    this.previouslyFocusedElement?.focus();
+  }
+
+  private trapFocus(): void {
+    const focusableElements = this.element.nativeElement.querySelectorAll(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+
+    if (focusableElements.length) {
+      focusableElements[0].focus();
+    }
+  }
+}
+```

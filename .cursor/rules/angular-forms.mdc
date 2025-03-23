@@ -1,1 +1,289 @@
- 
+---
+description: Angular forms standards and best practices
+globs: ['**/*.ts', '**/*.html']
+alwaysApply: true
+---
+
+# Angular Forms Standards
+
+## Overview
+
+Implement consistent and maintainable form handling across Angular applications using reactive forms.
+
+## Rules
+
+### Form Structure
+
+- Use reactive forms instead of template-driven forms
+- Define form structure in component class
+- Use typed form controls
+- Implement proper validation
+
+✅ Good:
+
+```typescript
+@Component({
+  template: `
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div formGroupName="address">
+        <input formControlName="street" />
+        <input formControlName="city" />
+      </div>
+      <button type="submit" [disabled]="form.invalid">Submit</button>
+    </form>
+  `,
+})
+export class UserFormComponent {
+  form = new FormGroup({
+    name: new FormControl('', {
+      validators: [Validators.required],
+      nonNullable: true,
+    }),
+    email: new FormControl('', {
+      validators: [Validators.required, Validators.email],
+      nonNullable: true,
+    }),
+    address: new FormGroup({
+      street: new FormControl('', {
+        validators: [Validators.required],
+        nonNullable: true,
+      }),
+      city: new FormControl('', {
+        validators: [Validators.required],
+        nonNullable: true,
+      }),
+    }),
+  });
+}
+```
+
+❌ Bad:
+
+```typescript
+@Component({
+  template: `
+    <form (ngSubmit)="onSubmit()">
+      <input [(ngModel)]="user.name" name="name" />
+      <input [(ngModel)]="user.email" name="email" />
+      <button type="submit">Submit</button>
+    </form>
+  `,
+})
+export class UserFormComponent {
+  user = {
+    name: '',
+    email: '',
+  };
+}
+```
+
+### Form Validation
+
+- Implement proper validation messages
+- Use async validators when needed
+- Validate on blur
+- Show validation state
+
+✅ Good:
+
+```typescript
+@Component({
+  template: `
+    <form [formGroup]="form">
+      <div>
+        <label for="email">Email</label>
+        <input
+          id="email"
+          formControlName="email"
+          [class.is-invalid]="email.invalid && email.touched"
+        />
+        <div *ngIf="email.invalid && email.touched" class="error-message">
+          <span *ngIf="email.errors?.['required']"> Email is required </span>
+          <span *ngIf="email.errors?.['email']"> Please enter a valid email </span>
+        </div>
+      </div>
+    </form>
+  `,
+})
+export class EmailFormComponent {
+  form = new FormGroup({
+    email: new FormControl('', {
+      validators: [Validators.required, Validators.email],
+      nonNullable: true,
+      updateOn: 'blur',
+    }),
+  });
+
+  get email() {
+    return this.form.get('email')!;
+  }
+}
+```
+
+❌ Bad:
+
+```typescript
+@Component({
+  template: `
+    <form [formGroup]="form">
+      <input formControlName="email" />
+      <div *ngIf="form.invalid">Form is invalid</div>
+    </form>
+  `,
+})
+export class EmailFormComponent {
+  form = new FormGroup({
+    email: new FormControl(''),
+  });
+}
+```
+
+### Form Submission
+
+- Handle form submission properly
+- Implement proper error handling
+- Show loading state
+- Prevent double submission
+
+✅ Good:
+
+```typescript
+@Component({
+  template: `
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <input formControlName="name" />
+      <button type="submit" [disabled]="form.invalid || isSubmitting">
+        {{ isSubmitting ? 'Submitting...' : 'Submit' }}
+      </button>
+    </form>
+  `,
+})
+export class SubmitFormComponent {
+  form = new FormGroup({
+    name: new FormControl('', {
+      validators: [Validators.required],
+      nonNullable: true,
+    }),
+  });
+
+  isSubmitting = false;
+
+  onSubmit(): void {
+    if (this.form.invalid || this.isSubmitting) return;
+
+    this.isSubmitting = true;
+    this.service
+      .submit(this.form.getRawValue())
+      .pipe(finalize(() => (this.isSubmitting = false)))
+      .subscribe({
+        next: () => this.handleSuccess(),
+        error: error => this.handleError(error),
+      });
+  }
+}
+```
+
+❌ Bad:
+
+```typescript
+@Component({
+  template: `
+    <form (ngSubmit)="onSubmit()">
+      <input [(ngModel)]="data.name" name="name" />
+      <button type="submit">Submit</button>
+    </form>
+  `,
+})
+export class SubmitFormComponent {
+  data = { name: '' };
+
+  onSubmit(): void {
+    this.service.submit(this.data).subscribe();
+  }
+}
+```
+
+### Dynamic Forms
+
+- Use FormArray for dynamic form fields
+- Implement proper add/remove functionality
+- Validate dynamic fields
+- Handle dynamic field updates
+
+✅ Good:
+
+```typescript
+@Component({
+  template: `
+    <form [formGroup]="form">
+      <div formArrayName="items">
+        <div *ngFor="let item of items.controls; let i = index" [formGroupName]="i">
+          <input formControlName="name" />
+          <input formControlName="quantity" />
+          <button type="button" (click)="removeItem(i)">Remove</button>
+        </div>
+        <button type="button" (click)="addItem()">Add Item</button>
+      </div>
+    </form>
+  `,
+})
+export class DynamicFormComponent {
+  form = new FormGroup({
+    items: new FormArray<FormGroup>([]),
+  });
+
+  get items() {
+    return this.form.get('items') as FormArray;
+  }
+
+  addItem(): void {
+    const itemForm = new FormGroup({
+      name: new FormControl('', {
+        validators: [Validators.required],
+        nonNullable: true,
+      }),
+      quantity: new FormControl(1, {
+        validators: [Validators.required, Validators.min(1)],
+        nonNullable: true,
+      }),
+    });
+
+    this.items.push(itemForm);
+  }
+
+  removeItem(index: number): void {
+    if (this.items.length > 1) {
+      this.items.removeAt(index);
+    }
+  }
+}
+```
+
+❌ Bad:
+
+```typescript
+@Component({
+  template: `
+    <form>
+      <div *ngFor="let item of items">
+        <input [(ngModel)]="item.name" [name]="'name' + i" />
+        <input [(ngModel)]="item.quantity" [name]="'quantity' + i" />
+      </div>
+      <button (click)="addItem()">Add Item</button>
+    </form>
+  `,
+})
+export class DynamicFormComponent {
+  items = [{ name: '', quantity: 1 }];
+
+  addItem(): void {
+    this.items.push({ name: '', quantity: 1 });
+  }
+}
+```
+
+## Resources
+
+- [Angular Reactive Forms](https://angular.io/guide/reactive-forms)
+- [Form Validation](https://angular.io/guide/form-validation)
+- [Dynamic Forms](https://angular.io/guide/dynamic-form)

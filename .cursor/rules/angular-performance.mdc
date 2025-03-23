@@ -1,1 +1,243 @@
- 
+---
+description: Angular performance standards and best practices
+globs: ['**/*.ts', '**/*.html']
+alwaysApply: true
+---
+
+# Angular Performance Standards
+
+## Overview
+
+Optimize Angular application performance by following best practices for change detection, memory management, and bundle size.
+
+## Rules
+
+### Change Detection
+
+- Use OnPush change detection strategy
+- Implement trackBy functions for ngFor
+- Avoid unnecessary template bindings
+- Use async pipe for observables
+
+✅ Good:
+
+```typescript
+@Component({
+  selector: 'task-list',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
+    <div *ngFor="let task of tasks; trackBy: trackByTaskId">
+      <task-item [task]="task"></task-item>
+    </div>
+    <div *ngIf="loading$ | async">Loading...</div>
+  `,
+})
+export class TaskListComponent {
+  tasks$ = this.taskService.getTasks();
+  loading$ = this.taskService.loading$;
+
+  trackByTaskId(_: number, task: Task): string {
+    return task.id;
+  }
+}
+```
+
+❌ Bad:
+
+```typescript
+@Component({
+  selector: 'task-list',
+  template: `
+    <div *ngFor="let task of tasks">
+      <task-item [task]="task"></task-item>
+    </div>
+    <div *ngIf="isLoading">Loading...</div>
+  `,
+})
+export class TaskListComponent {
+  tasks: Task[] = [];
+  isLoading = false;
+
+  ngOnInit() {
+    this.taskService.getTasks().subscribe(tasks => {
+      this.tasks = tasks;
+    });
+    this.taskService.loading$.subscribe(loading => {
+      this.isLoading = loading;
+    });
+  }
+}
+```
+
+### Memory Management
+
+- Unsubscribe from observables
+- Use takeUntilDestroyed
+- Implement proper cleanup
+- Avoid memory leaks
+
+✅ Good:
+
+```typescript
+@Component({
+  selector: 'task-details',
+  template: `
+    <div *ngIf="task$ | async as task">
+      {{ task.title }}
+    </div>
+  `,
+})
+export class TaskDetailsComponent {
+  task$ = this.route.params.pipe(
+    map(params => params['id']),
+    switchMap(id => this.taskService.getTask(id)),
+    takeUntilDestroyed()
+  );
+}
+```
+
+❌ Bad:
+
+```typescript
+@Component({
+  selector: 'task-details',
+  template: `
+    <div *ngIf="task">
+      {{ task.title }}
+    </div>
+  `,
+})
+export class TaskDetailsComponent implements OnInit, OnDestroy {
+  task: Task | null = null;
+  private subscription: Subscription;
+
+  ngOnInit() {
+    this.subscription = this.route.params.pipe(map(params => params['id'])).subscribe(id => {
+      this.taskService.getTask(id).subscribe(task => {
+        this.task = task;
+      });
+    });
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+  }
+}
+```
+
+### Lazy Loading
+
+- Implement lazy loading for feature modules
+- Use preloading strategies
+- Optimize bundle size
+- Split code into chunks
+
+✅ Good:
+
+```typescript
+const routes: Routes = [
+  {
+    path: 'tasks',
+    loadChildren: () => import('./features/tasks/tasks.module').then(m => m.TasksModule),
+    data: { preload: true },
+  },
+];
+
+@NgModule({
+  imports: [
+    RouterModule.forRoot(routes, {
+      preloadingStrategy: PreloadAllModules,
+    }),
+  ],
+})
+export class AppRoutingModule {}
+```
+
+❌ Bad:
+
+```typescript
+const routes: Routes = [
+  {
+    path: 'tasks',
+    component: TasksComponent,
+  },
+];
+
+@NgModule({
+  imports: [RouterModule.forRoot(routes), TasksModule],
+})
+export class AppRoutingModule {}
+```
+
+### Performance Monitoring
+
+- Implement performance metrics
+- Use Angular DevTools
+- Monitor bundle size
+- Track memory usage
+
+✅ Good:
+
+```typescript
+@Component({
+  selector: 'app-root',
+  template: `
+    <router-outlet></router-outlet>
+    <ngx-performance-monitor></ngx-performance-monitor>
+  `,
+})
+export class AppComponent implements OnInit {
+  constructor(private performance: PerformanceService) {}
+
+  ngOnInit() {
+    this.performance.startMonitoring();
+  }
+}
+```
+
+❌ Bad:
+
+```typescript
+@Component({
+  selector: 'app-root',
+  template: ` <router-outlet></router-outlet> `,
+})
+export class AppComponent {
+  // No performance monitoring
+}
+```
+
+### Bundle Optimization
+
+- Use production builds
+- Implement tree shaking
+- Optimize assets
+- Use modern build tools
+
+✅ Good:
+
+```json
+{
+  "scripts": {
+    "build": "ng build --configuration production",
+    "analyze": "ng build --stats-json && webpack-bundle-analyzer dist/stats.json"
+  }
+}
+```
+
+❌ Bad:
+
+```json
+{
+  "scripts": {
+    "build": "ng build"
+  }
+}
+```
+
+## Resources
+
+- [Angular Performance Guide](https://angular.io/guide/performance)
+- [Change Detection](https://angular.io/guide/change-detection)
+- [Lazy Loading](https://angular.io/guide/lazy-loading-ngmodules)
+- [Bundle Optimization](https://angular.io/guide/build)

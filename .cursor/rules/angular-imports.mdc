@@ -1,1 +1,268 @@
- 
+---
+description: Angular import standards and best practices
+globs: ['**/*.ts']
+alwaysApply: true
+---
+
+# Angular Import Standards
+
+## Overview
+
+Maintain consistent and organized imports across Angular applications to improve code readability and maintainability.
+
+## Rules
+
+### Import Order
+
+- Group imports by type (Angular, third-party, local)
+- Sort imports alphabetically within groups
+- Use absolute imports for local modules
+- Remove unused imports
+
+✅ Good:
+
+```typescript
+// Angular imports
+import { Component, OnInit } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+
+// Third-party imports
+import { Observable } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
+
+// Local imports
+import { UserService } from '@core/services/user.service';
+import { User } from '@core/models/user.model';
+```
+
+❌ Bad:
+
+```typescript
+import { UserService } from './services/user.service';
+import { Component } from '@angular/core';
+import { Observable } from 'rxjs';
+import { User } from '../models/user.model';
+import { FormGroup } from '@angular/forms';
+```
+
+### Barrel Files
+
+- Use barrel files (index.ts) for module exports
+- Export only what's needed
+- Keep barrel files up to date
+- Use meaningful export names
+
+✅ Good:
+
+```typescript
+// core/models/index.ts
+export * from './user.model';
+export * from './task.model';
+export * from './project.model';
+
+// core/services/index.ts
+export * from './user.service';
+export * from './task.service';
+export * from './project.service';
+```
+
+❌ Bad:
+
+```typescript
+// core/index.ts
+export * from './models/user.model';
+export * from './models/task.model';
+export * from './services/user.service';
+export * from './services/task.service';
+```
+
+### Import Aliases
+
+- Use path aliases for cleaner imports
+- Configure aliases in tsconfig.json
+- Use consistent alias naming
+- Document alias usage
+
+✅ Good:
+
+```json
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@core/*": ["src/app/core/*"],
+      "@shared/*": ["src/app/shared/*"],
+      "@features/*": ["src/app/features/*"]
+    }
+  }
+}
+```
+
+```typescript
+import { UserService } from '@core/services/user.service';
+import { SharedModule } from '@shared/shared.module';
+import { TaskListComponent } from '@features/tasks/task-list.component';
+```
+
+❌ Bad:
+
+```typescript
+import { UserService } from '../../../core/services/user.service';
+import { SharedModule } from '../../shared/shared.module';
+```
+
+### Module Imports
+
+- Import only needed modules
+- Use feature modules for lazy loading
+- Avoid circular dependencies
+- Keep module imports organized
+
+✅ Good:
+
+```typescript
+@NgModule({
+  imports: [
+    // Angular modules
+    CommonModule,
+    FormsModule,
+
+    // Third-party modules
+    NgRxModule,
+
+    // Feature modules
+    AuthModule,
+    TaskModule,
+  ],
+  declarations: [AppComponent],
+})
+export class AppModule {}
+```
+
+❌ Bad:
+
+```typescript
+@NgModule({
+  imports: [TaskModule, CommonModule, AuthModule, FormsModule, NgRxModule],
+  declarations: [AppComponent],
+})
+export class AppModule {}
+```
+
+### Type Imports
+
+- Use type imports for interfaces and types
+- Separate type imports from value imports
+- Use type-only imports when possible
+- Keep type imports organized
+
+✅ Good:
+
+```typescript
+import type { User } from '@core/models/user.model';
+import type { TaskStatus } from '@core/models/task.model';
+import { UserService } from '@core/services/user.service';
+```
+
+❌ Bad:
+
+```typescript
+import { User, TaskStatus } from '@core/models';
+import { UserService } from '@core/services/user.service';
+```
+
+## Resources
+
+- [TypeScript Import/Export](https://www.typescriptlang.org/docs/handbook/modules.html)
+- [Angular Module System](https://angular.io/guide/ngmodules)
+- [Path Aliases](https://www.typescriptlang.org/docs/handbook/module-resolution.html#path-mapping)
+
+## Import Paths
+
+- **Use namespace imports** instead of relative paths
+- Use `@tododay` alias pointing to `projects/tododay/src/app`
+- Exception: files directly in `projects/tododay/src` (e.g., `main.ts`)
+
+## Dependency Injection
+
+- **Use constructor-based injection** instead of `inject()` function
+- Order dependencies alphabetically in constructors
+- Mark dependencies as `private readonly` when possible
+
+## File Organization
+
+- **Always use separate files** for:
+  - Templates (`.html`)
+  - Styles (`.scss` or `.css`)
+  - Never use inline definitions
+
+## Component Architecture
+
+- **Create standalone components** only when shared across multiple modules/components
+- Otherwise, declare components in their respective modules
+- Use feature modules to group related components
+
+## Examples
+
+### Good Import Paths
+
+```typescript
+// Good
+import { TaskService } from '@tododay/core/services';
+import { Task } from '@tododay/core/models';
+import { SharedModule } from '@tododay/shared/shared.module';
+
+@Component({
+  // ...
+})
+export class TaskListComponent {
+  constructor(
+    private readonly authService: AuthService,
+    private readonly taskService: TaskService
+  ) {}
+}
+```
+
+### Bad Import Paths
+
+```typescript
+// Bad
+import { TaskService } from '../../../../core/services/task.service';
+import { Task } from '../../../models/task.model';
+import { SharedModule } from '../../shared.module';
+
+@Component({
+  // ...
+})
+export class TaskListComponent {
+  private taskService = inject(TaskService); // Bad: using inject()
+}
+```
+
+### Good Module Organization
+
+```typescript
+// task.module.ts
+@NgModule({
+  declarations: [TaskListComponent, TaskItemComponent, TaskFormComponent],
+  imports: [CommonModule, SharedModule, TaskRoutingModule],
+  providers: [TaskService],
+})
+export class TaskModule {}
+```
+
+### Good Standalone Component
+
+```typescript
+// shared/components/theme-toggle/theme-toggle.component.ts
+@Component({
+  selector: 'app-theme-toggle',
+  templateUrl: './theme-toggle.component.html',
+  styleUrls: ['./theme-toggle.component.scss'],
+  standalone: true,
+  imports: [CommonModule],
+})
+export class ThemeToggleComponent {
+  constructor(private readonly themeService: ThemeService) {}
+}
+```

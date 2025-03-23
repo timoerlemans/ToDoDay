@@ -1,1 +1,266 @@
- 
+---
+description: Angular testing standards and best practices
+globs: ['**/*.spec.ts']
+alwaysApply: true
+---
+
+# Angular Testing Standards
+
+## Overview
+
+Implement comprehensive testing strategies for Angular applications using unit tests, integration tests, and e2e tests.
+
+## Rules
+
+### Unit Testing
+
+- Test components in isolation
+- Mock dependencies
+- Test edge cases
+- Use meaningful test descriptions
+
+✅ Good:
+
+```typescript
+describe('TaskListComponent', () => {
+  let component: TaskListComponent;
+  let fixture: ComponentFixture<TaskListComponent>;
+  let taskService: jasmine.SpyObj<TaskService>;
+
+  beforeEach(async () => {
+    taskService = jasmine.createSpyObj('TaskService', ['getTasks']);
+    taskService.getTasks.and.returnValue(of([{ id: '1', title: 'Test Task' }]));
+
+    await TestBed.configureTestingModule({
+      declarations: [TaskListComponent],
+      providers: [{ provide: TaskService, useValue: taskService }],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(TaskListComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should load tasks on init', () => {
+    expect(taskService.getTasks).toHaveBeenCalled();
+    expect(component.tasks.length).toBe(1);
+  });
+
+  it('should handle error when loading tasks fails', () => {
+    taskService.getTasks.and.returnValue(throwError(() => new Error('Failed to load tasks')));
+
+    fixture = TestBed.createComponent(TaskListComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    expect(component.error).toBeTruthy();
+  });
+});
+```
+
+❌ Bad:
+
+```typescript
+describe('TaskListComponent', () => {
+  let component: TaskListComponent;
+  let fixture: ComponentFixture<TaskListComponent>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [TaskListComponent],
+      providers: [TaskService],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(TaskListComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should work', () => {
+    expect(component).toBeTruthy();
+  });
+});
+```
+
+### Integration Testing
+
+- Test component interactions
+- Test service integration
+- Test routing
+- Test state management
+
+✅ Good:
+
+```typescript
+describe('TaskFeature', () => {
+  let router: Router;
+  let location: Location;
+  let fixture: ComponentFixture<AppComponent>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [
+        RouterTestingModule.withRoutes([
+          { path: 'tasks', component: TaskListComponent },
+          { path: 'tasks/:id', component: TaskDetailComponent },
+        ]),
+      ],
+      declarations: [AppComponent, TaskListComponent, TaskDetailComponent],
+    }).compileComponents();
+
+    router = TestBed.inject(Router);
+    location = TestBed.inject(Location);
+    fixture = TestBed.createComponent(AppComponent);
+  });
+
+  it('should navigate to task detail', async () => {
+    await router.navigate(['/tasks/1']);
+    expect(location.path()).toBe('/tasks/1');
+  });
+
+  it('should load task details', async () => {
+    const taskService = TestBed.inject(TaskService);
+    spyOn(taskService, 'getTask').and.returnValue(of({ id: '1', title: 'Test Task' }));
+
+    await router.navigate(['/tasks/1']);
+    fixture.detectChanges();
+
+    const taskTitle = fixture.debugElement.query(By.css('.task-title')).nativeElement.textContent;
+    expect(taskTitle).toBe('Test Task');
+  });
+});
+```
+
+❌ Bad:
+
+```typescript
+describe('TaskFeature', () => {
+  it('should work', () => {
+    // No actual integration testing
+  });
+});
+```
+
+### E2E Testing
+
+- Test critical user flows
+- Test responsive design
+- Test accessibility
+- Test performance
+
+✅ Good:
+
+```typescript
+describe('Task Management', () => {
+  beforeEach(() => {
+    cy.visit('/');
+    cy.login('test@example.com', 'password');
+  });
+
+  it('should create a new task', () => {
+    cy.get('[data-testid="new-task-button"]').click();
+    cy.get('[data-testid="task-title-input"]').type('New Task');
+    cy.get('[data-testid="task-description-input"]').type('Task description');
+    cy.get('[data-testid="submit-task-button"]').click();
+
+    cy.get('[data-testid="task-list"]').should('contain', 'New Task');
+  });
+
+  it('should be responsive', () => {
+    cy.viewport('iphone-6');
+    cy.get('[data-testid="task-list"]').should('be.visible');
+
+    cy.viewport(1280, 720);
+    cy.get('[data-testid="task-list"]').should('be.visible');
+  });
+});
+```
+
+❌ Bad:
+
+```typescript
+describe('Task Management', () => {
+  it('should work', () => {
+    // No actual e2e testing
+  });
+});
+```
+
+### Test Coverage
+
+- Maintain high test coverage
+- Test error scenarios
+- Test edge cases
+- Test async operations
+
+✅ Good:
+
+```typescript
+describe('AuthService', () => {
+  let service: AuthService;
+  let httpMock: HttpTestingController;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
+      providers: [AuthService],
+    });
+
+    service = TestBed.inject(AuthService);
+    httpMock = TestBed.inject(HttpTestingController);
+  });
+
+  afterEach(() => {
+    httpMock.verify();
+  });
+
+  it('should login successfully', () => {
+    const mockUser = { id: '1', email: 'test@example.com' };
+
+    service.login('test@example.com', 'password').subscribe(user => {
+      expect(user).toEqual(mockUser);
+    });
+
+    const req = httpMock.expectOne('/api/auth/login');
+    expect(req.request.method).toBe('POST');
+    req.flush(mockUser);
+  });
+
+  it('should handle login failure', () => {
+    service.login('test@example.com', 'wrong-password').subscribe({
+      error: error => {
+        expect(error.status).toBe(401);
+      },
+    });
+
+    const req = httpMock.expectOne('/api/auth/login');
+    req.flush('', { status: 401, statusText: 'Unauthorized' });
+  });
+});
+```
+
+❌ Bad:
+
+```typescript
+describe('AuthService', () => {
+  let service: AuthService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [AuthService],
+    });
+    service = TestBed.inject(AuthService);
+  });
+
+  it('should work', () => {
+    // No actual testing
+  });
+});
+```
+
+## Resources
+
+- [Angular Testing Guide](https://angular.io/guide/testing)
+- [Jasmine Documentation](https://jasmine.github.io/)
+- [Cypress Documentation](https://docs.cypress.io/)
+- [Test Coverage](https://angular.io/guide/testing-code-coverage)
