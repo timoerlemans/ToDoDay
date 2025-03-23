@@ -12,8 +12,8 @@ import { User } from '@supabase/supabase-js';
  * Provides common task operations and state management.
  */
 export abstract class TaskBaseComponent {
-  protected activeTasks: Task[] = [];
-  protected completedTasks: Task[] = [];
+  public activeTasks: Task[] = [];
+  public completedTasks: Task[] = [];
   protected availableProjects: string[] = [];
 
   constructor(
