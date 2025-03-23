@@ -29,7 +29,8 @@
             "tsConfig": "projects/tododay/tsconfig.app.json",
             "assets": [
               "projects/tododay/src/favicon.ico",
-              "projects/tododay/src/assets"
+              "projects/tododay/src/assets",
+              "projects/tododay/src/manifest.webmanifest"
             ],
             "styles": [
               "projects/tododay/src/styles.scss"
@@ -54,7 +55,9 @@
               "includePaths": [
                 "projects/tododay/src/styles"
               ]
-            }
+            },
+            "serviceWorker": true,
+            "ngswConfigPath": "projects/tododay/ngsw-config.json"
           },
           "configurations": {
             "production": {

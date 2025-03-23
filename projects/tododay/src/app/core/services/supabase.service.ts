@@ -1,15 +1,15 @@
 import { Injectable } from '@angular/core';
-import { createClient, SupabaseClient, AuthResponse } from '@supabase/supabase-js';
+import { createClient, SupabaseClient, AuthResponse, User } from '@supabase/supabase-js';
 import { environment } from '@tododay/environments/environment';
 import { Task, TaskFormData } from '@tododay/app/core/models/task';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SupabaseService {
   private supabase: SupabaseClient;
-  private currentUserSubject = new BehaviorSubject<any>(null);
+  private currentUserSubject = new BehaviorSubject<User | null>(null);
   currentUser$ = this.currentUserSubject.asObservable();
 
   constructor() {
@@ -29,9 +29,12 @@ export class SupabaseService {
         },
         global: {
           headers: {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-            'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+            'Access-Control-Allow-Origin': environment.production ? 'https://jouw-domein.nl' : 'http://localhost:4200',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+            'X-Frame-Options': 'DENY',
+            'X-Content-Type-Options': 'nosniff',
+            'Strict-Transport-Security': 'max-age=31536000; includeSubDomains'
           }
         }
       }

@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import OpenAI from 'openai';
+import { HttpClient } from '@angular/common/http';
 import { environment } from '@tododay/environments/environment';
-import { TaskEnrichment } from '@tododay/core/models/task';
-import { Observable, from, map } from 'rxjs';
+import { TaskEnrichment } from '@tododay/app/core/models/task';
+import { Observable } from 'rxjs';
 import { DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -10,15 +10,14 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   providedIn: 'root'
 })
 export class OpenaiService {
-  private readonly openai: OpenAI;
+  private readonly apiUrl = environment.production 
+    ? 'https://api.jouw-domein.nl/api/ai'
+    : 'http://localhost:3000/api/ai';
 
   constructor(
+    private readonly http: HttpClient,
     private readonly destroyRef: DestroyRef
-  ) {
-    this.openai = new OpenAI({
-      apiKey: environment.openai.key,
-    });
-  }
+  ) {}
 
   /**
    * Verrijkt een taaktitel met AI-gegenereerde metadata
@@ -46,28 +45,18 @@ export class OpenaiService {
     Vandaag is ${new Date().toISOString().split('T')[0]}.
     `;
 
-    return from(
-      this.openai.chat.completions.create({
-        model: 'gpt-4',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: title },
-        ],
-        response_format: { type: 'json_object' },
-      })
-    ).pipe(
-      takeUntilDestroyed(this.destroyRef),
-      map((response) => {
-        if (response.choices?.[0]?.message?.content) {
-          try {
-            return JSON.parse(response.choices[0].message.content) as TaskEnrichment;
-          } catch (error) {
-            console.error('Failed to parse OpenAI response:', error);
-            return {} as TaskEnrichment;
-          }
-        }
-        return {} as TaskEnrichment;
-      })
+    return this.http.post<TaskEnrichment>(`${this.apiUrl}/enrich-task`, {
+      description: title
+    }).pipe(
+      takeUntilDestroyed(this.destroyRef)
+    );
+  }
+
+  enrichTask(taskDescription: string): Observable<TaskEnrichment> {
+    return this.http.post<TaskEnrichment>(`${this.apiUrl}/enrich-task`, {
+      description: taskDescription
+    }).pipe(
+      takeUntilDestroyed(this.destroyRef)
     );
   }
 } 
