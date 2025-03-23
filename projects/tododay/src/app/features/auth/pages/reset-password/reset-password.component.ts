@@ -5,7 +5,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AuthService } from '../../../../core/services/auth.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { AuthFormBaseComponent } from '../../components/auth-form-base.component';
-import { ResetPasswordForm } from '../../interfaces/auth-forms.interface';
 
 /**
  * Reset password component that handles password reset requests.
@@ -18,7 +17,7 @@ import { ResetPasswordForm } from '../../interfaces/auth-forms.interface';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResetPasswordComponent extends AuthFormBaseComponent {
-  override form = new FormGroup<ResetPasswordForm>({
+  override form = new FormGroup({
     email: new FormControl('', {
       nonNullable: true,
       validators: [Validators.required, Validators.email]
@@ -41,13 +40,16 @@ export class ResetPasswordComponent extends AuthFormBaseComponent {
 
     const { email } = this.form.getRawValue();
 
-    try {
-      await this.authService.resetPassword(email);
-      this.notificationService.success('Password reset email sent successfully!');
-      void this.router.navigate(['/auth/login']);
-    } catch (error) {
-      this.notificationService.error('Failed to send password reset email');
-      console.error('Password reset error:', error);
-    }
+    this.authService.resetPassword(email)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.notificationService.success('Password reset email sent successfully!');
+          void this.router.navigate(['/auth/login']);
+        },
+        error: () => {
+          this.notificationService.error('Failed to send password reset email');
+        }
+      });
   }
 }

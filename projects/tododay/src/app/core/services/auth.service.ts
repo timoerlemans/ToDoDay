@@ -121,6 +121,34 @@ export class AuthService {
   }
 
   /**
+   * Resets the password for a user with the given email
+   * @param email The user's email
+   */
+  resetPassword(email: string): Observable<void> {
+    return from(this.supabaseService.resetPassword(email)).pipe(
+      map(() => {
+        this.notificationService.success('Password reset email sent');
+      }),
+      catchError((error: AuthError) => {
+        this.notificationService.error(this.getErrorMessage(error));
+        return throwError(() => error);
+      })
+    );
+  }
+
+  updatePassword(password: string): Observable<void> {
+    return from(this.supabaseService.updatePassword(password)).pipe(
+      map(() => {
+        this.notificationService.success('Password updated successfully');
+      }),
+      catchError((error: AuthError) => {
+        this.notificationService.error(this.getErrorMessage(error));
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /**
    * Gets a user-friendly error message from an authentication error
    * @param error The authentication error
    */

@@ -71,6 +71,18 @@ export class SupabaseService {
   }
 
   /**
+   * Sends a password reset email to the user
+   * @param email User's email address
+   */
+  async resetPassword(email: string): Promise<void> {
+    await this.supabase.auth.resetPasswordForEmail(email);
+  }
+
+  async updatePassword(password: string): Promise<void> {
+    await this.supabase.auth.updateUser({ password });
+  }
+
+  /**
    * Gets the Supabase client instance
    */
   getClient(): SupabaseClient {

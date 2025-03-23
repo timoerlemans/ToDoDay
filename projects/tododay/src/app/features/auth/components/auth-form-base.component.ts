@@ -37,6 +37,8 @@ export abstract class AuthFormBaseComponent {
     protected readonly destroyRef: DestroyRef
   ) {}
 
+  abstract onSubmit(): Promise<void>;
+
   /**
    * Checks if a form field has errors and has been touched
    * @param fieldName The name of the form field to check
