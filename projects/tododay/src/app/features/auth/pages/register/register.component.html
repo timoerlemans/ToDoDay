@@ -12,9 +12,11 @@
       [formGroup]="registerForm"
       (ngSubmit)="onSubmit()"
       aria-label="Registration form"
+      #form="ngForm"
     >
       <div class="rounded-md shadow-sm -space-y-px">
-        <div>
+        <!-- Name field -->
+        <div class="form-group">
           <label for="name" class="sr-only">Full name</label>
           <input
             id="name"
@@ -24,24 +26,23 @@
             required
             class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
             placeholder="Full name"
-            aria-label="Full name"
-            [attr.aria-invalid]="
-              registerForm.get('name')?.invalid && registerForm.get('name')?.touched
-            "
+            [attr.aria-invalid]="formErrors().name !== null"
             aria-required="true"
           />
-          <div
-            *ngIf="registerForm.get('name')?.invalid && registerForm.get('name')?.touched"
-            class="text-red-500 text-sm mt-1"
-            role="alert"
-          >
-            <span *ngIf="registerForm.get('name')?.errors?.['required']">Name is required</span>
-            <span *ngIf="registerForm.get('name')?.errors?.['minlength']"
-              >Name must be at least 2 characters long</span
-            >
-          </div>
+          @if (formErrors().name) {
+            <div class="text-red-500 text-sm mt-1" role="alert">
+              @if (formErrors().name?.['required']) {
+                <span>Name is required</span>
+              }
+              @if (formErrors().name?.['minlength']) {
+                <span>Name must be at least 2 characters long</span>
+              }
+            </div>
+          }
         </div>
-        <div>
+
+        <!-- Email field -->
+        <div class="form-group">
           <label for="email" class="sr-only">Email address</label>
           <input
             id="email"
@@ -51,24 +52,23 @@
             required
             class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
             placeholder="Email address"
-            aria-label="Email address"
-            [attr.aria-invalid]="
-              registerForm.get('email')?.invalid && registerForm.get('email')?.touched
-            "
+            [attr.aria-invalid]="formErrors().email !== null"
             aria-required="true"
           />
-          <div
-            *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched"
-            class="text-red-500 text-sm mt-1"
-            role="alert"
-          >
-            <span *ngIf="registerForm.get('email')?.errors?.['required']">Email is required</span>
-            <span *ngIf="registerForm.get('email')?.errors?.['email']"
-              >Please enter a valid email address</span
-            >
-          </div>
+          @if (formErrors().email) {
+            <div class="text-red-500 text-sm mt-1" role="alert">
+              @if (formErrors().email?.['required']) {
+                <span>Email is required</span>
+              }
+              @if (formErrors().email?.['email']) {
+                <span>Please enter a valid email address</span>
+              }
+            </div>
+          }
         </div>
-        <div>
+
+        <!-- Password field -->
+        <div class="form-group">
           <label for="password" class="sr-only">Password</label>
           <input
             id="password"
@@ -78,26 +78,23 @@
             required
             class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
             placeholder="Password"
-            aria-label="Password"
-            [attr.aria-invalid]="
-              registerForm.get('password')?.invalid && registerForm.get('password')?.touched
-            "
+            [attr.aria-invalid]="formErrors().password !== null"
             aria-required="true"
           />
-          <div
-            *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched"
-            class="text-red-500 text-sm mt-1"
-            role="alert"
-          >
-            <span *ngIf="registerForm.get('password')?.errors?.['required']"
-              >Password is required</span
-            >
-            <span *ngIf="registerForm.get('password')?.errors?.['minlength']"
-              >Password must be at least 6 characters long</span
-            >
-          </div>
+          @if (formErrors().password) {
+            <div class="text-red-500 text-sm mt-1" role="alert">
+              @if (formErrors().password?.['required']) {
+                <span>Password is required</span>
+              }
+              @if (formErrors().password?.['minlength']) {
+                <span>Password must be at least 6 characters long</span>
+              }
+            </div>
+          }
         </div>
-        <div>
+
+        <!-- Confirm Password field -->
+        <div class="form-group">
           <label for="confirmPassword" class="sr-only">Confirm password</label>
           <input
             id="confirmPassword"
@@ -107,69 +104,57 @@
             required
             class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
             placeholder="Confirm password"
-            aria-label="Confirm password"
-            [attr.aria-invalid]="
-              registerForm.get('confirmPassword')?.invalid &&
-              registerForm.get('confirmPassword')?.touched
-            "
+            [attr.aria-invalid]="formErrors().confirmPassword !== null || formErrors().mismatch"
             aria-required="true"
           />
-          <div
-            *ngIf="
-              registerForm.get('confirmPassword')?.invalid &&
-              registerForm.get('confirmPassword')?.touched
-            "
-            class="text-red-500 text-sm mt-1"
-            role="alert"
-          >
-            <span *ngIf="registerForm.get('confirmPassword')?.errors?.['required']"
-              >Password confirmation is required</span
-            >
-          </div>
-          <div
-            *ngIf="
-              registerForm.errors?.['mismatch'] && registerForm.get('confirmPassword')?.touched
-            "
-            class="text-red-500 text-sm mt-1"
-            role="alert"
-          >
-            Passwords do not match
-          </div>
+          @if (formErrors().confirmPassword || formErrors().mismatch) {
+            <div class="text-red-500 text-sm mt-1" role="alert">
+              @if (formErrors().confirmPassword?.['required']) {
+                <span>Password confirmation is required</span>
+              }
+              @if (formErrors().mismatch) {
+                <span>Passwords do not match</span>
+              }
+            </div>
+          }
         </div>
       </div>
 
       <div>
         <button
           type="submit"
-          [disabled]="!registerForm.valid || isLoading"
+          [disabled]="!registerForm.valid || isLoading$()"
           class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
           aria-label="Create account"
         >
-          <span *ngIf="!isLoading">Create account</span>
-          <span *ngIf="isLoading" class="flex items-center">
-            <svg
-              class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <circle
-                class="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                stroke-width="4"
-              ></circle>
-              <path
-                class="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              ></path>
-            </svg>
-            Creating account...
-          </span>
+          @if (!isLoading$()) {
+            <span>Create account</span>
+          } @else {
+            <span class="flex items-center">
+              <svg
+                class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                ></circle>
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+              Creating account...
+            </span>
+          }
         </button>
       </div>
 

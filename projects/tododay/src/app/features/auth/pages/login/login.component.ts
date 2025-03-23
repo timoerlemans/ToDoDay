@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -18,19 +18,19 @@ interface LoginForm {
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginComponent {
   /** Form group for login credentials */
   loginForm = new FormGroup<LoginForm>({
     email: new FormControl('', {
       validators: [Validators.required, Validators.email],
-      nonNullable: true
+      nonNullable: true,
     }),
     password: new FormControl('', {
       validators: [Validators.required, Validators.minLength(6)],
-      nonNullable: true
-    })
+      nonNullable: true,
+    }),
   });
 
   /** Loading state for the form submission */
@@ -39,7 +39,8 @@ export class LoginComponent {
   constructor(
     private readonly authService: AuthService,
     private readonly notificationService: NotificationService,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly destroyRef: DestroyRef
   ) {}
 
   /**
@@ -51,21 +52,22 @@ export class LoginComponent {
       this.isLoading = true;
       const { email, password } = this.loginForm.getRawValue();
 
-      this.authService.signIn(email, password)
-        .pipe(takeUntilDestroyed())
+      this.authService
+        .signIn(email, password)
+        .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
-          next: (response) => {
+          next: response => {
             if (response.success) {
               this.router.navigate(['/tasks']);
               this.notificationService.success('Successfully logged in');
             }
             this.isLoading = false;
           },
-          error: (error) => {
+          error: error => {
             console.error('Login error:', error);
             this.notificationService.error('Failed to log in. Please check your credentials.');
             this.isLoading = false;
-          }
+          },
         });
     }
   }

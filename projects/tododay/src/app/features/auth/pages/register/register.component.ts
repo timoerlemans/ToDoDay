@@ -1,7 +1,21 @@
-import { Component } from '@angular/core';
-import { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { Component, computed, signal, DestroyRef } from '@angular/core';
+import {
+  AbstractControl,
+  FormControl,
+  FormGroup,
+  ValidationErrors,
+  Validators,
+} from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
+interface RegisterForm {
+  name: FormControl<string>;
+  email: FormControl<string>;
+  password: FormControl<string>;
+  confirmPassword: FormControl<string>;
+}
 
 /**
  * Registration component that handles new user sign-ups.
@@ -10,52 +24,73 @@ import { AuthService } from '../../../../core/services/auth.service';
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.scss']
+  styleUrls: ['./register.component.scss'],
 })
 export class RegisterComponent {
-  /** Form group for registration details */
-  registerForm: FormGroup;
-  /** Loading state for the form submission */
-  isLoading = false;
+  private readonly isLoading = signal(false);
+  readonly isLoading$ = this.isLoading.asReadonly();
+
+  readonly registerForm = new FormGroup<RegisterForm>(
+    {
+      name: new FormControl('', {
+        validators: [Validators.required, Validators.minLength(2)],
+        nonNullable: true,
+      }),
+      email: new FormControl('', {
+        validators: [Validators.required, Validators.email],
+        nonNullable: true,
+      }),
+      password: new FormControl('', {
+        validators: [Validators.required, Validators.minLength(6)],
+        nonNullable: true,
+      }),
+      confirmPassword: new FormControl('', {
+        validators: [Validators.required],
+        nonNullable: true,
+      }),
+    },
+    { validators: this.validatePasswordMatch }
+  );
+
+  readonly formErrors = computed(() => {
+    if (!this.registerForm) return {};
+
+    return {
+      name: this.getFieldErrors('name'),
+      email: this.getFieldErrors('email'),
+      password: this.getFieldErrors('password'),
+      confirmPassword: this.getFieldErrors('confirmPassword'),
+      mismatch: this.registerForm.errors?.['mismatch'],
+    };
+  });
 
   constructor(
-    private authService: AuthService,
-    private router: Router
-  ) {
-    this.registerForm = new FormGroup({
-      name: new FormControl('', [
-        Validators.required,
-        Validators.minLength(2)
-      ]),
-      email: new FormControl('', [
-        Validators.required,
-        Validators.email
-      ]),
-      password: new FormControl('', [
-        Validators.required,
-        Validators.minLength(6)
-      ]),
-      confirmPassword: new FormControl('', [
-        Validators.required
-      ])
-    }, { validators: this.validatePasswordMatch });
-  }
+    private readonly authService: AuthService,
+    private readonly router: Router,
+    private readonly destroyRef: DestroyRef
+  ) {}
 
   /**
    * Custom validator to ensure password and confirm password fields match.
-   * @param control The form group to validate
-   * @returns Validation error if passwords don't match, null otherwise
    */
   private validatePasswordMatch(control: AbstractControl): ValidationErrors | null {
     const formGroup = control as FormGroup;
-    const firstField = formGroup.get('password');
-    const secondField = formGroup.get('confirmPassword');
+    const password = formGroup.get('password')?.value;
+    const confirmPassword = formGroup.get('confirmPassword')?.value;
 
-    if (!firstField || !secondField) {
+    if (!password || !confirmPassword) {
       return null;
     }
 
-    return firstField.value === secondField.value ? null : { mismatch: true };
+    return password === confirmPassword ? null : { mismatch: true };
+  }
+
+  /**
+   * Gets validation errors for a specific form field
+   */
+  private getFieldErrors(fieldName: keyof RegisterForm): Record<string, boolean> | null {
+    const control = this.registerForm.get(fieldName);
+    return control?.touched ? control.errors : null;
   }
 
   /**
@@ -64,21 +99,24 @@ export class RegisterComponent {
    */
   onSubmit(): void {
     if (this.registerForm.valid) {
-      this.isLoading = true;
-      const { email, password, name } = this.registerForm.value;
+      this.isLoading.set(true);
+      const { email, password, name } = this.registerForm.getRawValue();
 
-      this.authService.signUp(email, password, name).subscribe({
-        next: (response) => {
-          if (response.success) {
-            this.router.navigate(['/login']);
-          }
-          this.isLoading = false;
-        },
-        error: (error) => {
-          console.error('Registration error:', error);
-          this.isLoading = false;
-        }
-      });
+      this.authService
+        .signUp(email, password, name)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: response => {
+            if (response.success) {
+              this.router.navigate(['/login']);
+            }
+            this.isLoading.set(false);
+          },
+          error: error => {
+            console.error('Registration error:', error);
+            this.isLoading.set(false);
+          },
+        });
     }
   }
 }

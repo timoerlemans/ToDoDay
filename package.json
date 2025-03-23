@@ -9,7 +9,8 @@
     "test": "ng test",
     "prepare": "husky install",
     "precommit": "lint-staged",
-    "commit": "git-cz"
+    "commit": "git-cz",
+    "commit-msg": "echo \"module.exports = {types: ['feat', 'fix', 'docs', 'style', 'refactor', 'test', 'chore'], allowCustomScopes: true}\" > .cz-config.js && git add . && git commit -m"
   },
   "lint-staged": {
     "projects/tododay/src/**/*.ts": [

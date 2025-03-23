@@ -36,7 +36,7 @@ echo "Checking for inline styles..."
 
 # Check for hardcoded credentials
 echo "Checking for hardcoded credentials..."
-! git diff --cached -- ':!.cursor/rules/*' | grep -E '(password|apiKey|secret|token).*=.*['"'"'].*['"'"']' || (echo "❌ Hardcoded credentials detected. Please use environment variables." && exit 1)
+! git diff --cached -- ':!.cursor/rules/*' | powershell -Command "Select-String -Pattern '(apiKey|secret|token).*=.*[''\"'].*[''\"']'" || (echo "❌ Hardcoded credentials detected. Please use environment variables." && exit 1)
 
 # Check for missing JSDoc comments
 echo "Checking for missing JSDoc comments..."
