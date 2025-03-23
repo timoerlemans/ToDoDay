@@ -71,20 +71,4 @@ export class LoginComponent {
         });
     }
   }
-
-  /**
-   * Gets form control error message
-   * @param controlName The name of the form control
-   * @returns The error message if any
-   */
-  getErrorMessage(controlName: keyof LoginForm): string {
-    const control = this.loginForm.get(controlName);
-    if (!control?.errors || !control.touched) return '';
-
-    if (control.errors['required']) return `${controlName} is required`;
-    if (control.errors['email']) return 'Please enter a valid email address';
-    if (control.errors['minlength']) return 'Password must be at least 6 characters long';
-
-    return '';
-  }
 }

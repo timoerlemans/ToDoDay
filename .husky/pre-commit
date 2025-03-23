@@ -12,11 +12,11 @@ fi
 
 # Check for old template syntax
 echo "Checking for old template syntax..."
-! git diff --cached -- ':!.cursor/rules/*' | grep -E '\{\{.*\}\}' || (echo "❌ Old template syntax detected. Please use modern syntax." && exit 1)
+! git diff --cached -- ':!.cursor/rules/*' | grep -E '^\+.*\{\{.*\}\}' || (echo "❌ Old template syntax detected. Please use modern syntax." && exit 1)
 
 # Check for FormBuilder usage
 echo "Checking for FormBuilder usage..."
-! git diff --cached -- ':!.cursor/rules/*' | grep -E 'FormBuilder' || (echo "❌ FormBuilder usage detected. Please use FormGroup directly." && exit 1)
+! git diff --cached -- ':!.cursor/rules/*' | grep -E '^\+.*FormBuilder' || (echo "❌ FormBuilder usage detected. Please use FormGroup directly." && exit 1)
 
 # Check for manual subscription cleanup
 echo "Checking for manual subscription cleanup..."
