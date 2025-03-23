@@ -37,7 +37,7 @@ A modern todo application built with Angular and Supabase, featuring real-time t
 
 ## Technologies
 
-- Angular 17 with standalone components
+- Angular 19 with standalone components
 - Supabase for backend and real-time features
 - Tailwind CSS for styling
 - TypeScript for type safety
@@ -62,7 +62,7 @@ A modern todo application built with Angular and Supabase, featuring real-time t
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/[your-username]/tododay.git
+git clone https://github.com/timoerlemans/tododay.git
 cd tododay
 ```
 
