@@ -5,12 +5,21 @@ import { NotificationService } from '@tododay/core/services/notification.service
 
 /**
  * Root component of the application.
- * Handles application-wide notifications and routing.
+ *
+ * @description
+ * The AppComponent serves as the main entry point of the application.
+ * It handles application-wide concerns such as:
+ * - Routing setup via RouterOutlet
+ * - Global notification management
+ * - Change detection optimization
+ *
+ * @example
+ * ```html
+ * <app-root></app-root>
+ * ```
  */
 @Component({
     selector: 'app-root',
-    standalone: true,
-    imports: [RouterOutlet],
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush

@@ -2,3 +2,13 @@
 // Most styles are handled by Tailwind CSS
 
 // Styles for app component
+.app-main {
+  display: grid;
+  min-height: 100vh;
+  background: var(--background-color);
+  color: var(--text-color);
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
+}
