@@ -1,14 +1,21 @@
-<div class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+<div
+  class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8"
+>
   <div class="max-w-md w-full space-y-8">
     <div>
-      <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
-        Maak een nieuw account
-      </h2>
+      <h1 class="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
+        Create your account
+      </h1>
     </div>
-    <form class="mt-8 space-y-6" [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+    <form
+      class="mt-8 space-y-6"
+      [formGroup]="registerForm"
+      (ngSubmit)="onSubmit()"
+      aria-label="Registration form"
+    >
       <div class="rounded-md shadow-sm -space-y-px">
         <div>
-          <label for="name" class="sr-only">Naam</label>
+          <label for="name" class="sr-only">Full name</label>
           <input
             id="name"
             name="name"
@@ -16,11 +23,26 @@
             formControlName="name"
             required
             class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-            placeholder="Naam"
+            placeholder="Full name"
+            aria-label="Full name"
+            [attr.aria-invalid]="
+              registerForm.get('name')?.invalid && registerForm.get('name')?.touched
+            "
+            aria-required="true"
           />
+          <div
+            *ngIf="registerForm.get('name')?.invalid && registerForm.get('name')?.touched"
+            class="text-red-500 text-sm mt-1"
+            role="alert"
+          >
+            <span *ngIf="registerForm.get('name')?.errors?.['required']">Name is required</span>
+            <span *ngIf="registerForm.get('name')?.errors?.['minlength']"
+              >Name must be at least 2 characters long</span
+            >
+          </div>
         </div>
         <div>
-          <label for="email" class="sr-only">E-mailadres</label>
+          <label for="email" class="sr-only">Email address</label>
           <input
             id="email"
             name="email"
@@ -28,20 +50,91 @@
             formControlName="email"
             required
             class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-            placeholder="E-mailadres"
+            placeholder="Email address"
+            aria-label="Email address"
+            [attr.aria-invalid]="
+              registerForm.get('email')?.invalid && registerForm.get('email')?.touched
+            "
+            aria-required="true"
           />
+          <div
+            *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched"
+            class="text-red-500 text-sm mt-1"
+            role="alert"
+          >
+            <span *ngIf="registerForm.get('email')?.errors?.['required']">Email is required</span>
+            <span *ngIf="registerForm.get('email')?.errors?.['email']"
+              >Please enter a valid email address</span
+            >
+          </div>
         </div>
         <div>
-          <label for="password" class="sr-only">Wachtwoord</label>
+          <label for="password" class="sr-only">Password</label>
           <input
             id="password"
             name="password"
             type="password"
             formControlName="password"
             required
-            class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-            placeholder="Wachtwoord"
+            class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            placeholder="Password"
+            aria-label="Password"
+            [attr.aria-invalid]="
+              registerForm.get('password')?.invalid && registerForm.get('password')?.touched
+            "
+            aria-required="true"
           />
+          <div
+            *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched"
+            class="text-red-500 text-sm mt-1"
+            role="alert"
+          >
+            <span *ngIf="registerForm.get('password')?.errors?.['required']"
+              >Password is required</span
+            >
+            <span *ngIf="registerForm.get('password')?.errors?.['minlength']"
+              >Password must be at least 6 characters long</span
+            >
+          </div>
+        </div>
+        <div>
+          <label for="confirmPassword" class="sr-only">Confirm password</label>
+          <input
+            id="confirmPassword"
+            name="confirmPassword"
+            type="password"
+            formControlName="confirmPassword"
+            required
+            class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            placeholder="Confirm password"
+            aria-label="Confirm password"
+            [attr.aria-invalid]="
+              registerForm.get('confirmPassword')?.invalid &&
+              registerForm.get('confirmPassword')?.touched
+            "
+            aria-required="true"
+          />
+          <div
+            *ngIf="
+              registerForm.get('confirmPassword')?.invalid &&
+              registerForm.get('confirmPassword')?.touched
+            "
+            class="text-red-500 text-sm mt-1"
+            role="alert"
+          >
+            <span *ngIf="registerForm.get('confirmPassword')?.errors?.['required']"
+              >Password confirmation is required</span
+            >
+          </div>
+          <div
+            *ngIf="
+              registerForm.errors?.['mismatch'] && registerForm.get('confirmPassword')?.touched
+            "
+            class="text-red-500 text-sm mt-1"
+            role="alert"
+          >
+            Passwords do not match
+          </div>
         </div>
       </div>
 
@@ -50,26 +143,48 @@
           type="submit"
           [disabled]="!registerForm.valid || isLoading"
           class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          aria-label="Create account"
         >
-          <span [@if]="!isLoading">Registreren</span>
-          <span [@if]="isLoading" class="flex items-center">
-            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          <span *ngIf="!isLoading">Create account</span>
+          <span *ngIf="isLoading" class="flex items-center">
+            <svg
+              class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              ></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
             </svg>
-            Bezig met registreren...
+            Creating account...
           </span>
         </button>
       </div>
 
       <div class="text-center">
         <p class="text-sm text-gray-600 dark:text-gray-400">
-          Al een account?
-          <a routerLink="/login" class="font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
-            Log hier in
+          Already have an account?
+          <a
+            routerLink="/login"
+            class="font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300"
+            aria-label="Go to login page"
+          >
+            Sign in here
           </a>
         </p>
       </div>
     </form>
   </div>
-</div> 
+</div>
