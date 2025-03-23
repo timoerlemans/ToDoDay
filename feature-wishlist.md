@@ -1,2 +1,3 @@
 - [ ] Multi-language
 - [ ] iOS App Store compatible
+- [ ] Unit tests and end-to-end tests with 100% code coverage
