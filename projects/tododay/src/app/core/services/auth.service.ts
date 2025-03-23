@@ -12,6 +12,11 @@ export interface AuthState {
   error: string | null;
 }
 
+interface AuthResponse {
+  success: boolean;
+  message: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -48,46 +53,53 @@ export class AuthService {
     });
   }
 
-  signIn(email: string, password: string): Observable<void> {
+  isAuthenticated(): Observable<boolean> {
+    return this.supabaseService.currentUser$.pipe(
+      map(user => !!user)
+    );
+  }
+
+  signIn(email: string, password: string): Observable<AuthResponse> {
     return from(this.supabaseService.signIn(email, password)).pipe(
-      map(() => void 0),
-      tap(() => {
-        this.notificationService.show('Je bent succesvol ingelogd', 'success');
-        this.router.navigate(['/']);
+      map(() => {
+        this.notificationService.showSuccess('Succesvol ingelogd');
+        this.router.navigate(['/tasks']);
+        return { success: true, message: 'Succesvol ingelogd' };
       }),
       catchError(error => {
         const message = this.getErrorMessage(error);
-        this.notificationService.show(message, 'error');
-        throw error;
+        this.notificationService.showError(message);
+        return [{ success: false, message }];
       })
     );
   }
 
-  signUp(email: string, password: string): Observable<void> {
+  signUp(email: string, password: string): Observable<AuthResponse> {
     return from(this.supabaseService.signUp(email, password)).pipe(
-      map(() => void 0),
-      tap(() => {
-        this.notificationService.show('Account succesvol aangemaakt. Controleer je e-mail om je account te verifiëren.', 'success');
+      map(() => {
+        this.notificationService.showSuccess('Registratie succesvol');
         this.router.navigate(['/login']);
+        return { success: true, message: 'Registratie succesvol' };
       }),
       catchError(error => {
         const message = this.getErrorMessage(error);
-        this.notificationService.show(message, 'error');
-        throw error;
+        this.notificationService.showError(message);
+        return [{ success: false, message }];
       })
     );
   }
 
-  signOut(): Observable<void> {
+  signOut(): Observable<AuthResponse> {
     return from(this.supabaseService.signOut()).pipe(
-      tap(() => {
-        this.notificationService.show('Je bent succesvol uitgelogd', 'success');
+      map(() => {
+        this.notificationService.showSuccess('Succesvol uitgelogd');
         this.router.navigate(['/login']);
+        return { success: true, message: 'Succesvol uitgelogd' };
       }),
       catchError(error => {
         const message = this.getErrorMessage(error);
-        this.notificationService.show(message, 'error');
-        throw error;
+        this.notificationService.showError(message);
+        return [{ success: false, message }];
       })
     );
   }
@@ -96,18 +108,6 @@ export class AuthService {
     if (error?.message) {
       return error.message;
     }
-
-    switch (error?.status) {
-      case 400:
-        return 'Ongeldige inloggegevens';
-      case 401:
-        return 'Je bent niet geautoriseerd';
-      case 404:
-        return 'Account niet gevonden';
-      case 422:
-        return 'Ongeldige invoer';
-      default:
-        return 'Er is een onbekende fout opgetreden';
-    }
+    return 'Er is een fout opgetreden. Probeer het later opnieuw.';
   }
 } 

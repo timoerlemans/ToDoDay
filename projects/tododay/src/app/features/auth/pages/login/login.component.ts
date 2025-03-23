@@ -1,16 +1,12 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { AuthService } from '@tododay/app/core/services/auth.service';
-import { NotificationService } from '@tododay/app/core/services/notification.service';
+import { Component } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
-    selector: 'app-login',
-    imports: [CommonModule, ReactiveFormsModule, RouterModule],
-    templateUrl: './login.component.html',
-    styleUrls: ['./login.component.scss']
+  selector: 'app-login',
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.scss']
 })
 export class LoginComponent {
   loginForm: FormGroup;
@@ -19,8 +15,7 @@ export class LoginComponent {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router,
-    private notificationService: NotificationService
+    private router: Router
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -32,19 +27,18 @@ export class LoginComponent {
     if (this.loginForm.valid) {
       this.isLoading = true;
       const { email, password } = this.loginForm.value;
-      
-      this.authService.signIn(email, password).then(({ success, message }) => {
-        if (success) {
-          this.notificationService.show('Succesvol ingelogd', 'success');
-          this.router.navigate(['/tasks']);
-        } else {
-          this.notificationService.show(message || 'Inloggen mislukt. Controleer je gegevens.', 'error');
+
+      this.authService.signIn(email, password).subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.router.navigate(['/tasks']);
+          }
+          this.isLoading = false;
+        },
+        error: (error) => {
+          console.error('Login error:', error);
+          this.isLoading = false;
         }
-      }).catch(error => {
-        this.notificationService.show('Er is een fout opgetreden bij het inloggen.', 'error');
-        console.error('Login error:', error);
-      }).finally(() => {
-        this.isLoading = false;
       });
     }
   }
