@@ -1,0 +1,46 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Run lint-staged
+npx lint-staged
+
+# Run custom code quality checks
+echo "Running code quality checks..."
+
+# Check for FormBuilder usage
+if grep -r "FormBuilder" ./projects/tododay/src/app; then
+  echo "❌ FormBuilder usage detected. Please use Reactive Forms instead."
+  exit 1
+fi
+
+# Check for old template syntax
+if grep -r "\*ngIf" ./projects/tododay/src/app; then
+  echo "❌ Old template syntax detected. Please use @if instead."
+  exit 1
+fi
+
+# Check for manual subscription cleanup
+if grep -r "takeUntil" ./projects/tododay/src/app; then
+  echo "❌ Manual subscription cleanup detected. Please use destroyRef instead."
+  exit 1
+fi
+
+# Check for old Input decorator
+if grep -r "@Input()" ./projects/tododay/src/app; then
+  echo "❌ Old Input decorator detected. Please use input() instead."
+  exit 1
+fi
+
+# Check for inject() usage
+if grep -r "inject(" ./projects/tododay/src/app; then
+  echo "❌ inject() usage detected. Please use constructor-based injection instead."
+  exit 1
+fi
+
+# Check for any type usage
+if grep -r ": any" ./projects/tododay/src/app; then
+  echo "❌ any type detected. Please use strict typing instead."
+  exit 1
+fi
+
+echo "✅ All code quality checks passed!" 
