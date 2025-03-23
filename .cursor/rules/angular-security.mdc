@@ -1,1 +1,203 @@
- 
+---
+description: Angular security standards and best practices
+globs: ['**/*.ts', '**/*.html']
+alwaysApply: true
+---
+
+# Angular Security Standards
+
+## Overview
+
+Implementeer veilige Angular applicaties door best practices te volgen voor XSS preventie, authenticatie, autorisatie en data sanitization.
+
+## Rules
+
+### Cross-Site Scripting (XSS) Prevention
+
+- Gebruik Angular's ingebouwde sanitization
+- Vermijd `bypassSecurityTrustHtml` tenzij absoluut noodzakelijk
+- Valideer user input
+- Gebruik Content Security Policy (CSP)
+
+✅ Good:
+
+```typescript
+@Component({
+  template: `
+    <div>{{ userContent }}</div>
+    <img [src]="imagePath" alt="User image" />
+  `,
+})
+export class SafeComponent {
+  userContent = 'Hello World';
+  imagePath = 'https://trusted-domain.com/image.jpg';
+}
+```
+
+❌ Bad:
+
+```typescript
+@Component({
+  template: `
+    <div [innerHTML]="userContent"></div>
+    <img [src]="untrustedImagePath" />
+  `,
+})
+export class UnsafeComponent {
+  constructor(private sanitizer: DomSanitizer) {
+    // Gevaarlijk: bypass van security checks
+    this.userContent = this.sanitizer.bypassSecurityTrustHtml(someHtml);
+  }
+}
+```
+
+### Authentication & Authorization
+
+- Implementeer JWT of andere veilige auth methoden
+- Gebruik Guards voor route bescherming
+- Vernieuw tokens veilig
+- Sla gevoelige data nooit op in localStorage
+
+✅ Good:
+
+```typescript
+@Injectable({ providedIn: 'root' })
+export class AuthGuard implements CanActivate {
+  constructor(
+    private auth: AuthService,
+    private router: Router
+  ) {}
+
+  canActivate(): Observable<boolean> {
+    return this.auth.isAuthenticated$.pipe(
+      tap(authenticated => {
+        if (!authenticated) {
+          this.router.navigate(['/login']);
+        }
+      })
+    );
+  }
+}
+
+// Routes configuratie
+const routes: Routes = [
+  {
+    path: 'admin',
+    component: AdminComponent,
+    canActivate: [AuthGuard],
+    data: { roles: ['ADMIN'] },
+  },
+];
+```
+
+❌ Bad:
+
+```typescript
+// Onveilig: gevoelige data in localStorage
+localStorage.setItem('token', jwt);
+localStorage.setItem('userPassword', password);
+
+// Onbeschermde routes
+const routes: Routes = [
+  {
+    path: 'admin',
+    component: AdminComponent, // Geen guard!
+  },
+];
+```
+
+### HTTP Security
+
+- Gebruik HTTPS
+- Implementeer CSRF bescherming
+- Voeg security headers toe
+- Valideer API responses
+
+✅ Good:
+
+```typescript
+@Injectable()
+export class SecurityInterceptor implements HttpInterceptor {
+  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    const secureReq = req.clone({
+      setHeaders: {
+        'X-CSRF-TOKEN': this.csrfService.getToken(),
+        'Content-Security-Policy': "default-src 'self'",
+        'X-Frame-Options': 'DENY',
+      },
+    });
+
+    return next.handle(secureReq);
+  }
+}
+```
+
+❌ Bad:
+
+```typescript
+// Onveilig: geen CSRF bescherming of security headers
+@Injectable()
+export class UnsafeInterceptor implements HttpInterceptor {
+  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    return next.handle(req);
+  }
+}
+```
+
+### Form Security
+
+- Valideer form input server-side én client-side
+- Voorkom SQL injectie
+- Sanitize user input
+- Implementeer rate limiting
+
+✅ Good:
+
+```typescript
+@Component({
+  template: `
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <input
+        formControlName="email"
+        type="email"
+        [attr.maxlength]="100"
+        pattern="[a-z0-9._%+-]+@[a-z0-9.-]+.[a-z]{2,}$"
+      />
+      <div *ngIf="email.errors?.['pattern']">Ongeldig email formaat</div>
+    </form>
+  `,
+})
+export class SecureFormComponent {
+  form = new FormGroup({
+    email: new FormControl('', {
+      validators: [
+        Validators.required,
+        Validators.pattern('[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$'),
+      ],
+      nonNullable: true,
+    }),
+  });
+}
+```
+
+❌ Bad:
+
+```typescript
+@Component({
+  template: `
+    <form (ngSubmit)="onSubmit()">
+      <input [(ngModel)]="email" name="email" />
+    </form>
+  `,
+})
+export class UnsafeFormComponent {
+  // Geen validatie!
+  email = '';
+}
+```
+
+## Resources
+
+- [Angular Security Guide](https://angular.io/guide/security)
+- [OWASP Angular Security Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Angular_Security_Cheat_Sheet.html)
+- [Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP)
