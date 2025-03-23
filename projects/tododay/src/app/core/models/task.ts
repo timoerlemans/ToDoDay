@@ -20,11 +20,16 @@ export interface TaskFormData {
   startDate?: string;
 }
 
-export interface Task extends TaskFormData {
+export interface Task {
   id: string;
+  title: string;
+  description?: string;
   status: TaskStatus;
-  createdAt: string;
-  updatedAt: string;
+  priority: TaskPriority;
+  dueDate?: Date;
+  createdAt: Date;
+  updatedAt: Date;
+  userId: string;
 }
 
 export interface TaskStatusChange {
@@ -38,4 +43,19 @@ export interface TaskEnrichment {
   priority: TaskPriority;
   dueDate: string | null;
   startDate: string | null;
+}
+
+export interface CreateTaskDto {
+  title: string;
+  description?: string;
+  priority?: TaskPriority;
+  dueDate?: Date;
+}
+
+export interface UpdateTaskDto {
+  title?: string;
+  description?: string;
+  status?: TaskStatus;
+  priority?: TaskPriority;
+  dueDate?: Date;
 }

@@ -1,8 +1,8 @@
 import { Injectable, signal } from '@angular/core';
 import { createClient, SupabaseClient, AuthResponse, User } from '@supabase/supabase-js';
-import { Observable } from 'rxjs';
-import { environment } from '@tododay/environments/environment';
-import { StorageService } from '@tododay/core/services/storage.service';
+import { Observable, from } from 'rxjs';
+import { environment } from '../../../environments/environment';
+import { StorageService } from './storage.service';
 
 /**
  * Service responsible for managing Supabase client and authentication.
@@ -62,7 +62,7 @@ export class SupabaseService {
    * Observable of the current user
    */
   get currentUser$(): Observable<User | null> {
-    return this.currentUser.asReadonly();
+    return from(this.currentUser.asReadonly());
   }
 
   /**

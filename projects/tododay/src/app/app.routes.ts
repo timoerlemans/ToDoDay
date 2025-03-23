@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { AuthGuard, PublicGuard } from '@tododay/core/guards/auth.guard';
+import { AuthGuard, PublicGuard } from './core/guards/auth.guard';
 
 /**
  * Application routes configuration.
@@ -13,16 +13,26 @@ import { AuthGuard, PublicGuard } from '@tododay/core/guards/auth.guard';
  */
 export const routes: Routes = [
   {
-    path: 'login',
+    path: '',
     canActivate: [PublicGuard],
-    loadChildren: () => import('@tododay/features/auth/auth.module')
-      .then(m => m.AuthModule),
+    children: [
+      {
+        path: '',
+        loadChildren: () => import('./features/auth/auth.module')
+          .then(m => m.AuthModule)
+      }
+    ]
   },
   {
     path: 'tasks',
     canActivate: [AuthGuard],
-    loadChildren: () => import('@tododay/features/task/task.module')
-      .then(m => m.TaskModule),
+    children: [
+      {
+        path: '',
+        loadChildren: () => import('./features/task/task.module')
+          .then(m => m.TaskModule)
+      }
+    ]
   },
   {
     path: '',

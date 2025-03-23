@@ -1,18 +1,15 @@
 import { Injectable, signal } from '@angular/core';
-import { Router } from '@angular/router';
 import { Observable, from } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
-import { User } from '@supabase/supabase-js';
-import { SupabaseService } from '@tododay/core/services/supabase.service';
-import { NotificationService } from '@tododay/core/services/notification.service';
+import { map, tap } from 'rxjs/operators';
+import { SupabaseService } from './supabase.service';
+import { NotificationService } from './notification.service';
 
 /**
  * Authentication state interface
  */
 export interface AuthState {
-  user: User | null;
-  loading: boolean;
-  error: string | null;
+  isAuthenticated: boolean;
+  user: any | null;
 }
 
 /**
@@ -40,46 +37,28 @@ interface AuthError {
   providedIn: 'root'
 })
 export class AuthService {
-  private authState = signal<AuthState>({
-    user: null,
-    loading: true,
-    error: null
+  private readonly authState = signal<AuthState>({
+    isAuthenticated: false,
+    user: null
   });
 
   constructor(
     private readonly supabaseService: SupabaseService,
-    private readonly notificationService: NotificationService,
-    private readonly router: Router
+    private readonly notificationService: NotificationService
   ) {
-    this.initializeAuth();
-  }
-
-  /**
-   * Observable of the current user
-   */
-  get currentUser$(): Observable<User | null> {
-    return this.supabaseService.currentUser$;
+    this.supabaseService.currentUser$.subscribe(user => {
+      this.authState.set({
+        isAuthenticated: !!user,
+        user
+      });
+    });
   }
 
   /**
    * Observable of the current authentication state
    */
   get authState$(): Observable<AuthState> {
-    return this.authState.asReadonly();
-  }
-
-  /**
-   * Initializes the authentication state by subscribing to the current user
-   */
-  private initializeAuth(): void {
-    this.supabaseService.currentUser$.subscribe(user => {
-      this.authState.update(state => ({
-        ...state,
-        user,
-        loading: false,
-        error: null
-      }));
-    });
+    return from(this.authState.asReadonly());
   }
 
   /**
@@ -96,19 +75,14 @@ export class AuthService {
    * @param email User's email
    * @param password User's password
    */
-  signIn(email: string, password: string): Observable<AuthResponse> {
-    return from(this.supabaseService.signIn(email, password)).pipe(
-      map(() => {
-        this.notificationService.showSuccess('Successfully signed in');
-        this.router.navigate(['/tasks']);
-        return { success: true, message: 'Successfully signed in' };
-      }),
-      catchError(error => {
-        const message = this.getErrorMessage(error);
-        this.notificationService.showError(message);
-        return [{ success: false, message }];
-      })
-    );
+  async signIn(email: string, password: string): Promise<void> {
+    try {
+      await this.supabaseService.signIn(email, password);
+      this.notificationService.success('Successfully logged in');
+    } catch (error) {
+      this.notificationService.error('Failed to log in');
+      throw error;
+    }
   }
 
   /**
@@ -116,37 +90,27 @@ export class AuthService {
    * @param email User's email
    * @param password User's password
    */
-  signUp(email: string, password: string): Observable<AuthResponse> {
-    return from(this.supabaseService.signUp(email, password)).pipe(
-      map(() => {
-        this.notificationService.showSuccess('Registration successful');
-        this.router.navigate(['/login']);
-        return { success: true, message: 'Registration successful' };
-      }),
-      catchError(error => {
-        const message = this.getErrorMessage(error);
-        this.notificationService.showError(message);
-        return [{ success: false, message }];
-      })
-    );
+  async signUp(email: string, password: string): Promise<void> {
+    try {
+      await this.supabaseService.signUp(email, password);
+      this.notificationService.success('Successfully registered');
+    } catch (error) {
+      this.notificationService.error('Failed to register');
+      throw error;
+    }
   }
 
   /**
    * Signs out the current user
    */
-  signOut(): Observable<AuthResponse> {
-    return from(this.supabaseService.signOut()).pipe(
-      map(() => {
-        this.notificationService.showSuccess('Successfully signed out');
-        this.router.navigate(['/login']);
-        return { success: true, message: 'Successfully signed out' };
-      }),
-      catchError(error => {
-        const message = this.getErrorMessage(error);
-        this.notificationService.showError(message);
-        return [{ success: false, message }];
-      })
-    );
+  async signOut(): Promise<void> {
+    try {
+      await this.supabaseService.signOut();
+      this.notificationService.success('Successfully logged out');
+    } catch (error) {
+      this.notificationService.error('Failed to log out');
+      throw error;
+    }
   }
 
   /**

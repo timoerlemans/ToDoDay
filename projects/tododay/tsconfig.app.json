@@ -5,18 +5,9 @@
     "outDir": "../../out-tsc/app",
     "types": [],
     "baseUrl": "./",
-    "paths": {
-      "@tododay/*": ["src/*"]
-    }
+    "paths": {}
   },
-  "files": [
-    "src/main.ts"
-  ],
-  "include": [
-    "src/**/*.d.ts"
-  ],
-  "exclude": [
-    "src/**/*.spec.ts",
-    "src/**/*.test.ts"
-  ]
+  "files": ["src/main.ts"],
+  "include": ["src/**/*.d.ts"],
+  "exclude": ["src/**/*.spec.ts", "src/**/*.test.ts"]
 }

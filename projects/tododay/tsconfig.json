@@ -4,15 +4,8 @@
     "outDir": "../../dist/out-tsc/app",
     "types": [],
     "baseUrl": "src",
-    "paths": {
-      "@tododay/*": ["projects/tododay/src/app/*"]
-    }
+    "paths": {}
   },
-  "files": [
-    "src/main.ts"
-  ],
-  "include": [
-    "src/**/*.d.ts",
-    "src/**/*.ts"
-  ]
-} 
+  "files": ["src/main.ts"],
+  "include": ["src/**/*.d.ts", "src/**/*.ts"]
+}

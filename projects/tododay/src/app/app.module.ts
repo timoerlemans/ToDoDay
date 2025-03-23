@@ -6,7 +6,7 @@ import { AppComponent } from './app.component';
 import { routes } from './app.routes';
 import { CoreModule } from './core/core.module';
 import { ServiceWorkerModule, provideServiceWorker } from '@angular/service-worker';
-import { securityInterceptor } from '@tododay/core/interceptors/security.interceptor';
+import { securityInterceptor } from './core/interceptors/security.interceptor';
 
 /**
  * Root module of the application.

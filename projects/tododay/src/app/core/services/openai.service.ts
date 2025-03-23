@@ -4,8 +4,8 @@ import { Observable, throwError } from 'rxjs';
 import { DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { catchError, retry, timeout } from 'rxjs/operators';
-import { environment } from '@tododay/environments/environment';
-import { TaskEnrichment } from '@tododay/core/models/task';
+import { environment } from '../../../environments/environment';
+import { TaskEnrichment } from '../models/task';
 
 /**
  * Interface for OpenAI API errors

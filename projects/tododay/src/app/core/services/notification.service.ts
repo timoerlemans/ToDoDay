@@ -1,5 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, from } from 'rxjs';
 
 /**
  * Interface representing a notification message
@@ -23,13 +23,13 @@ export interface Notification {
   providedIn: 'root'
 })
 export class NotificationService {
-  private notifications = signal<Notification[]>([]);
+  private readonly notifications = signal<Notification[]>([]);
 
   /**
    * Observable of the current notifications array
    */
   get notifications$(): Observable<Notification[]> {
-    return this.notifications.asReadonly();
+    return from(this.notifications.asReadonly());
   }
 
   /**
@@ -37,8 +37,13 @@ export class NotificationService {
    * @param message The message to display
    * @param duration Time in milliseconds before auto-dismissal
    */
-  showSuccess(message: string, duration: number = 3000): void {
-    this.show(message, 'success', duration);
+  success(message: string, duration = 3000): void {
+    this.addNotification({
+      id: crypto.randomUUID(),
+      message,
+      type: 'success',
+      duration
+    });
   }
 
   /**
@@ -46,8 +51,13 @@ export class NotificationService {
    * @param message The message to display
    * @param duration Time in milliseconds before auto-dismissal
    */
-  showError(message: string, duration: number = 5000): void {
-    this.show(message, 'error', duration);
+  error(message: string, duration = 5000): void {
+    this.addNotification({
+      id: crypto.randomUUID(),
+      message,
+      type: 'error',
+      duration
+    });
   }
 
   /**
@@ -55,8 +65,13 @@ export class NotificationService {
    * @param message The message to display
    * @param duration Time in milliseconds before auto-dismissal
    */
-  showInfo(message: string, duration: number = 3000): void {
-    this.show(message, 'info', duration);
+  info(message: string, duration = 3000): void {
+    this.addNotification({
+      id: crypto.randomUUID(),
+      message,
+      type: 'info',
+      duration
+    });
   }
 
   /**
@@ -64,38 +79,35 @@ export class NotificationService {
    * @param message The message to display
    * @param duration Time in milliseconds before auto-dismissal
    */
-  showWarning(message: string, duration: number = 4000): void {
-    this.show(message, 'warning', duration);
+  warning(message: string, duration = 5000): void {
+    this.addNotification({
+      id: crypto.randomUUID(),
+      message,
+      type: 'warning',
+      duration
+    });
   }
 
   /**
    * Internal method to show a notification
-   * @param message The message to display
-   * @param type The type of notification
-   * @param duration Time in milliseconds before auto-dismissal
+   * @param notification The notification to add
    */
-  private show(message: string, type: Notification['type'], duration: number): void {
-    const notification: Notification = {
-      id: crypto.randomUUID(),
-      message,
-      type,
-      duration
-    };
-
+  private addNotification(notification: Notification): void {
     this.notifications.update(notifications => [...notifications, notification]);
-
-    setTimeout(() => {
-      this.removeNotification(notification);
-    }, duration);
+    if (notification.duration) {
+      setTimeout(() => {
+        this.removeNotification(notification.id);
+      }, notification.duration);
+    }
   }
 
   /**
    * Removes a specific notification
-   * @param notification The notification to remove
+   * @param id The ID of the notification to remove
    */
-  removeNotification(notification: Notification): void {
+  removeNotification(id: string): void {
     this.notifications.update(notifications =>
-      notifications.filter(n => n.id !== notification.id)
+      notifications.filter(notification => notification.id !== id)
     );
   }
 
