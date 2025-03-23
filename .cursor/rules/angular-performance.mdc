@@ -1,4 +1,9 @@
 ---
+description: 
+globs: 
+alwaysApply: true
+---
+---
 description: Angular performance standards and best practices
 globs: ['**/*.ts', '**/*.html']
 alwaysApply: true
@@ -237,7 +242,7 @@ export class AppComponent {
 
 ## Resources
 
-- [Angular Performance Guide](https://angular.io/guide/performance)
-- [Change Detection](https://angular.io/guide/change-detection)
-- [Lazy Loading](https://angular.io/guide/lazy-loading-ngmodules)
-- [Bundle Optimization](https://angular.io/guide/build)
+- [Angular Performance Guide](mdc:https:/angular.io/guide/performance)
+- [Change Detection](mdc:https:/angular.io/guide/change-detection)
+- [Lazy Loading](mdc:https:/angular.io/guide/lazy-loading-ngmodules)
+- [Bundle Optimization](mdc:https:/angular.io/guide/build)

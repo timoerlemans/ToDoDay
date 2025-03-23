@@ -1,4 +1,9 @@
 ---
+description: 
+globs: 
+alwaysApply: true
+---
+---
 description: Angular documentation standards and best practices
 globs: ['**/*.ts']
 alwaysApply: true
@@ -185,9 +190,9 @@ Run `pnpm install` and `pnpm start` to run the app.
 
 ## Resources
 
-- [JSDoc Documentation](https://jsdoc.app/)
-- [Angular Style Guide](https://angular.io/guide/styleguide)
-- [TypeDoc](https://typedoc.org/)
+- [JSDoc Documentation](mdc:https:/jsdoc.app)
+- [Angular Style Guide](mdc:https:/angular.io/guide/styleguide)
+- [TypeDoc](mdc:https:/typedoc.org)
 
 ## Code Documentation
 

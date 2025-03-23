@@ -1,4 +1,9 @@
 ---
+description: 
+globs: 
+alwaysApply: true
+---
+---
 description: Angular forms standards and best practices
 globs: ['**/*.ts', '**/*.html']
 alwaysApply: true
@@ -284,6 +289,6 @@ export class DynamicFormComponent {
 
 ## Resources
 
-- [Angular Reactive Forms](https://angular.io/guide/reactive-forms)
-- [Form Validation](https://angular.io/guide/form-validation)
-- [Dynamic Forms](https://angular.io/guide/dynamic-form)
+- [Angular Reactive Forms](mdc:https:/angular.io/guide/reactive-forms)
+- [Form Validation](mdc:https:/angular.io/guide/form-validation)
+- [Dynamic Forms](mdc:https:/angular.io/guide/dynamic-form)

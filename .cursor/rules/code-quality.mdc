@@ -3,6 +3,11 @@ description:
 globs: 
 alwaysApply: true
 ---
+---
+description: 
+globs: 
+alwaysApply: true
+---
 **Angular Code Quality Standards**
 
 - **Use namespace imports** instead of relative paths (use `@tododay` with an alias pointing to `projects/tododay/src/app`). There\'s an exception for all the files that are directly in the `projects/tododay/src` folder, like main.ts.

@@ -1,4 +1,9 @@
 ---
+description: 
+globs: 
+alwaysApply: true
+---
+---
 description: Angular styling standards and best practices
 globs: ['**/*.scss', '**/*.css', '**/*.sass']
 alwaysApply: true

@@ -1,4 +1,9 @@
 ---
+description: 
+globs: 
+alwaysApply: true
+---
+---
 description: Use English for all written text in the codebase
 globs: ['**/*']
 alwaysApply: true
@@ -233,10 +238,10 @@ In specific cases where local language is required (e.g., legal requirements or 
 
 ## Resources
 
-- [Google Developer Documentation Style Guide](https://developers.google.com/style)
-- [Microsoft Style Guide](https://docs.microsoft.com/style-guide)
-- [Angular Contribution Guide](https://github.com/angular/angular/blob/main/CONTRIBUTING.md)
-- [Conventional Commits](https://www.conventionalcommits.org/)
+- [Google Developer Documentation Style Guide](mdc:https:/developers.google.com/style)
+- [Microsoft Style Guide](mdc:https:/docs.microsoft.com/style-guide)
+- [Angular Contribution Guide](mdc:https:/github.com/angular/angular/blob/main/CONTRIBUTING.md)
+- [Conventional Commits](mdc:https:/www.conventionalcommits.org)
 
 # English Only
 

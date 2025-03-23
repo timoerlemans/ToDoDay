@@ -1,4 +1,9 @@
 ---
+description: 
+globs: 
+alwaysApply: true
+---
+---
 description: Angular accessibility (a11y) standards and best practices
 globs: ['**/*.ts', '**/*.html']
 alwaysApply: true
@@ -170,9 +175,9 @@ describe('MyComponent', () => {
 
 ## Resources
 
-- [WCAG 2.1 Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)
-- [Angular CDK a11y](https://material.angular.io/cdk/a11y/overview)
-- [axe-core Testing Library](https://github.com/dequelabs/axe-core)
+- [WCAG 2.1 Guidelines](mdc:https:/www.w3.org/WAI/WCAG21/quickref)
+- [Angular CDK a11y](mdc:https:/material.angular.io/cdk/a11y/overview)
+- [axe-core Testing Library](mdc:https:/github.com/dequelabs/axe-core)
 
 ## Examples
 

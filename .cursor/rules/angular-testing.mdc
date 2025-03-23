@@ -1,4 +1,9 @@
 ---
+description: 
+globs: 
+alwaysApply: true
+---
+---
 description: Angular testing standards and best practices
 globs: ['**/*.spec.ts']
 alwaysApply: true
@@ -260,7 +265,7 @@ describe('AuthService', () => {
 
 ## Resources
 
-- [Angular Testing Guide](https://angular.io/guide/testing)
-- [Jasmine Documentation](https://jasmine.github.io/)
-- [Cypress Documentation](https://docs.cypress.io/)
-- [Test Coverage](https://angular.io/guide/testing-code-coverage)
+- [Angular Testing Guide](mdc:https:/angular.io/guide/testing)
+- [Jasmine Documentation](mdc:https:/jasmine.github.io)
+- [Cypress Documentation](mdc:https:/docs.cypress.io)
+- [Test Coverage](mdc:https:/angular.io/guide/testing-code-coverage)

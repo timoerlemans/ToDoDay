@@ -3,6 +3,11 @@ description:
 globs: 
 alwaysApply: true
 ---
+---
+description: 
+globs: 
+alwaysApply: true
+---
 # PNPM Package Manager Standard
 
 ## Description
@@ -236,10 +241,10 @@ pnpm install some-package --registry http://untrusted-registry
 
 ## Resources
 
-- [PNPM Documentation](https://pnpm.io/motivation)
-- [PNPM Workspaces](https://pnpm.io/workspaces)
-- [PNPM CLI](https://pnpm.io/cli/add)
-- [PNPM vs NPM/Yarn](https://pnpm.io/feature-comparison)
+- [PNPM Documentation](mdc:https:/pnpm.io/motivation)
+- [PNPM Workspaces](mdc:https:/pnpm.io/workspaces)
+- [PNPM CLI](mdc:https:/pnpm.io/cli/add)
+- [PNPM vs NPM/Yarn](mdc:https:/pnpm.io/feature-comparison)
 
 ## Examples
 

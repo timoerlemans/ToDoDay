@@ -1,4 +1,9 @@
 ---
+description: 
+globs: 
+alwaysApply: true
+---
+---
 description: Use atomic commits with commitizen for consistent commit messages
 globs: ['**/*']
 alwaysApply: true
