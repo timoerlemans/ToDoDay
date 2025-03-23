@@ -5,23 +5,9 @@ export enum TaskStatus {
 }
 
 export enum TaskPriority {
-  LOW = 'low',
-  MEDIUM = 'medium',
-  HIGH = 'high'
-}
-
-export interface Task {
-  id: string;
-  title: string;
-  description?: string;
-  status: TaskStatus;
-  priority: TaskPriority;
-  project?: string;
-  dueDate?: Date;
-  userId: string;
-  created_at: string;
-  updated_at: string;
-  user_id: string;
+  LOW = 'LOW',
+  MEDIUM = 'MEDIUM',
+  HIGH = 'HIGH'
 }
 
 export interface TaskFormData {
@@ -30,6 +16,13 @@ export interface TaskFormData {
   priority: TaskPriority;
   project?: string;
   dueDate?: Date;
+}
+
+export interface Task extends TaskFormData {
+  id: string;
+  status: TaskStatus;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface TaskStatusChange {
