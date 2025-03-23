@@ -182,12 +182,6 @@ import { UserService } from '@core/services/user.service';
 - [Angular Module System](mdc:https:/angular.io/guide/ngmodules)
 - [Path Aliases](mdc:https:/www.typescriptlang.org/docs/handbook/module-resolution.html#path-mapping)
 
-## Import Paths
-
-- **Use namespace imports** instead of relative paths
-- Use `@tododay` alias pointing to `projects/tododay/src/app`
-- Exception: files directly in `projects/tododay/src` (e.g., `main.ts`)
-
 ## Dependency Injection
 
 - **Use constructor-based injection** instead of `inject()` function
