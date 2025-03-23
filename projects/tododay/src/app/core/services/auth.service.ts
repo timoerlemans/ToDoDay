@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject, Observable, from, of } from 'rxjs';
+import { Observable, from } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { User } from '@supabase/supabase-js';
 import { SupabaseService } from './supabase.service';
@@ -17,11 +17,17 @@ interface AuthResponse {
   message: string;
 }
 
+interface AuthError {
+  message: string;
+  status?: number;
+  name?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private authState = new BehaviorSubject<AuthState>({
+  private authState = signal<AuthState>({
     user: null,
     loading: true,
     error: null
@@ -40,16 +46,17 @@ export class AuthService {
   }
 
   get authState$(): Observable<AuthState> {
-    return this.authState.asObservable();
+    return this.authState.asReadonly();
   }
 
   private initializeAuth(): void {
     this.supabaseService.currentUser$.subscribe(user => {
-      this.authState.next({
+      this.authState.update(state => ({
+        ...state,
         user,
         loading: false,
         error: null
-      });
+      }));
     });
   }
 
@@ -104,10 +111,10 @@ export class AuthService {
     );
   }
 
-  private getErrorMessage(error: any): string {
+  private getErrorMessage(error: AuthError): string {
     if (error?.message) {
       return error.message;
     }
     return 'Er is een fout opgetreden. Probeer het later opnieuw.';
   }
-} 
+}

@@ -12,17 +12,19 @@ export enum TaskPriority {
 
 export interface TaskFormData {
   title: string;
-  description?: string;
+  description: string;
   priority: TaskPriority;
   project?: string;
-  dueDate?: Date;
+  labels?: string[];
+  dueDate?: string;
+  startDate?: string;
 }
 
 export interface Task extends TaskFormData {
   id: string;
   status: TaskStatus;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface TaskStatusChange {

@@ -1,25 +1,25 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { createClient, SupabaseClient, AuthResponse, User } from '@supabase/supabase-js';
 import { environment } from '../../../environments/environment';
-import { BehaviorSubject } from 'rxjs';
+import { StorageService } from './storage.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SupabaseService {
   private supabase: SupabaseClient;
-  private currentUser = new BehaviorSubject<User | null>(null);
+  private currentUser = signal<User | null>(null);
 
-  constructor() {
+  constructor(private storageService: StorageService) {
     this.supabase = createClient(
       environment.supabase.url,
       environment.supabase.key,
       {
         auth: {
           storage: {
-            getItem: (key: string) => localStorage.getItem(key),
-            setItem: (key: string, value: string) => localStorage.setItem(key, value),
-            removeItem: (key: string) => localStorage.removeItem(key)
+            getItem: (key: string) => this.storageService.getItem(key),
+            setItem: (key: string, value: string) => this.storageService.setItem(key, value),
+            removeItem: (key: string) => this.storageService.removeItem(key)
           },
           persistSession: true,
           autoRefreshToken: true
@@ -37,18 +37,18 @@ export class SupabaseService {
   private async loadSession(): Promise<void> {
     const { data: { session } } = await this.supabase.auth.getSession();
     if (session?.user) {
-      this.currentUser.next(session.user);
+      this.currentUser.set(session.user);
     }
   }
 
   private setupAuthListener(): void {
     this.supabase.auth.onAuthStateChange((_event, session) => {
-      this.currentUser.next(session?.user ?? null);
+      this.currentUser.set(session?.user ?? null);
     });
   }
 
   get currentUser$() {
-    return this.currentUser.asObservable();
+    return this.currentUser.asReadonly();
   }
 
   async signIn(email: string, password: string): Promise<AuthResponse> {
@@ -61,10 +61,10 @@ export class SupabaseService {
 
   async signOut(): Promise<void> {
     await this.supabase.auth.signOut();
-    this.currentUser.next(null);
+    this.currentUser.set(null);
   }
 
   getClient(): SupabaseClient {
     return this.supabase;
   }
-} 
+}

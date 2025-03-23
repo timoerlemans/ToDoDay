@@ -1,13 +1,15 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { SupabaseService } from './supabase.service';
 import { Task, TaskFormData } from '../models/task';
 import { Observable, from } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
+import { map, catchError, tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TaskService {
+  private tasks = signal<Task[]>([]);
+
   constructor(private supabaseService: SupabaseService) {}
 
   getTasks(): Observable<Task[]> {
@@ -20,6 +22,7 @@ export class TaskService {
           if (error) throw error;
           return data as Task[];
         }),
+        tap(tasks => this.tasks.set(tasks)),
         catchError(error => {
           console.error('Error fetching tasks:', error);
           throw error;
@@ -38,6 +41,7 @@ export class TaskService {
           if (error) throw error;
           return data as Task;
         }),
+        tap(task => this.tasks.update(tasks => [task, ...tasks])),
         catchError(error => {
           console.error('Error creating task:', error);
           throw error;
@@ -57,6 +61,9 @@ export class TaskService {
           if (error) throw error;
           return data as Task;
         }),
+        tap(updatedTask => this.tasks.update(tasks =>
+          tasks.map(task => task.id === updatedTask.id ? updatedTask : task)
+        )),
         catchError(error => {
           console.error('Error updating task:', error);
           throw error;
@@ -73,10 +80,15 @@ export class TaskService {
         map(({ error }) => {
           if (error) throw error;
         }),
+        tap(() => this.tasks.update(tasks => tasks.filter(task => task.id !== taskId))),
         catchError(error => {
           console.error('Error deleting task:', error);
           throw error;
         })
       );
   }
-} 
+
+  get tasks$(): Observable<Task[]> {
+    return this.tasks.asReadonly();
+  }
+}
