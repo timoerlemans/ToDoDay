@@ -1,4 +1,9 @@
 ---
+description: 
+globs: 
+alwaysApply: true
+---
+---
 description: Angular import standards and best practices
 globs: ['**/*.ts']
 alwaysApply: true
@@ -173,9 +178,9 @@ import { UserService } from '@core/services/user.service';
 
 ## Resources
 
-- [TypeScript Import/Export](https://www.typescriptlang.org/docs/handbook/modules.html)
-- [Angular Module System](https://angular.io/guide/ngmodules)
-- [Path Aliases](https://www.typescriptlang.org/docs/handbook/module-resolution.html#path-mapping)
+- [TypeScript Import/Export](mdc:https:/www.typescriptlang.org/docs/handbook/modules.html)
+- [Angular Module System](mdc:https:/angular.io/guide/ngmodules)
+- [Path Aliases](mdc:https:/www.typescriptlang.org/docs/handbook/module-resolution.html#path-mapping)
 
 ## Import Paths
 

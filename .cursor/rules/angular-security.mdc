@@ -1,4 +1,9 @@
 ---
+description: 
+globs: 
+alwaysApply: true
+---
+---
 description: Angular security standards and best practices
 globs: ['**/*.ts', '**/*.html']
 alwaysApply: true
@@ -198,6 +203,6 @@ export class UnsafeFormComponent {
 
 ## Resources
 
-- [Angular Security Guide](https://angular.io/guide/security)
-- [OWASP Angular Security Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Angular_Security_Cheat_Sheet.html)
-- [Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP)
+- [Angular Security Guide](mdc:https:/angular.io/guide/security)
+- [OWASP Angular Security Cheat Sheet](mdc:https:/cheatsheetseries.owasp.org/cheatsheets/Angular_Security_Cheat_Sheet.html)
+- [Content Security Policy](mdc:https:/developer.mozilla.org/en-US/docs/Web/HTTP/CSP)

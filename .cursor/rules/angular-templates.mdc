@@ -1,4 +1,9 @@
 ---
+description: 
+globs: 
+alwaysApply: true
+---
+---
 description: Angular template standards and best practices
 globs: ['**/*.html']
 alwaysApply: true
@@ -176,7 +181,7 @@ Implementeer consistente en onderhoudbare templates in Angular applicaties met b
 
 ## Resources
 
-- [Angular Template Syntax](https://angular.io/guide/template-syntax)
-- [Angular Control Flow](https://angular.io/guide/control-flow)
-- [Content Projection](https://angular.io/guide/content-projection)
-- [Template Performance](https://angular.io/guide/template-typecheck)
+- [Angular Template Syntax](mdc:https:/angular.io/guide/template-syntax)
+- [Angular Control Flow](mdc:https:/angular.io/guide/control-flow)
+- [Content Projection](mdc:https:/angular.io/guide/content-projection)
+- [Template Performance](mdc:https:/angular.io/guide/template-typecheck)

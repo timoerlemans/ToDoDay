@@ -3,6 +3,12 @@ description:
 globs: 
 alwaysApply: true
 ---
+---
+description:
+globs:
+alwaysApply: true
+---
+
 # Verplichte Technologie Stack
 
 ## Beschrijving
@@ -28,11 +34,22 @@ Deze regels definiëren de verplichte technologie stack voor dit project. Afwijk
 ### Framework
 
 - **Angular v19** verplicht voor alle frontend ontwikkeling
-- Gebruik van standalone componenten waar mogelijk
+- Gebruik van standalone componenten alleen wanneer strikt noodzakelijk (bijv. voor gedeelde componenten)
 - Implementeer lazy loading voor feature modules
 - Volg Angular style guide en best practices
 
 ✅ Good:
+
+```typescript
+@Component({
+  selector: 'app-home',
+  templateUrl: './home.component.html',
+  styleUrls: ['./home.component.scss'],
+})
+export class HomeComponent {}
+```
+
+❌ Bad:
 
 ```typescript
 @Component({
@@ -45,13 +62,6 @@ Deze regels definiëren de verplichte technologie stack voor dit project. Afwijk
   `,
 })
 export class HomeComponent {}
-```
-
-❌ Bad:
-
-```typescript
-// Gebruik van oudere Angular versies of andere frameworks
-import React from 'react';
 ```
 
 ### Styling
