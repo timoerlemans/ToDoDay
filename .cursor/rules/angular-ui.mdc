@@ -1,0 +1,328 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Angular UI Rules
+
+## Overview
+
+This document outlines UI standards for Angular applications, focusing on component design, styling, animations, and user experience.
+
+## Component Design
+
+- Use proper component composition
+- Implement responsive design
+- Follow material design principles
+- Use proper component communication
+
+### Good Examples
+
+```typescript
+// Reusable card component
+@Component({
+  selector: 'app-card',
+  template: `
+    <div class="card" [class.card--elevated]="elevated">
+      <div class="card__header" *ngIf="header">
+        <ng-content select="[card-header]"></ng-content>
+      </div>
+      <div class="card__content">
+        <ng-content></ng-content>
+      </div>
+      <div class="card__footer" *ngIf="footer">
+        <ng-content select="[card-footer]"></ng-content>
+      </div>
+    </div>
+  `,
+  styles: [
+    `
+      .card {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        padding: 16px;
+        transition: box-shadow 0.2s ease;
+      }
+
+      .card--elevated {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .card__header {
+        margin-bottom: 16px;
+      }
+
+      .card__content {
+        margin-bottom: 16px;
+      }
+
+      .card__footer {
+        border-top: 1px solid #eee;
+        padding-top: 16px;
+      }
+    `,
+  ],
+})
+export class CardComponent {
+  @Input() elevated = false;
+  @Input() header = false;
+  @Input() footer = false;
+}
+
+// Usage example
+@Component({
+  selector: 'app-todo-card',
+  template: `
+    <app-card elevated>
+      <div card-header>
+        <h2>{{ todo.title }}</h2>
+      </div>
+      <p>{{ todo.description }}</p>
+      <div card-footer>
+        <button (click)="onComplete()">Complete</button>
+      </div>
+    </app-card>
+  `,
+})
+export class TodoCardComponent {
+  @Input() todo!: Todo;
+  @Output() complete = new EventEmitter<void>();
+}
+```
+
+### Bad Examples
+
+```typescript
+// Monolithic component
+@Component({
+  selector: 'app-todo-card',
+  template: `
+    <div class="todo-card">
+      <div class="todo-card__header">
+        <h2>{{ todo.title }}</h2>
+      </div>
+      <div class="todo-card__content">
+        <p>{{ todo.description }}</p>
+      </div>
+      <div class="todo-card__footer">
+        <button (click)="onComplete()">Complete</button>
+      </div>
+    </div>
+  `,
+  styles: [
+    `
+      .todo-card {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        padding: 16px;
+      }
+
+      .todo-card__header {
+        margin-bottom: 16px;
+      }
+
+      .todo-card__content {
+        margin-bottom: 16px;
+      }
+
+      .todo-card__footer {
+        border-top: 1px solid #eee;
+        padding-top: 16px;
+      }
+    `,
+  ],
+})
+export class TodoCardComponent {
+  @Input() todo!: Todo;
+  @Output() complete = new EventEmitter<void>();
+}
+```
+
+## Styling
+
+- Use SCSS for styling
+- Implement proper CSS architecture
+- Use CSS variables for theming
+- Follow BEM naming convention
+
+### Good Examples
+
+```scss
+// Variables
+:root {
+  --primary-color: #007bff;
+  --secondary-color: #6c757d;
+  --background-color: #f8f9fa;
+  --text-color: #212529;
+  --spacing-unit: 8px;
+}
+
+// Mixins
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin responsive($breakpoint) {
+  @if $breakpoint == tablet {
+    @media (min-width: 768px) {
+      @content;
+    }
+  } @else if $breakpoint == desktop {
+    @media (min-width: 1024px) {
+      @content;
+    }
+  }
+}
+
+// Component styles
+.todo-list {
+  &__item {
+    padding: var(--spacing-unit);
+    border-bottom: 1px solid var(--secondary-color);
+
+    @include flex-center;
+
+    @include responsive(tablet) {
+      padding: calc(var(--spacing-unit) * 2);
+    }
+  }
+
+  &__title {
+    color: var(--text-color);
+    font-size: 1.2rem;
+    margin: 0;
+  }
+
+  &__actions {
+    margin-left: auto;
+  }
+}
+```
+
+### Bad Examples
+
+```scss
+// Inline styles
+.todo-list-item {
+  padding: 8px;
+  border-bottom: 1px solid #6c757d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.todo-list-title {
+  color: #212529;
+  font-size: 1.2rem;
+  margin: 0;
+}
+
+.todo-list-actions {
+  margin-left: auto;
+}
+
+@media (min-width: 768px) {
+  .todo-list-item {
+    padding: 16px;
+  }
+}
+```
+
+## Animations
+
+- Use Angular animations
+- Implement smooth transitions
+- Handle loading states
+- Use proper animation timing
+
+### Good Examples
+
+```typescript
+// Animated list component
+@Component({
+  selector: 'app-todo-list',
+  template: `
+    <div class="todo-list">
+      <div *ngFor="let todo of todos" [@todoItem] class="todo-list__item">
+        {{ todo.title }}
+      </div>
+    </div>
+  `,
+  animations: [
+    trigger('todoItem', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(20px)' }),
+        animate('200ms ease-out', style({ opacity: 1, transform: 'translateY(0)' })),
+      ]),
+      transition(':leave', [
+        animate('200ms ease-in', style({ opacity: 0, transform: 'translateY(-20px)' })),
+      ]),
+    ]),
+  ],
+})
+export class TodoListComponent {
+  @Input() todos: Todo[] = [];
+}
+
+// Loading animation
+@Component({
+  selector: 'app-loading',
+  template: `
+    <div class="loading" [@loadingAnimation]>
+      <div class="loading__spinner"></div>
+      <div class="loading__text">Loading...</div>
+    </div>
+  `,
+  animations: [
+    trigger('loadingAnimation', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('200ms ease-out', style({ opacity: 1 })),
+      ]),
+      transition(':leave', [animate('200ms ease-in', style({ opacity: 0 }))]),
+    ]),
+  ],
+})
+export class LoadingComponent {}
+```
+
+### Bad Examples
+
+```typescript
+// Component without animations
+@Component({
+  selector: 'app-todo-list',
+  template: `
+    <div class="todo-list">
+      <div *ngFor="let todo of todos" class="todo-list__item">
+        {{ todo.title }}
+      </div>
+    </div>
+  `,
+})
+export class TodoListComponent {
+  @Input() todos: Todo[] = [];
+}
+
+// Basic loading indicator
+@Component({
+  selector: 'app-loading',
+  template: `
+    <div class="loading">
+      <div class="loading__spinner"></div>
+      <div class="loading__text">Loading...</div>
+    </div>
+  `,
+})
+export class LoadingComponent {}
+```
+
+## Resources
+
+- [Angular Material](mdc:https:/material.angular.io)
+- [Angular Animations](mdc:https:/angular.io/guide/animations)
+- [Angular Style Guide](mdc:https:/angular.io/guide/styleguide)
