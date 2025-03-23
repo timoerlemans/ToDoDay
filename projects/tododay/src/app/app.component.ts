@@ -1,8 +1,12 @@
 import { ChangeDetectionStrategy, Component, DestroyRef } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { NotificationService } from './core/services/notification.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { NotificationService } from '@tododay/core/services/notification.service';
 
+/**
+ * Root component of the application.
+ * Handles application-wide notifications and routing.
+ */
 @Component({
     selector: 'app-root',
     standalone: true,
