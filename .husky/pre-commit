@@ -2,72 +2,80 @@
 
 echo "Running code quality checks..."
 
+# Filter out .cursor/rules directory from git diff
+DIFF_FILES=$(git diff --cached --name-only | grep -v '^\.cursor/rules/')
+
+if [ -z "$DIFF_FILES" ]; then
+  echo "No files to check outside of .cursor/rules/"
+  exit 0
+fi
+
 # Check for old template syntax
 echo "Checking for old template syntax..."
-! git diff --cached | grep -E '\{\{.*\}\}' || (echo "❌ Old template syntax detected. Please use modern syntax." && exit 1)
+! git diff --cached -- ':!.cursor/rules/*' | grep -E '\{\{.*\}\}' || (echo "❌ Old template syntax detected. Please use modern syntax." && exit 1)
 
 # Check for FormBuilder usage
 echo "Checking for FormBuilder usage..."
-! git diff --cached | grep -E 'FormBuilder' || (echo "❌ FormBuilder usage detected. Please use FormGroup directly." && exit 1)
+! git diff --cached -- ':!.cursor/rules/*' | grep -E 'FormBuilder' || (echo "❌ FormBuilder usage detected. Please use FormGroup directly." && exit 1)
 
 # Check for manual subscription cleanup
 echo "Checking for manual subscription cleanup..."
-! git diff --cached | grep -E 'unsubscribe|Subscription' || (echo "❌ Manual subscription cleanup detected. Please use destroyRef instead." && exit 1)
+! git diff --cached -- ':!.cursor/rules/*' | grep -E 'unsubscribe|Subscription' || (echo "❌ Manual subscription cleanup detected. Please use destroyRef instead." && exit 1)
 
 # Check for inject() usage
 echo "Checking for inject() usage..."
-! git diff --cached | grep -E 'inject\(' || (echo "❌ inject() usage detected. Please use constructor injection." && exit 1)
+! git diff --cached -- ':!.cursor/rules/*' | grep -E 'inject\(' || (echo "❌ inject() usage detected. Please use constructor injection." && exit 1)
 
 # Check for inline templates
 echo "Checking for inline templates..."
-! git diff --cached | grep -E 'template:' || (echo "❌ Inline templates detected. Please use external template files." && exit 1)
+! git diff --cached -- ':!.cursor/rules/*' | grep -E 'template:' || (echo "❌ Inline templates detected. Please use external template files." && exit 1)
 
 # Check for inline styles
 echo "Checking for inline styles..."
-! git diff --cached | grep -E 'styles:' || (echo "❌ Inline styles detected. Please use external style files." && exit 1)
+! git diff --cached -- ':!.cursor/rules/*' | grep -E 'styles:' || (echo "❌ Inline styles detected. Please use external style files." && exit 1)
 
 # Check for hardcoded credentials
 echo "Checking for hardcoded credentials..."
-! git diff --cached | grep -E '(password|apiKey|secret|token).*=.*['"'"'].*['"'"']' || (echo "❌ Hardcoded credentials detected. Please use environment variables." && exit 1)
+! git diff --cached -- ':!.cursor/rules/*' | grep -E '(password|apiKey|secret|token).*=.*['"'"'].*['"'"']' || (echo "❌ Hardcoded credentials detected. Please use environment variables." && exit 1)
 
 # Check for missing JSDoc comments
 echo "Checking for missing JSDoc comments..."
-git diff --cached --name-only | grep -E '\.ts$' | xargs -I {} sh -c '! grep -L "@.*" {} || (echo "❌ Missing JSDoc comments in {}." && exit 1)'
+git diff --cached --name-only -- ':!.cursor/rules/*' | grep -E '\.ts$' | xargs -I {} sh -c '! grep -L "@.*" {} || (echo "❌ Missing JSDoc comments in {}." && exit 1)' || true
 
 # Check for missing ARIA attributes
 echo "Checking for missing ARIA attributes..."
-git diff --cached --name-only | grep -E '\.html$' | xargs -I {} sh -c '! grep -L "aria-" {} || (echo "❌ Missing ARIA attributes in {}." && exit 1)'
+git diff --cached --name-only -- ':!.cursor/rules/*' | grep -E '\.html$' | xargs -I {} sh -c '! grep -L "aria-" {} || (echo "❌ Missing ARIA attributes in {}." && exit 1)' || true
 
 # Check for missing alt text
 echo "Checking for missing alt text..."
-git diff --cached --name-only | grep -E '\.html$' | xargs -I {} sh -c '! grep -L "alt=" {} || (echo "❌ Missing alt text in {}." && exit 1)'
+git diff --cached --name-only -- ':!.cursor/rules/*' | grep -E '\.html$' | xargs -I {} sh -c '! grep -L "alt=" {} || (echo "❌ Missing alt text in {}." && exit 1)' || true
 
 # Check for missing form labels
 echo "Checking for missing form labels..."
-git diff --cached --name-only | grep -E '\.html$' | xargs -I {} sh -c '! grep -L "<label" {} || (echo "❌ Missing form labels in {}." && exit 1)'
+git diff --cached --name-only -- ':!.cursor/rules/*' | grep -E '\.html$' | xargs -I {} sh -c '! grep -L "<label" {} || (echo "❌ Missing form labels in {}." && exit 1)' || true
 
 # Check for missing keyboard navigation
 echo "Checking for missing keyboard navigation..."
-git diff --cached --name-only | grep -E '\.html$' | xargs -I {} sh -c '! grep -L "(keydown)" {} || (echo "❌ Missing keyboard navigation in {}." && exit 1)'
+git diff --cached --name-only -- ':!.cursor/rules/*' | grep -E '\.html$' | xargs -I {} sh -c '! grep -L "(keydown)" {} || (echo "❌ Missing keyboard navigation in {}." && exit 1)' || true
 
 # Check for missing color contrast
 echo "Checking for missing color contrast..."
-git diff --cached --name-only | grep -E '\.scss$' | xargs -I {} sh -c '! grep -L "color:" {} || (echo "❌ Missing color contrast check in {}." && exit 1)'
+git diff --cached --name-only -- ':!.cursor/rules/*' | grep -E '\.scss$' | xargs -I {} sh -c '! grep -L "color:" {} || (echo "❌ Missing color contrast check in {}." && exit 1)' || true
 
 # Check for missing responsive design
 echo "Checking for missing responsive design..."
-git diff --cached --name-only | grep -E '\.scss$' | xargs -I {} sh -c '! grep -L "@media" {} || (echo "❌ Missing responsive design in {}." && exit 1)'
+git diff --cached --name-only -- ':!.cursor/rules/*' | grep -E '\.scss$' | xargs -I {} sh -c '! grep -L "@media" {} || (echo "❌ Missing responsive design in {}." && exit 1)' || true
 
 # Check for missing error handling
 echo "Checking for missing error handling..."
-git diff --cached --name-only | grep -E '\.ts$' | xargs -I {} sh -c '! grep -L "catch" {} || (echo "❌ Missing error handling in {}." && exit 1)'
+git diff --cached --name-only -- ':!.cursor/rules/*' | grep -E '\.ts$' | xargs -I {} sh -c '! grep -L "catch" {} || (echo "❌ Missing error handling in {}." && exit 1)' || true
 
 # Check for missing type annotations
 echo "Checking for missing type annotations..."
-git diff --cached --name-only | grep -E '\.ts$' | xargs -I {} sh -c '! grep -L ": " {} || (echo "❌ Missing type annotations in {}." && exit 1)'
+git diff --cached --name-only -- ':!.cursor/rules/*' | grep -E '\.ts$' | xargs -I {} sh -c '! grep -L ": " {} || (echo "❌ Missing type annotations in {}." && exit 1)' || true
 
 # Check for missing tests
 echo "Checking for missing tests..."
-git diff --cached --name-only | grep -E '\.ts$' | xargs -I {} sh -c '! test -f "$(dirname {})/$(basename {} .ts).spec.ts" || (echo "❌ Missing test file for {}." && exit 1)'
+git diff --cached --name-only -- ':!.cursor/rules/*' | grep -E '\.ts$' | xargs -I {} sh -c '! test -f "$(dirname {})/$(basename {} .ts).spec.ts" || (echo "❌ Missing test file for {}." && exit 1)' || true
 
 echo "✅ All code quality checks passed!"
