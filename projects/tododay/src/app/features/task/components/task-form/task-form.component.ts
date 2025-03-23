@@ -1,36 +1,42 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Task, TaskPriority } from '../../../core/models/task';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Task, TaskPriority } from '../../../../core/models/task';
+
+interface TaskForm {
+  title: FormControl<string>;
+  description: FormControl<string>;
+  priority: FormControl<TaskPriority>;
+}
 
 @Component({
-  selector: 'tododay-task-form',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  selector: 'app-task-form',
   templateUrl: './task-form.component.html',
   styleUrls: ['./task-form.component.scss']
 })
-export class TaskFormComponent implements OnInit {
-  @Output() submitTask = new EventEmitter<Task>();
+export class TaskFormComponent {
+  @Input() task?: Task;
+  @Output() submitted = new EventEmitter<Task>();
 
-  taskForm = new FormGroup({
-    title: new FormControl('', [Validators.required]),
-    description: new FormControl(''),
-    project: new FormControl(''),
-    dueDate: new FormControl<Date | null>(null),
-    priority: new FormControl(TaskPriority.MEDIUM)
+  taskForm = new FormGroup<TaskForm>({
+    title: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required, Validators.minLength(3)]
+    }),
+    description: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required]
+    }),
+    priority: new FormControl<TaskPriority>(TaskPriority.MEDIUM, {
+      nonNullable: true
+    })
   });
 
-  protected readonly TaskPriority = TaskPriority;
-
-  constructor() {}
-
-  ngOnInit(): void {}
+  TaskPriority = TaskPriority;
 
   onSubmit(): void {
     if (this.taskForm.valid) {
-      this.submitTask.emit(this.taskForm.value as Task);
-      this.taskForm.reset({ priority: TaskPriority.MEDIUM });
+      this.submitted.emit(this.taskForm.getRawValue() as Task);
+      this.taskForm.reset();
     }
   }
 
