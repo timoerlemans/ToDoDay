@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 export interface Notification {
@@ -13,11 +13,11 @@ export type NotificationType = 'success' | 'error' | 'info' | 'warning';
 @Injectable({
   providedIn: 'root'
 })
-export class NotificationService {
+export class NotificationService implements OnDestroy {
   private readonly notificationsSubject = new BehaviorSubject<Notification[]>([]);
   public readonly notifications$ = this.notificationsSubject.asObservable();
-
   private readonly defaultDuration = 3000;
+  private readonly timeouts = new Map<string, number>();
 
   show(message: string, type: NotificationType = 'info', duration: number = this.defaultDuration): void {
     const notification: Notification = {
@@ -31,15 +31,27 @@ export class NotificationService {
     this.notificationsSubject.next([...currentNotifications, notification]);
 
     if (duration > 0) {
-      setTimeout(() => {
+      const timeoutId = window.setTimeout(() => {
         this.remove(notification.id);
       }, duration);
+      this.timeouts.set(notification.id, timeoutId);
     }
   }
 
   remove(id: string): void {
+    const timeoutId = this.timeouts.get(id);
+    if (timeoutId) {
+      window.clearTimeout(timeoutId);
+      this.timeouts.delete(id);
+    }
     const currentNotifications = this.notificationsSubject.value;
     this.notificationsSubject.next(currentNotifications.filter(n => n.id !== id));
+  }
+
+  ngOnDestroy(): void {
+    // Cleanup alle actieve timeouts
+    this.timeouts.forEach(timeoutId => window.clearTimeout(timeoutId));
+    this.timeouts.clear();
   }
 
   success(message: string, duration?: number): void {

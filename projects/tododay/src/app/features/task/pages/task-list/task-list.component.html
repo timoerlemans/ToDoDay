@@ -1,23 +1,24 @@
-<div class="container mx-auto px-4 py-8">
+<div class="container mx-auto px-4 py-8" role="main">
   <div class="flex justify-between items-center mb-8">
-    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Mijn Taken</h1>
-    <app-theme-toggle></app-theme-toggle>
+    <h1 class="text-3xl font-bold text-gray-900 dark:text-white" id="page-title">Mijn Taken</h1>
+    <app-theme-toggle aria-label="Wissel tussen licht en donker thema"></app-theme-toggle>
   </div>
 
   <div class="mb-8">
-    <app-task-form (submitTask)="onTaskSubmit($event)"></app-task-form>
+    <app-task-form (submitTask)="onTaskSubmit($event)" aria-labelledby="page-title"></app-task-form>
   </div>
 
   <div class="space-y-6">
     @if (activeTasks.length > 0) {
       <div>
-        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Actieve Taken</h2>
-        <div class="space-y-4">
+        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4" id="active-tasks">Actieve Taken</h2>
+        <div class="space-y-4" role="list" aria-labelledby="active-tasks">
           @for (task of activeTasks; track task.id) {
             <app-task-item
               [task]="task"
               (statusChange)="onStatusChange($event.taskId, $event)"
               (deleteTask)="onDeleteTask($event)"
+              role="listitem"
             ></app-task-item>
           }
         </div>
@@ -26,13 +27,14 @@
 
     @if (completedTasks.length > 0) {
       <div>
-        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Voltooide Taken</h2>
-        <div class="space-y-4">
+        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4" id="completed-tasks">Voltooide Taken</h2>
+        <div class="space-y-4" role="list" aria-labelledby="completed-tasks">
           @for (task of completedTasks; track task.id) {
             <app-task-item
               [task]="task"
               (statusChange)="onStatusChange($event.taskId, $event)"
               (deleteTask)="onDeleteTask($event)"
+              role="listitem"
             ></app-task-item>
           }
         </div>
@@ -40,7 +42,7 @@
     }
 
     @if (activeTasks.length === 0 && completedTasks.length === 0) {
-      <div class="text-center py-8">
+      <div class="text-center py-8" role="status">
         <p class="text-gray-500 dark:text-gray-400">Nog geen taken toegevoegd</p>
       </div>
     }

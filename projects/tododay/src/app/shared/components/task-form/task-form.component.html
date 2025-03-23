@@ -1,69 +1,78 @@
 <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow mb-8">
-  <h2 class="text-lg font-medium text-gray-800 dark:text-white mb-3">Nieuwe taak</h2>
+  <h2 id="form-title" class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Nieuwe taak</h2>
   
-  <form [formGroup]="taskForm" (ngSubmit)="onSubmit()" class="space-y-4">
+  <form [formGroup]="taskForm" (ngSubmit)="onSubmit()" class="space-y-4" role="form" aria-labelledby="form-title">
     <div>
-      <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Titel</label>
-      <input 
+      <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Titel</label>
+      <input
         type="text"
         id="title"
         formControlName="title"
-        class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-        placeholder="Voer een titel in">
-      @if (taskForm.get('title')?.touched && taskForm.get('title')?.errors) {
-        <div class="mt-1 text-sm text-red-600 dark:text-red-400">
-          {{ getErrorMessage('title') }}
-        </div>
-      }
+        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+        required
+        aria-required="true"
+        aria-invalid="{{taskForm.get('title')?.invalid && taskForm.get('title')?.touched}}"
+        [attr.aria-describedby]="taskForm.get('title')?.errors?.['required'] && taskForm.get('title')?.touched ? 'title-error' : null"
+      >
+      <div *ngIf="taskForm.get('title')?.errors?.['required'] && taskForm.get('title')?.touched" 
+           id="title-error" 
+           class="mt-1 text-sm text-red-600 dark:text-red-400" 
+           role="alert">
+        Titel is verplicht
+      </div>
     </div>
 
     <div>
-      <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Beschrijving</label>
-      <textarea 
+      <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Beschrijving</label>
+      <textarea
         id="description"
         formControlName="description"
         rows="3"
-        class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-        placeholder="Voer een beschrijving in"></textarea>
+        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+      ></textarea>
     </div>
 
     <div>
-      <label for="priority" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Prioriteit</label>
-      <select 
+      <label for="priority" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Prioriteit</label>
+      <select
         id="priority"
         formControlName="priority"
-        class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white">
-        <option value="high">Hoog</option>
-        <option value="medium">Gemiddeld</option>
-        <option value="low">Laag</option>
+        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+      >
+        <option [value]="TaskPriority.LOW">Laag</option>
+        <option [value]="TaskPriority.MEDIUM">Gemiddeld</option>
+        <option [value]="TaskPriority.HIGH">Hoog</option>
       </select>
     </div>
 
     <div>
-      <label for="project" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Project</label>
-      <input 
+      <label for="project" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Project</label>
+      <input
         type="text"
         id="project"
         formControlName="project"
-        class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-        placeholder="Voer een projectnaam in">
+        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+      >
     </div>
 
     <div>
-      <label for="dueDate" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Vervaldatum</label>
-      <input 
-        type="date"
+      <label for="dueDate" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Vervaldatum</label>
+      <input
+        type="datetime-local"
         id="dueDate"
         formControlName="dueDate"
-        class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+      >
     </div>
 
     <div class="flex justify-end">
-      <button 
+      <button
         type="submit"
-        [disabled]="!taskForm.valid"
-        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-        Taak toevoegen
+        [disabled]="taskForm.invalid"
+        class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+        aria-disabled="{{taskForm.invalid}}"
+      >
+        Toevoegen
       </button>
     </div>
   </form>

@@ -6,11 +6,10 @@ import { AuthService } from '@tododay/app/core/services/auth.service';
 import { NotificationService } from '@tododay/app/core/services/notification.service';
 
 @Component({
-  selector: 'app-register',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './register.component.html',
-  styleUrls: ['./register.component.scss']
+    selector: 'app-register',
+    imports: [CommonModule, ReactiveFormsModule],
+    templateUrl: './register.component.html',
+    styleUrls: ['./register.component.scss']
 })
 export class RegisterComponent {
   registerForm: FormGroup;

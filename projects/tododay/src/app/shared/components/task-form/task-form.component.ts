@@ -1,33 +1,45 @@
-import { Component, EventEmitter, Output, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { TaskFormData } from '@tododay/app/core/models/task';
+import { TaskService } from '../../services/task.service';
+import { Task, TaskPriority } from '../../models/task.model';
 
 @Component({
-  selector: 'app-task-form',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './task-form.component.html',
-  styleUrls: ['./task-form.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-task-form',
+    imports: [CommonModule, ReactiveFormsModule],
+    templateUrl: './task-form.component.html',
+    styleUrls: ['./task-form.component.scss']
 })
-export class TaskFormComponent {
-  @Output() submitTask = new EventEmitter<TaskFormData>();
+export class TaskFormComponent implements OnInit {
+  taskForm: FormGroup;
+  TaskPriority = TaskPriority;
 
-  protected taskForm: FormGroup;
-
-  constructor(private fb: FormBuilder) {
+  constructor(
+    private fb: FormBuilder,
+    private taskService: TaskService
+  ) {
     this.taskForm = this.fb.group({
-      title: ['', [Validators.required, Validators.minLength(3)]],
+      title: ['', [Validators.required]],
       description: [''],
-      project: ['']
+      project: [''],
+      dueDate: [null],
+      priority: [TaskPriority.MEDIUM]
     });
   }
 
+  ngOnInit(): void {}
+
   onSubmit(): void {
     if (this.taskForm.valid) {
-      this.submitTask.emit(this.taskForm.value);
-      this.taskForm.reset();
+      const task: Task = {
+        ...this.taskForm.value,
+        id: Date.now().toString(),
+        status: 'TODO',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+      this.taskService.addTask(task);
+      this.taskForm.reset({ priority: TaskPriority.MEDIUM });
     }
   }
 
