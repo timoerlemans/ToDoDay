@@ -2,14 +2,13 @@ import { ChangeDetectionStrategy, Component, inject, isDevMode } from '@angular/
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Task, TaskStatus, TaskFormData } from '../../../../shared/models/task.model';
-import { TaskService } from '../../../../shared/services/task.service';
-import { NotificationService } from '../../../../shared/services/notification.service';
-import { AuthService } from '../../../../shared/services/auth.service';
+import { Task, TaskStatus } from '../../../../core/models/task';
+import { TaskService } from '../../../../core/services/task.service';
+import { NotificationService } from '../../../../core/services/notification.service';
+import { AuthService } from '../../../../core/services/auth.service';
 import { TaskFormComponent } from '../../../../shared/components/task-form/task-form.component';
 import { TaskItemComponent } from '../../../../shared/components/task-item/task-item.component';
 import { ThemeToggleComponent } from '../../../../shared/components/theme-toggle/theme-toggle.component';
-import { User } from '../../../../shared/models/user.model';
 
 @Component({
     selector: 'tododay-task-list',
@@ -37,7 +36,7 @@ export class TaskListComponent {
   constructor() {
     this.authService.currentUser$
       .pipe(takeUntilDestroyed())
-      .subscribe((user: User | null) => {
+      .subscribe(user => {
         if (!user) {
           this.router.navigate(['/login']);
         }
@@ -65,8 +64,8 @@ export class TaskListComponent {
       });
   }
 
-  onTaskSubmit(taskData: TaskFormData): void {
-    this.taskService.createTask(taskData)
+  onTaskSubmit(task: Task): void {
+    this.taskService.createTask(task)
       .pipe(takeUntilDestroyed())
       .subscribe({
         next: () => {
