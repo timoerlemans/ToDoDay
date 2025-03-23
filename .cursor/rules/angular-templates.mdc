@@ -1,1 +1,182 @@
- 
+---
+description: Angular template standards and best practices
+globs: ['**/*.html']
+alwaysApply: true
+---
+
+# Angular Template Standards
+
+## Overview
+
+Implementeer consistente en onderhoudbare templates in Angular applicaties met best practices voor template syntax en structuur.
+
+## Rules
+
+### Template Syntax
+
+- Gebruik nieuwe Angular template syntax (@if, @for)
+- Vermijd complexe template expressies
+- Gebruik trackBy met @for
+- Implementeer template referenties correct
+
+✅ Good:
+
+```html
+<div class="task-list">
+  @for (task of tasks; track task.id) {
+  <app-task-item [task]="task" (statusChange)="onStatusChange($event)"> </app-task-item>
+  } @empty {
+  <p>Geen taken gevonden</p>
+  }
+</div>
+
+@if (isLoading) {
+<app-spinner></app-spinner>
+} @else {
+<div class="content">{{ content }}</div>
+}
+```
+
+❌ Bad:
+
+```html
+<div class="task-list">
+  <div *ngFor="let task of tasks">
+    <app-task-item [task]="task" (statusChange)="onStatusChange($event)"> </app-task-item>
+  </div>
+  <div *ngIf="tasks.length === 0">Geen taken gevonden</div>
+  <div *ngIf="isLoading">Loading...</div>
+</div>
+```
+
+### Template Binding
+
+- Gebruik correcte binding syntax
+- Implementeer two-way binding correct
+- Vermijd onnodige bindings
+- Gebruik event filtering
+
+✅ Good:
+
+```html
+<form #taskForm="ngForm" (ngSubmit)="onSubmit()">
+  <input [(ngModel)]="task.title" name="title" #title="ngModel" required minlength="3" />
+
+  <div *ngIf="title.invalid && title.touched">
+    @if (title.errors?.['required']) {
+    <span>Titel is verplicht</span>
+    } @if (title.errors?.['minlength']) {
+    <span>Titel moet minimaal 3 karakters bevatten</span>
+    }
+  </div>
+
+  <button type="submit" [disabled]="taskForm.invalid || isSubmitting" (click.stop)="onSubmit()">
+    {{ isSubmitting ? 'Bezig met opslaan...' : 'Opslaan' }}
+  </button>
+</form>
+```
+
+❌ Bad:
+
+```html
+<form>
+  <input [ngModel]="task.title" (ngModelChange)="task.title = $event" />
+  <button [disabled]="!task.title" (click)="$event.stopPropagation(); onSubmit()">Opslaan</button>
+</form>
+```
+
+### Template Structuur
+
+- Gebruik componenten voor herbruikbare UI
+- Implementeer content projection correct
+- Organiseer templates logisch
+- Gebruik ng-container voor structurele directives
+
+✅ Good:
+
+```html
+<ng-container *ngTemplateOutlet="headerTemplate"> </ng-container>
+
+<main class="content">
+  <ng-container *ngTemplateOutlet="searchTemplate"> </ng-container>
+
+  <section class="task-list">
+    <ng-content select="[taskList]"></ng-content>
+  </section>
+
+  <aside class="sidebar">
+    <ng-content select="[sidebar]"></ng-content>
+  </aside>
+</main>
+
+<ng-template #headerTemplate>
+  <header>
+    <h1>{{ title }}</h1>
+    <nav>
+      <ng-content select="[navigation]"></ng-content>
+    </nav>
+  </header>
+</ng-template>
+
+<ng-template #searchTemplate>
+  <app-search [placeholder]="'Zoek taken...'" (search)="onSearch($event)"> </app-search>
+</ng-template>
+```
+
+❌ Bad:
+
+```html
+<div>
+  <div>
+    <h1>{{ title }}</h1>
+    <div>
+      <!-- Navigation content -->
+    </div>
+  </div>
+
+  <div>
+    <!-- Search content -->
+  </div>
+
+  <div>
+    <!-- Task list content -->
+  </div>
+</div>
+```
+
+### Performance
+
+- Gebruik OnPush change detection
+- Implementeer trackBy functions
+- Vermijd onnodige template expressies
+- Gebruik async pipe voor observables
+
+✅ Good:
+
+```html
+<div class="task-list">
+  @for (task of tasks$ | async; track trackByTaskId) {
+  <app-task-item [task]="task" (update)="onUpdate($event)"> </app-task-item>
+  }
+</div>
+
+<div class="status">Status: {{ status$ | async }}</div>
+```
+
+❌ Bad:
+
+```html
+<div class="task-list">
+  <div *ngFor="let task of tasks">
+    <app-task-item [task]="task" [status]="getStatus(task)" (update)="onUpdate($event)">
+    </app-task-item>
+  </div>
+</div>
+```
+
+## Resources
+
+- [Angular Template Syntax](https://angular.io/guide/template-syntax)
+- [Angular Control Flow](https://angular.io/guide/control-flow)
+- [Content Projection](https://angular.io/guide/content-projection)
+- [Template Performance](https://angular.io/guide/template-typecheck)
