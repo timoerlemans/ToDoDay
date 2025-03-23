@@ -1,0 +1,2 @@
+- [ ] Multi-language
+- [ ] iOS App Store compatible
