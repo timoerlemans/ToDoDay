@@ -1,31 +1,26 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { TaskService } from '../../services/task.service';
-import { Task, TaskPriority } from '../../models/task.model';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { TaskService } from '@tododay/shared/services/task.service';
+import { Task, TaskPriority } from '@tododay/shared/models/task.model';
 
 @Component({
     selector: 'app-task-form',
-    imports: [CommonModule, ReactiveFormsModule],
+    imports: [ReactiveFormsModule],
     templateUrl: './task-form.component.html',
     styleUrls: ['./task-form.component.scss']
 })
 export class TaskFormComponent implements OnInit {
-  taskForm: FormGroup;
+  taskForm = new FormGroup({
+    title: new FormControl('', [Validators.required]),
+    description: new FormControl(''),
+    project: new FormControl(''),
+    dueDate: new FormControl<Date | null>(null),
+    priority: new FormControl(TaskPriority.MEDIUM)
+  });
+
   TaskPriority = TaskPriority;
 
-  constructor(
-    private fb: FormBuilder,
-    private taskService: TaskService
-  ) {
-    this.taskForm = this.fb.group({
-      title: ['', [Validators.required]],
-      description: [''],
-      project: [''],
-      dueDate: [null],
-      priority: [TaskPriority.MEDIUM]
-    });
-  }
+  constructor(private taskService: TaskService) {}
 
   ngOnInit(): void {}
 
