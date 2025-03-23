@@ -1,21 +1,23 @@
 import { Injectable, signal } from '@angular/core';
-import { Observable, from } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { toObservable } from '@angular/core/rxjs-interop';
+import { Observable, from, throwError } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
 import { SupabaseService } from './supabase.service';
 import { NotificationService } from './notification.service';
+import { User } from '@supabase/supabase-js';
 
 /**
  * Authentication state interface
  */
 export interface AuthState {
   isAuthenticated: boolean;
-  user: any | null;
+  user: User | null;
 }
 
 /**
  * Authentication response interface
  */
-interface AuthResponse {
+export interface AuthResponse {
   success: boolean;
   message: string;
 }
@@ -23,7 +25,7 @@ interface AuthResponse {
 /**
  * Authentication error interface
  */
-interface AuthError {
+export interface AuthError {
   message: string;
   status?: number;
   name?: string;
@@ -42,6 +44,9 @@ export class AuthService {
     user: null
   });
 
+  readonly authState$ = toObservable(this.authState);
+  readonly currentUser$ = this.authState$.pipe(map(state => state.user));
+
   constructor(
     private readonly supabaseService: SupabaseService,
     private readonly notificationService: NotificationService
@@ -52,13 +57,6 @@ export class AuthService {
         user
       });
     });
-  }
-
-  /**
-   * Observable of the current authentication state
-   */
-  get authState$(): Observable<AuthState> {
-    return from(this.authState.asReadonly());
   }
 
   /**
@@ -75,14 +73,17 @@ export class AuthService {
    * @param email User's email
    * @param password User's password
    */
-  async signIn(email: string, password: string): Promise<void> {
-    try {
-      await this.supabaseService.signIn(email, password);
-      this.notificationService.success('Successfully logged in');
-    } catch (error) {
-      this.notificationService.error('Failed to log in');
-      throw error;
-    }
+  signIn(email: string, password: string): Observable<AuthResponse> {
+    return from(this.supabaseService.signIn(email, password)).pipe(
+      map(() => ({
+        success: true,
+        message: 'Successfully logged in'
+      })),
+      catchError((error: AuthError) => {
+        this.notificationService.error(this.getErrorMessage(error));
+        return throwError(() => error);
+      })
+    );
   }
 
   /**
@@ -90,27 +91,33 @@ export class AuthService {
    * @param email User's email
    * @param password User's password
    */
-  async signUp(email: string, password: string): Promise<void> {
-    try {
-      await this.supabaseService.signUp(email, password);
-      this.notificationService.success('Successfully registered');
-    } catch (error) {
-      this.notificationService.error('Failed to register');
-      throw error;
-    }
+  signUp(email: string, password: string): Observable<AuthResponse> {
+    return from(this.supabaseService.signUp(email, password)).pipe(
+      map(() => ({
+        success: true,
+        message: 'Successfully registered'
+      })),
+      catchError((error: AuthError) => {
+        this.notificationService.error(this.getErrorMessage(error));
+        return throwError(() => error);
+      })
+    );
   }
 
   /**
    * Signs out the current user
    */
-  async signOut(): Promise<void> {
-    try {
-      await this.supabaseService.signOut();
-      this.notificationService.success('Successfully logged out');
-    } catch (error) {
-      this.notificationService.error('Failed to log out');
-      throw error;
-    }
+  signOut(): Observable<AuthResponse> {
+    return from(this.supabaseService.signOut()).pipe(
+      map(() => ({
+        success: true,
+        message: 'Successfully logged out'
+      })),
+      catchError((error: AuthError) => {
+        this.notificationService.error(this.getErrorMessage(error));
+        return throwError(() => error);
+      })
+    );
   }
 
   /**
@@ -122,5 +129,12 @@ export class AuthService {
       return error.message;
     }
     return 'An error occurred. Please try again later.';
+  }
+
+  /**
+   * Gets the current authentication state
+   */
+  getAuthState(): Observable<AuthState> {
+    return this.authState$;
   }
 }

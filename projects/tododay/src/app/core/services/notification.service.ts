@@ -1,5 +1,6 @@
 import { Injectable, signal } from '@angular/core';
-import { Observable, from } from 'rxjs';
+import { toObservable } from '@angular/core/rxjs-interop';
+import { Observable } from 'rxjs';
 
 /**
  * Interface representing a notification message
@@ -11,8 +12,8 @@ export interface Notification {
   message: string;
   /** Type of notification that determines its styling */
   type: 'success' | 'error' | 'info' | 'warning';
-  /** Duration in milliseconds before auto-dismissal */
-  duration?: number;
+  /** Timestamp of the notification */
+  timestamp: Date;
 }
 
 /**
@@ -24,81 +25,47 @@ export interface Notification {
 })
 export class NotificationService {
   private readonly notifications = signal<Notification[]>([]);
+  readonly notifications$ = toObservable(this.notifications);
 
-  /**
-   * Observable of the current notifications array
-   */
-  get notifications$(): Observable<Notification[]> {
-    return from(this.notifications.asReadonly());
-  }
+  constructor() {}
 
   /**
    * Shows a success notification
    * @param message The message to display
-   * @param duration Time in milliseconds before auto-dismissal
    */
-  success(message: string, duration = 3000): void {
-    this.addNotification({
-      id: crypto.randomUUID(),
-      message,
-      type: 'success',
-      duration
-    });
+  success(message: string): void {
+    this.addNotification(message, 'success');
   }
 
   /**
    * Shows an error notification
    * @param message The message to display
-   * @param duration Time in milliseconds before auto-dismissal
    */
-  error(message: string, duration = 5000): void {
-    this.addNotification({
-      id: crypto.randomUUID(),
-      message,
-      type: 'error',
-      duration
-    });
+  error(message: string): void {
+    this.addNotification(message, 'error');
   }
 
   /**
    * Shows an info notification
    * @param message The message to display
-   * @param duration Time in milliseconds before auto-dismissal
    */
-  info(message: string, duration = 3000): void {
-    this.addNotification({
-      id: crypto.randomUUID(),
-      message,
-      type: 'info',
-      duration
-    });
+  info(message: string): void {
+    this.addNotification(message, 'info');
   }
 
   /**
    * Shows a warning notification
    * @param message The message to display
-   * @param duration Time in milliseconds before auto-dismissal
    */
-  warning(message: string, duration = 5000): void {
-    this.addNotification({
-      id: crypto.randomUUID(),
-      message,
-      type: 'warning',
-      duration
-    });
+  warning(message: string): void {
+    this.addNotification(message, 'warning');
   }
 
   /**
-   * Internal method to show a notification
-   * @param notification The notification to add
+   * Get all notifications
    */
-  private addNotification(notification: Notification): void {
-    this.notifications.update(notifications => [...notifications, notification]);
-    if (notification.duration) {
-      setTimeout(() => {
-        this.removeNotification(notification.id);
-      }, notification.duration);
-    }
+  getNotifications(): Observable<Notification[]> {
+    return this.notifications$;
   }
 
   /**
@@ -114,7 +81,23 @@ export class NotificationService {
   /**
    * Clears all notifications
    */
-  clear(): void {
+  clearNotifications(): void {
     this.notifications.set([]);
+  }
+
+  private addNotification(message: string, type: Notification['type']): void {
+    const notification: Notification = {
+      id: crypto.randomUUID(),
+      message,
+      type,
+      timestamp: new Date()
+    };
+
+    this.notifications.update(notifications => [...notifications, notification]);
+
+    // Automatically remove notification after 5 seconds
+    setTimeout(() => {
+      this.removeNotification(notification.id);
+    }, 5000);
   }
 }

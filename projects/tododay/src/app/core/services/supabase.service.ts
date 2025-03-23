@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
 import { createClient, SupabaseClient, AuthResponse, User } from '@supabase/supabase-js';
-import { Observable, from } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { StorageService } from './storage.service';
 
@@ -13,7 +13,8 @@ import { StorageService } from './storage.service';
 })
 export class SupabaseService {
   private supabase: SupabaseClient;
-  private currentUser = signal<User | null>(null);
+  private readonly currentUser = signal<User | null>(null);
+  readonly currentUser$ = toObservable(this.currentUser);
 
   constructor(private readonly storageService: StorageService) {
     this.supabase = createClient(
@@ -32,37 +33,15 @@ export class SupabaseService {
       }
     );
 
-    // Try to load the current session
-    this.loadSession();
+    // Set initial auth state
+    this.supabase.auth.getSession().then(({ data: { session } }) => {
+      this.currentUser.set(session?.user ?? null);
+    });
 
     // Listen for auth state changes
-    this.setupAuthListener();
-  }
-
-  /**
-   * Loads the current session from storage
-   */
-  private async loadSession(): Promise<void> {
-    const { data: { session } } = await this.supabase.auth.getSession();
-    if (session?.user) {
-      this.currentUser.set(session.user);
-    }
-  }
-
-  /**
-   * Sets up the authentication state change listener
-   */
-  private setupAuthListener(): void {
     this.supabase.auth.onAuthStateChange((_event, session) => {
       this.currentUser.set(session?.user ?? null);
     });
-  }
-
-  /**
-   * Observable of the current user
-   */
-  get currentUser$(): Observable<User | null> {
-    return from(this.currentUser.asReadonly());
   }
 
   /**

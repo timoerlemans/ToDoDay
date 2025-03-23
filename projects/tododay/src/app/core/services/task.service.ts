@@ -1,94 +1,104 @@
 import { Injectable, signal } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
+import { Observable, from, map, switchMap, tap } from 'rxjs';
 import { SupabaseService } from './supabase.service';
-import { Task, TaskFormData } from '../models/task';
-import { Observable, from } from 'rxjs';
-import { map, catchError, tap } from 'rxjs/operators';
+import { NotificationService } from './notification.service';
+import { Task } from '../models/task';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TaskService {
-  private tasks = signal<Task[]>([]);
+  private readonly tasks = signal<Task[]>([]);
+  readonly tasks$ = toObservable(this.tasks);
 
-  constructor(private supabaseService: SupabaseService) {}
+  constructor(
+    private readonly supabase: SupabaseService,
+    private readonly notificationService: NotificationService
+  ) {
+    this.loadTasks().subscribe();
+  }
 
-  getTasks(): Observable<Task[]> {
-    return from(this.supabaseService.getClient()
+  /**
+   * Load all tasks for the current user
+   */
+  private loadTasks(): Observable<void> {
+    return from(this.supabase.getClient()
       .from('tasks')
       .select('*')
       .order('created_at', { ascending: false }))
       .pipe(
-        map(({ data, error }) => {
+        tap(({ data, error }) => {
           if (error) throw error;
-          return data as Task[];
+          this.tasks.set(data || []);
         }),
-        tap(tasks => this.tasks.set(tasks)),
-        catchError(error => {
-          console.error('Error fetching tasks:', error);
-          throw error;
-        })
+        map(() => void 0)
       );
   }
 
-  createTask(taskData: TaskFormData): Observable<Task> {
-    return from(this.supabaseService.getClient()
+  /**
+   * Get all tasks
+   */
+  getTasks(): Observable<Task[]> {
+    return this.tasks$;
+  }
+
+  /**
+   * Create a new task
+   */
+  createTask(task: Omit<Task, 'id' | 'created_at' | 'updated_at'>): Observable<void> {
+    return from(this.supabase.getClient()
       .from('tasks')
-      .insert([taskData])
+      .insert(task)
       .select()
       .single())
       .pipe(
-        map(({ data, error }) => {
+        tap(({ data, error }) => {
           if (error) throw error;
-          return data as Task;
+          this.tasks.update(tasks => [data, ...tasks]);
+          this.notificationService.success('Task created successfully');
         }),
-        tap(task => this.tasks.update(tasks => [task, ...tasks])),
-        catchError(error => {
-          console.error('Error creating task:', error);
-          throw error;
-        })
+        map(() => void 0)
       );
   }
 
-  updateTask(taskId: string, updates: Partial<Task>): Observable<Task> {
-    return from(this.supabaseService.getClient()
+  /**
+   * Update an existing task
+   */
+  updateTask(id: string, updates: Partial<Task>): Observable<void> {
+    return from(this.supabase.getClient()
       .from('tasks')
       .update(updates)
-      .eq('id', taskId)
+      .eq('id', id)
       .select()
       .single())
       .pipe(
-        map(({ data, error }) => {
+        tap(({ data, error }) => {
           if (error) throw error;
-          return data as Task;
+          this.tasks.update(tasks =>
+            tasks.map(task => task.id === id ? { ...task, ...data } : task)
+          );
+          this.notificationService.success('Task updated successfully');
         }),
-        tap(updatedTask => this.tasks.update(tasks =>
-          tasks.map(task => task.id === updatedTask.id ? updatedTask : task)
-        )),
-        catchError(error => {
-          console.error('Error updating task:', error);
-          throw error;
-        })
+        map(() => void 0)
       );
   }
 
-  deleteTask(taskId: string): Observable<void> {
-    return from(this.supabaseService.getClient()
+  /**
+   * Delete a task
+   */
+  deleteTask(id: string): Observable<void> {
+    return from(this.supabase.getClient()
       .from('tasks')
       .delete()
-      .eq('id', taskId))
+      .eq('id', id))
       .pipe(
-        map(({ error }) => {
+        tap(({ error }) => {
           if (error) throw error;
+          this.tasks.update(tasks => tasks.filter(task => task.id !== id));
+          this.notificationService.success('Task deleted successfully');
         }),
-        tap(() => this.tasks.update(tasks => tasks.filter(task => task.id !== taskId))),
-        catchError(error => {
-          console.error('Error deleting task:', error);
-          throw error;
-        })
+        map(() => void 0)
       );
-  }
-
-  get tasks$(): Observable<Task[]> {
-    return this.tasks.asReadonly();
   }
 }
