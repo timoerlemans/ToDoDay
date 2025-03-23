@@ -1,9 +1,9 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TaskItemComponent } from '../task-item/task-item.component';
-import { TaskService } from '../../services/task.service';
-import { Task, TaskStatus } from '../../models/task.model';
-import { Subscription } from 'rxjs';
+import { TaskItemComponent } from '@tododay/shared/components/task-item/task-item.component';
+import { TaskService } from '@tododay/shared/services/task.service';
+import { Task, TaskStatus } from '@tododay/shared/models/task.model';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-task-list',
@@ -26,23 +26,21 @@ import { Subscription } from 'rxjs';
     }
   `]
 })
-export class TaskListComponent implements OnInit, OnDestroy {
+export class TaskListComponent implements OnInit {
   tasks: Task[] = [];
-  private subscription: Subscription;
 
-  constructor(private taskService: TaskService) {
-    this.subscription = this.taskService.tasks$.subscribe(tasks => {
-      this.tasks = tasks;
-    });
+  constructor(
+    private taskService: TaskService,
+    private destroyRef: DestroyRef
+  ) {
+    this.taskService.tasks$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(tasks => {
+        this.tasks = tasks;
+      });
   }
 
   ngOnInit(): void {}
-
-  ngOnDestroy(): void {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-    }
-  }
 
   onStatusChange(event: { taskId: string; status: TaskStatus }): void {
     const task = this.taskService.getTaskById(event.taskId);
