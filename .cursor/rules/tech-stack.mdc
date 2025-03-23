@@ -1,6 +1,325 @@
----
-description: 
-globs: 
-alwaysApply: true
----
- 
+# Verplichte Technologie Stack
+
+## Beschrijving
+
+Deze regels definiëren de verplichte technologie stack voor dit project. Afwijkingen zijn alleen toegestaan na expliciete documentatie en goedkeuring.
+
+## Glob Pattern
+
+```json
+["**/*"]
+```
+
+## Parameters
+
+```json
+{
+  "alwaysApply": true
+}
+```
+
+## Core Technologies
+
+### Framework
+
+- **Angular v19** verplicht voor alle frontend ontwikkeling
+- Gebruik van standalone componenten waar mogelijk
+- Implementeer lazy loading voor feature modules
+- Volg Angular style guide en best practices
+
+✅ Good:
+
+```typescript
+@Component({
+  standalone: true,
+  imports: [CommonModule],
+  template: `
+    <div class="container mx-auto">
+      <h1 class="text-2xl font-bold">{{ title }}</h1>
+    </div>
+  `,
+})
+export class HomeComponent {}
+```
+
+❌ Bad:
+
+```typescript
+// Gebruik van oudere Angular versies of andere frameworks
+import React from 'react';
+```
+
+### Styling
+
+- **Tailwind CSS** voor utility-first styling
+- **SCSS** voor custom componenten en theming
+- Responsive design is verplicht voor alle componenten
+
+✅ Good:
+
+```html
+<div class="container mx-auto p-4 md:p-6 lg:p-8">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <!-- Responsive grid layout -->
+  </div>
+</div>
+```
+
+❌ Bad:
+
+```html
+<!-- Niet-responsive layout of geen gebruik van Tailwind -->
+<div style="width: 1200px; margin: 0 auto;">
+  <!-- Vaste breedte zonder responsiveness -->
+</div>
+```
+
+### Taal
+
+- **TypeScript** verplicht voor alle code
+- Strict mode enabled
+- Geen gebruik van `any` type
+- Expliciete return types
+
+✅ Good:
+
+```typescript
+interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
+function getUser(id: string): Promise<User> {
+  return this.http.get<User>(`/api/users/${id}`).toPromise();
+}
+```
+
+❌ Bad:
+
+```typescript
+// Gebruik van any of impliciete types
+function getUser(id) {
+  return this.http.get('/api/users/' + id);
+}
+```
+
+### Database/Backend
+
+- **Supabase** voor database en backend services
+- Gebruik type-safe database queries
+- Implementeer row level security
+- Gebruik Supabase realtime features waar relevant
+
+✅ Good:
+
+```typescript
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
+
+interface Task {
+  id: string;
+  title: string;
+  user_id: string;
+}
+
+async function getTasks(): Promise<Task[]> {
+  const { data, error } = await supabase.from('tasks').select('*').order('created_at');
+
+  if (error) throw error;
+  return data;
+}
+```
+
+❌ Bad:
+
+```typescript
+// Gebruik van andere databases of directe SQL queries
+const tasks = await db.query('SELECT * FROM tasks');
+```
+
+### State Management
+
+- **RxJS** voor reactive programming
+- **NgRx signals** voor component state
+- Gebruik appropriate RxJS operators
+- Implementeer proper cleanup
+
+✅ Good:
+
+```typescript
+@Component({
+  template: `
+    <div *ngIf="tasks$ | async as tasks">
+      <app-task-item *ngFor="let task of tasks" [task]="task" />
+    </div>
+  `,
+})
+export class TaskListComponent {
+  tasks$ = this.taskService.getTasks().pipe(
+    takeUntilDestroyed(),
+    catchError(error => {
+      console.error('Failed to load tasks:', error);
+      return EMPTY;
+    })
+  );
+}
+```
+
+❌ Bad:
+
+```typescript
+// Gebruik van andere state management oplossingen
+import { Store } from 'redux';
+```
+
+### API Integratie
+
+- **OpenAI API** voor AI functionaliteit
+- Implementeer rate limiting
+- Error handling voor API calls
+- Caching waar mogelijk
+
+✅ Good:
+
+```typescript
+@Injectable({ providedIn: 'root' })
+export class OpenAIService {
+  constructor(private http: HttpClient) {}
+
+  async generateResponse(prompt: string): Promise<string> {
+    const response = await this.http
+      .post<OpenAIResponse>(
+        'https://api.openai.com/v1/chat/completions',
+        {
+          model: 'gpt-4',
+          messages: [{ role: 'user', content: prompt }],
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${environment.openaiKey}`,
+          },
+        }
+      )
+      .pipe(retry(3), catchError(this.handleError))
+      .toPromise();
+
+    return response.choices[0].message.content;
+  }
+}
+```
+
+❌ Bad:
+
+```typescript
+// Direct API calls zonder error handling of rate limiting
+fetch('https://api.openai.com/v1/completions', {...});
+```
+
+### Testing
+
+- **Jest** voor unit tests
+- **Cypress** voor end-to-end tests
+- 80% minimum code coverage
+- Test beschrijvingen in het Nederlands
+
+✅ Good:
+
+```typescript
+describe('TaskService', () => {
+  it('moet een nieuwe taak aanmaken', () => {
+    const service = TestBed.inject(TaskService);
+    const task = { title: 'Test Task' };
+
+    service.createTask(task).subscribe(result => {
+      expect(result.title).toBe(task.title);
+    });
+  });
+});
+
+// cypress/e2e/tasks.cy.ts
+describe('Taken beheer', () => {
+  it('moet een nieuwe taak kunnen aanmaken', () => {
+    cy.visit('/tasks');
+    cy.get('[data-cy=new-task-button]').click();
+    cy.get('[data-cy=task-title]').type('Nieuwe taak');
+    cy.get('[data-cy=save-task]').click();
+    cy.get('[data-cy=task-list]').should('contain', 'Nieuwe taak');
+  });
+});
+```
+
+❌ Bad:
+
+```typescript
+// Geen tests of gebruik van andere test frameworks
+import { expect } from 'chai';
+```
+
+### Package Manager
+
+- **PNPM** verplicht voor alle package management
+- Gebruik van pnpm workspaces voor monorepo
+- Vergrendel dependencies met pnpm-lock.yaml
+
+✅ Good:
+
+```bash
+# Installeer dependencies
+pnpm install
+
+# Voeg nieuwe package toe
+pnpm add @angular/material
+
+# Update packages
+pnpm update
+```
+
+❌ Bad:
+
+```bash
+# Gebruik van npm of yarn
+npm install
+yarn add @angular/material
+```
+
+## Afwijkingen
+
+Als afwijking van deze stack noodzakelijk is:
+
+1. Documenteer de afwijking in `DEVIATIONS.md`:
+
+   ```markdown
+   ## [Datum] - [Technologie]
+
+   ### Afwijking
+
+   Beschrijf de afwijking van de standaard stack
+
+   ### Reden
+
+   Leg uit waarom deze afwijking noodzakelijk is
+
+   ### Alternatieven
+
+   Welke alternatieven zijn overwogen
+
+   ### Impact
+
+   Beschrijf de impact op het project
+   ```
+
+2. Krijg goedkeuring van het team
+3. Update relevante documentatie
+
+## Resources
+
+- [Angular Docs](https://angular.dev)
+- [Tailwind CSS](https://tailwindcss.com)
+- [Supabase](https://supabase.com/docs)
+- [NgRx](https://ngrx.io)
+- [OpenAI API](https://platform.openai.com/docs)
+- [Jest](https://jestjs.io)
+- [Cypress](https://cypress.io)
+- [PNPM](https://pnpm.io)
