@@ -1,1 +1,228 @@
- 
+---
+description: Angular styling standards and best practices
+globs: ['**/*.scss', '**/*.css', '**/*.sass']
+alwaysApply: true
+---
+
+# Angular Styling Standards
+
+## Overview
+
+Implementeer consistente en onderhoudbare styling in Angular applicaties met SCSS/CSS best practices.
+
+## Rules
+
+### SCSS Structuur
+
+- Gebruik SCSS voor betere onderhoudbaarheid
+- Implementeer BEM methodologie
+- Organiseer styles in modules
+- Gebruik variabelen voor herbruikbare waardes
+
+✅ Good:
+
+```scss
+// _variables.scss
+$primary-color: #007bff;
+$border-radius: 4px;
+$spacing-unit: 8px;
+
+// _mixins.scss
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// components/task-card.component.scss
+.task-card {
+  padding: $spacing-unit * 2;
+  border-radius: $border-radius;
+
+  &__header {
+    @include flex-center;
+    margin-bottom: $spacing-unit;
+  }
+
+  &__title {
+    color: $primary-color;
+    font-weight: bold;
+  }
+
+  &--completed {
+    opacity: 0.7;
+  }
+}
+```
+
+❌ Bad:
+
+```scss
+.card {
+  padding: 16px;
+  border-radius: 4px;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.cardTitle {
+  color: blue;
+  font-weight: bold;
+}
+```
+
+### Component Styling
+
+- Gebruik component-specifieke styles
+- Implementeer responsive design
+- Vermijd !important
+- Gebruik CSS Grid en Flexbox
+
+✅ Good:
+
+```scss
+// task-list.component.scss
+:host {
+  display: grid;
+  gap: $spacing-unit;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  padding: $spacing-unit;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.task-list {
+  &__item {
+    background: var(--background-color);
+    border-radius: $border-radius;
+    transition: transform 0.2s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+    }
+  }
+}
+```
+
+❌ Bad:
+
+```scss
+.tasks {
+  width: 100%;
+}
+
+.task {
+  width: 300px !important;
+  float: left;
+  margin: 10px;
+}
+
+@media screen and (max-width: 768px) {
+  .task {
+    width: 100% !important;
+  }
+}
+```
+
+### Theming
+
+- Gebruik CSS variabelen voor theming
+- Implementeer dark/light modes
+- Maak gebruik van Angular Material theming
+- Zorg voor consistente kleuren
+
+✅ Good:
+
+```scss
+// styles/themes/_light.scss
+:root {
+  --primary-color: #007bff;
+  --background-color: #ffffff;
+  --text-color: #333333;
+  --border-color: #e0e0e0;
+}
+
+// styles/themes/_dark.scss
+:root[data-theme='dark'] {
+  --primary-color: #4dabf7;
+  --background-color: #1a1a1a;
+  --text-color: #ffffff;
+  --border-color: #404040;
+}
+
+// components/button.component.scss
+.btn {
+  background-color: var(--primary-color);
+  color: var(--background-color);
+  border: 1px solid var(--border-color);
+
+  &:hover {
+    filter: brightness(1.1);
+  }
+}
+```
+
+❌ Bad:
+
+```scss
+.button-light {
+  background-color: #007bff;
+  color: white;
+}
+
+.button-dark {
+  background-color: #4dabf7;
+  color: black;
+}
+```
+
+### Performance
+
+- Minimaliseer specificity
+- Voorkom diepe nesting
+- Gebruik efficiënte selectors
+- Optimaliseer animaties
+
+✅ Good:
+
+```scss
+.task-list {
+  &__item {
+    // Lage specificiteit
+    background: var(--background-color);
+
+    // Efficiënte animatie
+    transform: translateZ(0);
+    transition: transform 0.2s ease;
+    will-change: transform;
+  }
+}
+```
+
+❌ Bad:
+
+```scss
+div.content div.tasks div.task-item div.task-header h2.task-title {
+  // Te hoge specificiteit
+  color: #333;
+}
+
+.task {
+  // Inefficiënte animatie
+  transition: all 0.5s ease;
+}
+```
+
+## Resources
+
+- [SCSS Documentation](https://sass-lang.com/documentation)
+- [BEM Methodology](http://getbem.com/)
+- [CSS Custom Properties](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties)
+- [Angular Material Theming](https://material.angular.io/guide/theming)
