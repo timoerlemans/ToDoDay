@@ -1,39 +1,53 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { environment } from '@tododay/environments/environment';
-import { TaskEnrichment } from '@tododay/app/core/models/task';
 import { Observable, throwError } from 'rxjs';
 import { DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { catchError, retry, timeout } from 'rxjs/operators';
+import { environment } from '@tododay/environments/environment';
+import { TaskEnrichment } from '@tododay/core/models/task';
 
+/**
+ * Interface for OpenAI API errors
+ */
 interface OpenAIApiError {
+  /** HTTP status code of the error */
   status: number;
+  /** Error message */
   message: string;
+  /** Error name/type */
   name?: string;
 }
 
+/**
+ * System prompt for task enrichment
+ * Instructs the AI on how to analyze and enrich task information
+ */
 const SYSTEM_PROMPT = `
-Je bent een assistent die helpt bij het organiseren van taken.
-Analyseer de taaktitel en maak aanbevelingen voor de volgende velden:
-- project: Een logische projectnaam (alleen als er duidelijk een project te identificeren is)
-- labels: Een array van relevante labels (maximaal 3)
-- priority: De prioriteit (alleen 'low', 'medium', of 'high')
-- dueDate: Een logische deadline in ISO-stringformaat (alleen als er een duidelijke deadline te identificeren is)
-- startDate: Een logische startdatum in ISO-stringformaat (alleen als er een duidelijke startdatum te identificeren is)
+You are an assistant helping with task organization.
+Analyze the task title and make recommendations for the following fields:
+- project: A logical project name (only if a project can be clearly identified)
+- labels: An array of relevant labels (maximum 3)
+- priority: The priority (only 'low', 'medium', or 'high')
+- dueDate: A logical deadline in ISO string format (only if a clear deadline can be identified)
+- startDate: A logical start date in ISO string format (only if a clear start date can be identified)
 
-Geef de informatie terug in JSON-formaat zoals hieronder:
+Return the information in JSON format as shown below:
 {
-  "project": "string of null",
+  "project": "string or null",
   "labels": ["label1", "label2"],
   "priority": "low|medium|high",
-  "dueDate": "ISO date string of null",
-  "startDate": "ISO date string of null"
+  "dueDate": "ISO date string or null",
+  "startDate": "ISO date string or null"
 }
 
-Vandaag is ${new Date().toISOString().split('T')[0]}.
+Today is ${new Date().toISOString().split('T')[0]}.
 `;
 
+/**
+ * Service responsible for interacting with OpenAI API.
+ * Provides methods to enrich tasks with AI-generated metadata.
+ */
 @Injectable({
   providedIn: 'root'
 })
@@ -48,10 +62,10 @@ export class OpenaiService {
   ) {}
 
   /**
-   * Verrijkt een taaktitel met AI-gegenereerde metadata
-   * @param title De titel van de taak
-   * @returns Een Observable met de verrijkte taakgegevens
-   * @throws Een error als de API call faalt
+   * Enriches a task title with AI-generated metadata
+   * @param title The title of the task
+   * @returns An Observable with the enriched task data
+   * @throws An error if the API call fails
    */
   enrichTaskTitle(title: string): Observable<TaskEnrichment> {
     return this.http.post<TaskEnrichment>(`${this.apiUrl}/enrich-task`, {
@@ -66,10 +80,10 @@ export class OpenaiService {
   }
 
   /**
-   * Verrijkt een taakbeschrijving met AI-gegenereerde metadata
-   * @param taskDescription De beschrijving van de taak
-   * @returns Een Observable met de verrijkte taakgegevens
-   * @throws Een error als de API call faalt
+   * Enriches a task description with AI-generated metadata
+   * @param taskDescription The description of the task
+   * @returns An Observable with the enriched task data
+   * @throws An error if the API call fails
    */
   enrichTask(taskDescription: string): Observable<TaskEnrichment> {
     return this.http.post<TaskEnrichment>(`${this.apiUrl}/enrich-task`, {
@@ -84,9 +98,9 @@ export class OpenaiService {
   }
 
   /**
-   * Handelt API fouten af
-   * @param error De opgevangen error
-   * @returns Een Observable met een gebruiksvriendelijke foutmelding
+   * Handles API errors and transforms them into user-friendly messages
+   * @param error The caught error (either HttpErrorResponse or Error)
+   * @returns An Observable that errors with a user-friendly message
    */
   private handleError(error: HttpErrorResponse | Error): Observable<never> {
     const apiError = this.normalizeError(error);
@@ -97,9 +111,9 @@ export class OpenaiService {
   }
 
   /**
-   * Normaliseert verschillende error types naar een OpenAIApiError
-   * @param error De opgevangen error
-   * @returns Een genormaliseerde OpenAIApiError
+   * Normalizes different error types to a consistent OpenAIApiError format
+   * @param error The caught error
+   * @returns A normalized OpenAIApiError
    */
   private normalizeError(error: HttpErrorResponse | Error): OpenAIApiError {
     if (error instanceof HttpErrorResponse) {
@@ -118,27 +132,27 @@ export class OpenaiService {
   }
 
   /**
-   * Genereert een gebruiksvriendelijke foutmelding op basis van de error
-   * @param error De genormaliseerde error
-   * @returns Een gebruiksvriendelijke foutmelding
+   * Generates a user-friendly error message based on the error type
+   * @param error The normalized error
+   * @returns A user-friendly error message
    */
   private getErrorMessage(error: OpenAIApiError): string {
     switch (error.status) {
       case 429:
-        return 'Te veel verzoeken. Probeer het later opnieuw.';
+        return 'Too many requests. Please try again later.';
       case 401:
-        return 'Niet geautoriseerd. Controleer je API sleutel.';
+        return 'Unauthorized. Please check your API key.';
       case 403:
-        return 'Toegang geweigerd. Controleer je rechten.';
+        return 'Access denied. Please check your permissions.';
       case 404:
-        return 'API endpoint niet gevonden.';
+        return 'API endpoint not found.';
       case 500:
-        return 'Serverfout. Probeer het later opnieuw.';
+        return 'Server error. Please try again later.';
       default:
         if (error.name === 'TimeoutError') {
-          return 'Verzoek duurde te lang. Probeer het opnieuw.';
+          return 'Request timed out. Please try again.';
         }
-        return `Er is een fout opgetreden: ${error.message}`;
+        return `An error occurred: ${error.message}`;
     }
   }
 }
