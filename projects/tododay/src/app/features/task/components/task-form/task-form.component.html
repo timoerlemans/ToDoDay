@@ -1,7 +1,5 @@
 <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow mb-8">
-  <h2 id="form-title" class="text-xl font-semibold text-gray-900 dark:text-white mb-3">
-    Nieuwe taak
-  </h2>
+  <h2 id="form-title" class="text-xl font-semibold text-gray-900 dark:text-white mb-3">New Task</h2>
 
   <form
     [formGroup]="taskForm"
@@ -10,90 +8,134 @@
     role="form"
     aria-labelledby="form-title"
   >
-    <div>
-      <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300"
-        >Titel</label
-      >
+    <!-- Title -->
+    <div class="mb-4">
+      <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+        Title
+      </label>
       <input
         type="text"
         id="title"
         formControlName="title"
-        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-        required
-        aria-required="true"
-        [attr.aria-invalid]="taskForm.get('title')?.invalid && taskForm.get('title')?.touched"
-        [attr.aria-describedby]="
-          taskForm.get('title')?.errors?.['required'] && taskForm.get('title')?.touched
-            ? 'title-error'
-            : null
-        "
+        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600"
       />
-      @if (taskForm.get('title')?.errors?.['required'] && taskForm.get('title')?.touched) {
-        <div id="title-error" class="mt-1 text-sm text-red-600 dark:text-red-400" role="alert">
-          Titel is verplicht
-        </div>
-      }
+      <p
+        class="mt-1 text-sm text-red-600"
+        *ngIf="taskForm.get('title')?.invalid && taskForm.get('title')?.touched"
+      >
+        {{ getErrorMessage('title') }}
+      </p>
     </div>
 
-    <div>
-      <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300"
-        >Beschrijving</label
-      >
+    <!-- Description -->
+    <div class="mb-4">
+      <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+        Description
+      </label>
       <textarea
         id="description"
         formControlName="description"
         rows="3"
-        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600"
       ></textarea>
+      <p
+        class="mt-1 text-sm text-red-600"
+        *ngIf="taskForm.get('description')?.invalid && taskForm.get('description')?.touched"
+      >
+        {{ getErrorMessage('description') }}
+      </p>
     </div>
 
-    <div>
-      <label for="priority" class="block text-sm font-medium text-gray-700 dark:text-gray-300"
-        >Prioriteit</label
-      >
-      <select
-        id="priority"
-        formControlName="priority"
-        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-      >
-        <option [value]="TaskPriority.LOW">Laag</option>
-        <option [value]="TaskPriority.MEDIUM">Gemiddeld</option>
-        <option [value]="TaskPriority.HIGH">Hoog</option>
-      </select>
-    </div>
-
-    <div>
-      <label for="project" class="block text-sm font-medium text-gray-700 dark:text-gray-300"
-        >Project</label
-      >
+    <!-- Project -->
+    <div class="mb-4">
+      <label for="project" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+        Project
+      </label>
       <input
         type="text"
         id="project"
         formControlName="project"
-        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600"
       />
     </div>
 
-    <div>
-      <label for="dueDate" class="block text-sm font-medium text-gray-700 dark:text-gray-300"
-        >Vervaldatum</label
+    <!-- Priority -->
+    <div class="mb-4">
+      <label for="priority" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+        Priority
+      </label>
+      <select
+        id="priority"
+        formControlName="priority"
+        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600"
       >
+        <option [ngValue]="null">No priority</option>
+        <option [value]="TaskPriority.LOW">Low</option>
+        <option [value]="TaskPriority.MEDIUM">Medium</option>
+        <option [value]="TaskPriority.HIGH">High</option>
+      </select>
+    </div>
+
+    <!-- Due Date -->
+    <div class="mb-4">
+      <label for="due_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+        Deadline
+      </label>
+      <input
+        type="date"
+        id="due_date"
+        formControlName="due_date"
+        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600"
+      />
+    </div>
+
+    <!-- Start Date -->
+    <div class="mb-4">
+      <label for="start_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+        Start Date
+      </label>
+      <input
+        type="date"
+        id="start_date"
+        formControlName="start_date"
+        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600"
+      />
+    </div>
+
+    <!-- Notify At -->
+    <div class="mb-4">
+      <label for="notify_at" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+        Reminder
+      </label>
       <input
         type="datetime-local"
-        id="dueDate"
-        formControlName="dueDate"
-        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+        id="notify_at"
+        formControlName="notify_at"
+        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600"
+      />
+    </div>
+
+    <!-- Labels -->
+    <div class="mb-4">
+      <label for="labels" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+        Labels (comma-separated)
+      </label>
+      <input
+        type="text"
+        id="labels"
+        [formControlName]="'labels'"
+        placeholder="project, urgent, review"
+        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600"
       />
     </div>
 
     <div class="flex justify-end">
       <button
         type="submit"
-        [disabled]="taskForm.invalid"
-        class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
-        [attr.aria-disabled]="taskForm.invalid"
+        (click)="onSubmit()"
+        class="inline-flex justify-center rounded-md border border-transparent bg-primary-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
       >
-        Toevoegen
+        Save
       </button>
     </div>
   </form>

@@ -1,36 +1,40 @@
 export enum TaskStatus {
-  TODO = 'TODO',
-  IN_PROGRESS = 'IN_PROGRESS',
-  DONE = 'DONE'
+  TODO = 'todo',
+  IN_PROGRESS = 'in_progress',
+  DONE = 'done'
 }
 
 export enum TaskPriority {
-  LOW = 'LOW',
-  MEDIUM = 'MEDIUM',
-  HIGH = 'HIGH'
+  LOW = 'low',
+  MEDIUM = 'medium',
+  HIGH = 'high'
 }
 
 export interface TaskFormData {
   title: string;
-  description: string;
-  priority: TaskPriority;
+  description?: string;
+  priority?: TaskPriority;
   project?: string;
   labels?: string[];
-  dueDate?: string;
-  startDate?: string;
+  due_date?: string;
+  start_date?: string;
+  notify_at?: string;
 }
 
 export interface Task {
   id: string;
   title: string;
   description?: string;
-  status: TaskStatus;
-  priority: TaskPriority;
   project?: string;
-  dueDate?: Date;
-  createdAt: Date;
-  updatedAt: Date;
-  userId: string;
+  labels?: string[];
+  priority?: TaskPriority;
+  due_date?: Date;
+  start_date?: Date;
+  status?: TaskStatus;
+  notify_at?: Date;
+  created_at: Date;
+  updated_at: Date;
+  user_id: string;
 }
 
 export interface TaskStatusChange {
@@ -51,7 +55,10 @@ export interface CreateTaskDto {
   description?: string;
   priority?: TaskPriority;
   project?: string;
-  dueDate?: Date;
+  labels?: string[];
+  due_date?: Date;
+  start_date?: Date;
+  notify_at?: Date;
 }
 
 export interface UpdateTaskDto {
@@ -60,5 +67,8 @@ export interface UpdateTaskDto {
   status?: TaskStatus;
   priority?: TaskPriority;
   project?: string;
-  dueDate?: Date;
+  labels?: string[];
+  due_date?: Date;
+  start_date?: Date;
+  notify_at?: Date;
 }
