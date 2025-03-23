@@ -1,50 +1,82 @@
-import { Injectable, inject } from '@angular/core';
-import { BehaviorSubject, Observable, from } from 'rxjs';
-import { Task, TaskStatus, TaskFormData } from '@tododay/app/core/models/task';
-import { SupabaseService } from '@tododay/app/core/services/supabase.service';
+import { Injectable } from '@angular/core';
+import { SupabaseService } from './supabase.service';
+import { Task, TaskFormData } from '../models/task';
+import { Observable, from } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TaskService {
-  private readonly tasksSubject = new BehaviorSubject<Task[]>([]);
-  public readonly tasks$ = this.tasksSubject.asObservable();
-  private readonly supabaseService = inject(SupabaseService);
-
-  constructor() {
-    this.loadTasksFromStorage();
-  }
-
-  private loadTasksFromStorage(): void {
-    const storedTasks = localStorage.getItem('tasks');
-    if (storedTasks) {
-      try {
-        const tasks = JSON.parse(storedTasks);
-        this.tasksSubject.next(tasks);
-      } catch (error) {
-        console.error('Fout bij het laden van taken:', error);
-        localStorage.removeItem('tasks');
-      }
-    }
-  }
-
-  private saveTasksToStorage(tasks: Task[]): void {
-    localStorage.setItem('tasks', JSON.stringify(tasks));
-  }
+  constructor(private supabaseService: SupabaseService) {}
 
   getTasks(): Observable<Task[]> {
-    return from(this.supabaseService.getTasks());
+    return from(this.supabaseService.getClient()
+      .from('tasks')
+      .select('*')
+      .order('created_at', { ascending: false }))
+      .pipe(
+        map(({ data, error }) => {
+          if (error) throw error;
+          return data as Task[];
+        }),
+        catchError(error => {
+          console.error('Error fetching tasks:', error);
+          throw error;
+        })
+      );
   }
 
   createTask(taskData: TaskFormData): Observable<Task> {
-    return from(this.supabaseService.createTask(taskData));
+    return from(this.supabaseService.getClient()
+      .from('tasks')
+      .insert([taskData])
+      .select()
+      .single())
+      .pipe(
+        map(({ data, error }) => {
+          if (error) throw error;
+          return data as Task;
+        }),
+        catchError(error => {
+          console.error('Error creating task:', error);
+          throw error;
+        })
+      );
   }
 
   updateTask(taskId: string, updates: Partial<Task>): Observable<Task> {
-    return from(this.supabaseService.updateTask(taskId, updates));
+    return from(this.supabaseService.getClient()
+      .from('tasks')
+      .update(updates)
+      .eq('id', taskId)
+      .select()
+      .single())
+      .pipe(
+        map(({ data, error }) => {
+          if (error) throw error;
+          return data as Task;
+        }),
+        catchError(error => {
+          console.error('Error updating task:', error);
+          throw error;
+        })
+      );
   }
 
   deleteTask(taskId: string): Observable<void> {
-    return from(this.supabaseService.deleteTask(taskId));
+    return from(this.supabaseService.getClient()
+      .from('tasks')
+      .delete()
+      .eq('id', taskId))
+      .pipe(
+        map(({ error }) => {
+          if (error) throw error;
+        }),
+        catchError(error => {
+          console.error('Error deleting task:', error);
+          throw error;
+        })
+      );
   }
 } 
