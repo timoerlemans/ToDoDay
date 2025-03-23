@@ -1,1 +1,366 @@
- 
+---
+description: Use English for all written text in the codebase
+globs: ['**/*']
+alwaysApply: true
+---
+
+# English Language Standard
+
+## Description
+
+This rule enforces the use of English language across all project content to maintain consistency and facilitate international collaboration.
+
+## Glob Pattern
+
+```json
+["**/*"]
+```
+
+## Parameters
+
+```json
+{
+  "alwaysApply": true
+}
+```
+
+## Rules
+
+### Code Comments
+
+- All code comments must be written in English
+- Use proper grammar and punctuation
+- Be clear and concise
+- Document complex logic thoroughly
+
+✅ Good:
+
+```typescript
+// Calculate the total price including VAT
+function calculateTotalPrice(basePrice: number, vatRate: number): number {
+  // First calculate the VAT amount
+  const vatAmount = basePrice * (vatRate / 100);
+  // Return the total by adding base price and VAT
+  return basePrice + vatAmount;
+}
+```
+
+❌ Bad:
+
+```typescript
+// Bereken de totaalprijs inclusief BTW
+function calculateTotalPrice(basePrice: number, vatRate: number): number {
+  // Eerst BTW berekenen
+  const vatAmount = basePrice * (vatRate / 100);
+  return basePrice + vatAmount;
+}
+```
+
+### Commit Messages
+
+- Use English for all commit messages
+- Follow conventional commit format
+- Be descriptive and clear
+- Reference issue numbers when applicable
+
+✅ Good:
+
+```bash
+git commit -m "feat(auth): add password reset functionality
+- Add reset password form
+- Implement email notification
+- Add validation rules
+Closes #123"
+```
+
+❌ Bad:
+
+```bash
+git commit -m "nieuwe functie: wachtwoord reset toegevoegd"
+```
+
+### Documentation
+
+- All documentation files must be in English
+- Include clear examples
+- Use proper technical terminology
+- Maintain consistent style
+
+✅ Good:
+
+```markdown
+# User Authentication
+
+This module handles user authentication using JWT tokens.
+
+## Features
+
+- Secure password hashing
+- Token-based authentication
+- Role-based access control
+```
+
+❌ Bad:
+
+```markdown
+# Gebruikers Authenticatie
+
+Deze module regelt de authenticatie van gebruikers met JWT tokens.
+
+## Functies
+
+- Veilige wachtwoord hashing
+- Token-gebaseerde authenticatie
+```
+
+### User Interface Text
+
+- All UI text must be in English
+- Use consistent terminology
+- Follow UI copy style guide
+- Include proper error messages
+
+✅ Good:
+
+```typescript
+@Component({
+  template: `
+    <div class="error-message">
+      <p>Unable to save changes. Please try again later.</p>
+      <button>Retry</button>
+    </div>
+  `
+})
+```
+
+❌ Bad:
+
+```typescript
+@Component({
+  template: `
+    <div class="error-message">
+      <p>Kan wijzigingen niet opslaan. Probeer het later opnieuw.</p>
+      <button>Opnieuw proberen</button>
+    </div>
+  `
+})
+```
+
+### Error and Log Messages
+
+- All error messages must be in English
+- Be descriptive and actionable
+- Include error codes when applicable
+- Use proper technical terms
+
+✅ Good:
+
+```typescript
+logger.error('Database connection failed: timeout after 30 seconds', {
+  errorCode: 'DB_CONN_001',
+  timestamp: new Date(),
+  details: error.message,
+});
+```
+
+❌ Bad:
+
+```typescript
+logger.error('Database verbinding mislukt: timeout na 30 seconden', {
+  foutCode: 'DB_CONN_001',
+  tijdstip: new Date(),
+  details: error.message,
+});
+```
+
+### API Responses
+
+- All API responses must be in English
+- Use consistent message formatting
+- Include proper HTTP status codes
+- Provide clear error details
+
+✅ Good:
+
+```typescript
+{
+  "status": "error",
+  "message": "Invalid authentication credentials",
+  "code": "AUTH_001",
+  "details": "The provided access token has expired"
+}
+```
+
+❌ Bad:
+
+```typescript
+{
+  "status": "fout",
+  "bericht": "Ongeldige inloggegevens",
+  "code": "AUTH_001",
+  "details": "Het toegangstoken is verlopen"
+}
+```
+
+## Exceptions
+
+In specific cases where local language is required (e.g., legal requirements or local market features):
+
+1. Document the exception in `LANGUAGE_EXCEPTIONS.md`:
+
+   ```markdown
+   ## [Date] - [Feature]
+
+   ### Exception
+
+   Describe the language exception
+
+   ### Reason
+
+   Explain why English cannot be used
+
+   ### Scope
+
+   Define the exact scope of the exception
+
+   ### Approval
+
+   List approvers and date
+   ```
+
+2. Implement using translation system
+3. Keep English as the default
+
+## Resources
+
+- [Google Developer Documentation Style Guide](https://developers.google.com/style)
+- [Microsoft Style Guide](https://docs.microsoft.com/style-guide)
+- [Angular Contribution Guide](https://github.com/angular/angular/blob/main/CONTRIBUTING.md)
+- [Conventional Commits](https://www.conventionalcommits.org/)
+
+# English Only
+
+## General Rule
+
+All written text in the codebase must be in English, including:
+
+- Code comments
+- Inline documentation
+- Commit messages
+- Error messages
+- Log messages
+- UI text
+- README files
+- API documentation
+- TypeScript interfaces and types
+- Variable and function names
+
+## Examples
+
+### Good
+
+```typescript
+/**
+ * Handles API errors and returns user-friendly messages
+ * @param error The caught error
+ * @returns A user-friendly error message
+ */
+private handleError(error: HttpErrorResponse | Error): Observable<never> {
+  // ...
+}
+```
+
+### Bad
+
+```typescript
+/**
+ * Verwerkt API fouten en geeft gebruiksvriendelijke berichten terug
+ * @param error De opgevangen fout
+ * @returns Een gebruiksvriendelijk foutbericht
+ */
+private handleError(error: HttpErrorResponse | Error): Observable<never> {
+  // ...
+}
+```
+
+### Good
+
+```typescript
+interface UserPreferences {
+  theme: 'light' | 'dark';
+  language: string;
+  notifications: boolean;
+}
+```
+
+### Bad
+
+```typescript
+interface GebruikersVoorkeuren {
+  thema: 'licht' | 'donker';
+  taal: string;
+  meldingen: boolean;
+}
+```
+
+### Good
+
+```typescript
+// Check if user has required permissions
+if (!user.hasPermission('admin')) {
+  throw new Error('User does not have admin permissions');
+}
+```
+
+### Bad
+
+```typescript
+// Controleer of gebruiker de juiste rechten heeft
+if (!user.hasPermission('admin')) {
+  throw new Error('Gebruiker heeft geen admin rechten');
+}
+```
+
+## Commit Messages
+
+Always use English in commit messages, even if the rest of the project is in another language.
+
+### Good
+
+```
+feat(auth): add login functionality
+
+- Add login form component
+- Add authentication service
+- Add login page routing
+
+Closes #123
+```
+
+### Bad
+
+```
+feat(auth): voeg login functionaliteit toe
+
+- Voeg login formulier component toe
+- Voeg authenticatie service toe
+- Voeg login pagina routing toe
+
+Sluit #123
+```
+
+## Error Messages
+
+Always use English in error messages for consistency and better debugging.
+
+### Good
+
+```typescript
+throw new Error('Failed to connect to database: Connection timeout');
+```
+
+### Bad
+
+```typescript
+throw new Error('Kon niet verbinden met database: Verbinding timeout');
+```

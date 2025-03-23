@@ -1,3 +1,8 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
 # Verplichte Technologie Stack
 
 ## Beschrijving
@@ -315,11 +320,11 @@ Als afwijking van deze stack noodzakelijk is:
 
 ## Resources
 
-- [Angular Docs](https://angular.dev)
-- [Tailwind CSS](https://tailwindcss.com)
-- [Supabase](https://supabase.com/docs)
-- [NgRx](https://ngrx.io)
-- [OpenAI API](https://platform.openai.com/docs)
-- [Jest](https://jestjs.io)
-- [Cypress](https://cypress.io)
-- [PNPM](https://pnpm.io)
+- [Angular Docs](mdc:https:/angular.dev)
+- [Tailwind CSS](mdc:https:/tailwindcss.com)
+- [Supabase](mdc:https:/supabase.com/docs)
+- [NgRx](mdc:https:/ngrx.io)
+- [OpenAI API](mdc:https:/platform.openai.com/docs)
+- [Jest](mdc:https:/jestjs.io)
+- [Cypress](mdc:https:/cypress.io)
+- [PNPM](mdc:https:/pnpm.io)
