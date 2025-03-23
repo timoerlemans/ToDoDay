@@ -1,0 +1,237 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Angular Routing Rules
+
+## Overview
+
+This document outlines routing standards for Angular applications, focusing on route organization, guards, resolvers, and lazy loading.
+
+## Route Organization
+
+- Use feature-based routing modules
+- Implement lazy loading for feature modules
+- Use route constants for path definitions
+- Organize routes by feature area
+
+### Good Examples
+
+```typescript
+// Route constants
+export const ROUTES = {
+  TODOS: {
+    ROOT: 'todos',
+    DETAIL: ':id',
+    EDIT: ':id/edit',
+  },
+} as const;
+
+// Feature routing module
+@NgModule({
+  imports: [
+    RouterModule.forChild([
+      {
+        path: ROUTES.TODOS.ROOT,
+        children: [
+          {
+            path: '',
+            component: TodoListComponent,
+          },
+          {
+            path: ROUTES.TODOS.DETAIL,
+            component: TodoDetailComponent,
+            resolve: { todo: TodoResolver },
+          },
+        ],
+      },
+    ]),
+  ],
+})
+export class TodosRoutingModule {}
+```
+
+### Bad Examples
+
+```typescript
+// All routes in app-routing.module.ts
+const routes: Routes = [
+  {
+    path: 'todos',
+    component: TodoListComponent,
+  },
+  {
+    path: 'todos/:id',
+    component: TodoDetailComponent,
+  },
+  {
+    path: 'todos/:id/edit',
+    component: TodoEditComponent,
+  },
+];
+
+@NgModule({
+  imports: [RouterModule.forRoot(routes)],
+})
+export class AppRoutingModule {}
+```
+
+## Route Guards
+
+- Use functional guards when possible
+- Implement proper authentication checks
+- Handle route access permissions
+- Use canActivate for navigation guards
+
+### Good Examples
+
+```typescript
+// Functional guard
+export const authGuard = () => {
+  return inject(AuthService).isAuthenticated$.pipe(
+    map(isAuthenticated => {
+      if (!isAuthenticated) {
+        return inject(Router).createUrlTree(['/login']);
+      }
+      return true;
+    })
+  );
+};
+
+// Route with guard
+const routes: Routes = [
+  {
+    path: 'admin',
+    component: AdminComponent,
+    canActivate: [authGuard],
+  },
+];
+```
+
+### Bad Examples
+
+```typescript
+// Class-based guard without proper error handling
+@Injectable({ providedIn: 'root' })
+export class AuthGuard implements CanActivate {
+  canActivate(): boolean {
+    return this.authService.isAuthenticated;
+  }
+}
+
+// Route without proper guard implementation
+const routes: Routes = [
+  {
+    path: 'admin',
+    component: AdminComponent,
+    canActivate: [AuthGuard],
+  },
+];
+```
+
+## Route Resolvers
+
+- Use functional resolvers when possible
+- Handle loading states
+- Implement error handling
+- Cache resolved data when appropriate
+
+### Good Examples
+
+```typescript
+// Functional resolver
+export const todoResolver = () => {
+  const route = inject(ActivatedRoute);
+  const todoService = inject(TodoService);
+
+  return todoService.getTodo(route.snapshot.params['id']).pipe(
+    catchError(() => {
+      return throwError(() => new Error('Todo not found'));
+    })
+  );
+};
+
+// Route with resolver
+const routes: Routes = [
+  {
+    path: 'todos/:id',
+    component: TodoDetailComponent,
+    resolve: { todo: todoResolver },
+  },
+];
+```
+
+### Bad Examples
+
+```typescript
+// Class-based resolver without error handling
+@Injectable({ providedIn: 'root' })
+export class TodoResolver implements Resolve<Todo> {
+  resolve(route: ActivatedRouteSnapshot): Observable<Todo> {
+    return this.todoService.getTodo(route.params['id']);
+  }
+}
+
+// Route without proper resolver implementation
+const routes: Routes = [
+  {
+    path: 'todos/:id',
+    component: TodoDetailComponent,
+    resolve: { todo: TodoResolver },
+  },
+];
+```
+
+## Lazy Loading
+
+- Implement lazy loading for feature modules
+- Use preloading strategies
+- Handle loading states
+- Implement error boundaries
+
+### Good Examples
+
+```typescript
+// Lazy loaded feature module
+const routes: Routes = [
+  {
+    path: 'todos',
+    loadChildren: () => import('./features/todos/todos.module').then(m => m.TodosModule),
+  },
+];
+
+// Preloading strategy
+@NgModule({
+  imports: [
+    RouterModule.forRoot(routes, {
+      preloadingStrategy: PreloadAllModules,
+    }),
+  ],
+})
+export class AppRoutingModule {}
+```
+
+### Bad Examples
+
+```typescript
+// Eager loading everything
+const routes: Routes = [
+  {
+    path: 'todos',
+    component: TodoListComponent,
+  },
+];
+
+@NgModule({
+  imports: [RouterModule.forRoot(routes)],
+  declarations: [TodoListComponent, TodoItemComponent, TodoFormComponent],
+})
+export class AppRoutingModule {}
+```
+
+## Resources
+
+- [Angular Router](mdc:https:/angular.io/guide/router)
+- [Angular Route Guards](mdc:https:/angular.io/guide/router-tutorial-toh#canactivate-requiring-authentication)
+- [Angular Route Resolvers](mdc:https:/angular.io/guide/router-tutorial-toh#preloading-background-loading-of-feature-areas)

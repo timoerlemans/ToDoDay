@@ -1,0 +1,266 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Angular Utils Rules
+
+## Overview
+
+This document outlines utility standards for Angular applications, focusing on helper functions, pipes, directives, and common patterns.
+
+## Helper Functions
+
+- Use pure functions
+- Implement proper error handling
+- Use TypeScript features
+- Document function behavior
+
+### Good Examples
+
+```typescript
+// Date formatting utility
+export const formatDate = (date: Date | string): string => {
+  const d = new Date(date);
+  return d.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+};
+
+// Array utility
+export const groupBy = <T, K extends keyof T>(array: T[], key: K): Map<T[K], T[]> => {
+  return array.reduce((map, item) => {
+    const groupKey = item[key];
+    const group = map.get(groupKey) || [];
+    map.set(groupKey, [...group, item]);
+    return map;
+  }, new Map<T[K], T[]>());
+};
+
+// String utility
+export const truncate = (str: string, length: number, suffix: string = '...'): string => {
+  if (str.length <= length) return str;
+  return str.slice(0, length) + suffix;
+};
+
+// Validation utility
+export const isValidEmail = (email: string): boolean => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
+```
+
+### Bad Examples
+
+```typescript
+// Impure function with side effects
+export const formatDate = (date: Date): string => {
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0); // Side effect
+  return d.toLocaleDateString();
+};
+
+// Function without type safety
+export const groupBy = (array: any[], key: string): any => {
+  return array.reduce((acc, item) => {
+    const groupKey = item[key];
+    if (!acc[groupKey]) {
+      acc[groupKey] = [];
+    }
+    acc[groupKey].push(item);
+    return acc;
+  }, {});
+};
+
+// Function without error handling
+export const truncate = (str: string, length: number): string => {
+  return str.slice(0, length) + '...';
+};
+```
+
+## Pipes
+
+- Use pure pipes
+- Implement proper error handling
+- Use TypeScript features
+- Document pipe behavior
+
+### Good Examples
+
+```typescript
+// Date formatting pipe
+@Pipe({
+  name: 'formatDate',
+  pure: true,
+  standalone: true,
+})
+export class FormatDatePipe implements PipeTransform {
+  transform(value: Date | string | null | undefined, format: string = 'medium'): string {
+    if (!value) return '';
+
+    try {
+      const date = new Date(value);
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: format === 'long' ? 'long' : 'short',
+        day: 'numeric',
+      });
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return '';
+    }
+  }
+}
+
+// Array filtering pipe
+@Pipe({
+  name: 'filterBy',
+  pure: true,
+  standalone: true,
+})
+export class FilterByPipe implements PipeTransform {
+  transform<T>(array: T[], predicate: (item: T) => boolean): T[] {
+    if (!array) return [];
+    return array.filter(predicate);
+  }
+}
+```
+
+### Bad Examples
+
+```typescript
+// Impure pipe
+@Pipe({
+  name: 'formatDate',
+  pure: false,
+})
+export class FormatDatePipe implements PipeTransform {
+  transform(value: Date): string {
+    return value.toLocaleDateString();
+  }
+}
+
+// Pipe without type safety
+@Pipe({
+  name: 'filterBy',
+})
+export class FilterByPipe implements PipeTransform {
+  transform(array: any[], predicate: (item: any) => boolean): any[] {
+    return array.filter(predicate);
+  }
+}
+```
+
+## Directives
+
+- Use proper directive types
+- Implement proper error handling
+- Use TypeScript features
+- Document directive behavior
+
+### Good Examples
+
+```typescript
+// Click outside directive
+@Directive({
+  selector: '[clickOutside]',
+  standalone: true,
+})
+export class ClickOutsideDirective implements OnInit, OnDestroy {
+  @Output() clickOutside = new EventEmitter<void>();
+  private documentClick$ = new Subject<void>();
+
+  constructor(
+    private elementRef: ElementRef,
+    private renderer: Renderer2
+  ) {}
+
+  ngOnInit(): void {
+    this.renderer.listen('document', 'click', (event: MouseEvent) => {
+      const clickedInside = this.elementRef.nativeElement.contains(event.target);
+      if (!clickedInside) {
+        this.clickOutside.emit();
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.documentClick$.complete();
+  }
+}
+
+// Debounce input directive
+@Directive({
+  selector: '[debounceInput]',
+  standalone: true,
+})
+export class DebounceInputDirective implements OnInit, OnDestroy {
+  @Input() debounceTime = 300;
+  @Output() debouncedValue = new EventEmitter<string>();
+  private input$ = new Subject<string>();
+
+  constructor() {}
+
+  ngOnInit(): void {
+    this.input$
+      .pipe(debounceTime(this.debounceTime), distinctUntilChanged(), takeUntil(this.destroy$))
+      .subscribe(value => {
+        this.debouncedValue.emit(value);
+      });
+  }
+
+  @HostListener('input', ['$event.target.value'])
+  onInput(value: string): void {
+    this.input$.next(value);
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+}
+```
+
+### Bad Examples
+
+```typescript
+// Directive without proper cleanup
+@Directive({
+  selector: '[clickOutside]',
+})
+export class ClickOutsideDirective {
+  @Output() clickOutside = new EventEmitter<void>();
+
+  constructor(private elementRef: ElementRef) {
+    document.addEventListener('click', (event: MouseEvent) => {
+      const clickedInside = this.elementRef.nativeElement.contains(event.target);
+      if (!clickedInside) {
+        this.clickOutside.emit();
+      }
+    });
+  }
+}
+
+// Directive without type safety
+@Directive({
+  selector: '[debounceInput]',
+})
+export class DebounceInputDirective {
+  @Input() debounceTime = 300;
+  @Output() debouncedValue = new EventEmitter();
+
+  constructor() {
+    this.input$.pipe(debounceTime(this.debounceTime)).subscribe(value => {
+      this.debouncedValue.emit(value);
+    });
+  }
+}
+```
+
+## Resources
+
+- [Angular Pipes](mdc:https:/angular.io/guide/pipes)
+- [Angular Directives](mdc:https:/angular.io/guide/attribute-directives)
+- [Angular Common Module](mdc:https:/angular.io/api/common)

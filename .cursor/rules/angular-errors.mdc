@@ -1,0 +1,277 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Angular Errors Rules
+
+## Overview
+
+This document outlines error handling standards for Angular applications, focusing on error types, error handling patterns, and error reporting.
+
+## Error Types
+
+- Define custom error classes
+- Use proper error inheritance
+- Implement error interfaces
+- Document error types
+
+### Good Examples
+
+```typescript
+// Base error class
+export class AppError extends Error {
+  constructor(
+    message: string,
+    public readonly code: string,
+    public readonly details?: unknown
+  ) {
+    super(message);
+    this.name = 'AppError';
+  }
+}
+
+// Specific error types
+export class ValidationError extends AppError {
+  constructor(message: string, details?: unknown) {
+    super(message, 'VALIDATION_ERROR', details);
+    this.name = 'ValidationError';
+  }
+}
+
+export class ApiError extends AppError {
+  constructor(
+    message: string,
+    public readonly status: number,
+    details?: unknown
+  ) {
+    super(message, 'API_ERROR', details);
+    this.name = 'ApiError';
+  }
+}
+
+// Error interface
+export interface ErrorResponse {
+  code: string;
+  message: string;
+  details?: unknown;
+  timestamp: string;
+}
+```
+
+### Bad Examples
+
+```typescript
+// Generic error class
+export class AppError extends Error {
+  constructor(message: string) {
+    super(message);
+  }
+}
+
+// Error without proper typing
+export class ApiError {
+  constructor(public message: string) {}
+}
+
+// Missing error interface
+export type ErrorResponse = {
+  message: string;
+  details: any;
+};
+```
+
+## Error Handling
+
+- Implement proper error handling
+- Use error interceptors
+- Handle async errors
+- Provide user feedback
+
+### Good Examples
+
+```typescript
+// Error interceptor
+@Injectable()
+export class ErrorInterceptor implements HttpInterceptor {
+  constructor(
+    private readonly errorService: ErrorService,
+    private readonly router: Router
+  ) {}
+
+  intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
+    return next.handle(request).pipe(
+      catchError(error => {
+        if (error instanceof HttpErrorResponse) {
+          switch (error.status) {
+            case 401:
+              return this.handleUnauthorized();
+            case 403:
+              return this.handleForbidden();
+            case 404:
+              return this.handleNotFound();
+            default:
+              return this.handleGenericError(error);
+          }
+        }
+        return throwError(() => error);
+      })
+    );
+  }
+
+  private handleUnauthorized(): Observable<never> {
+    this.router.navigate(['/login']);
+    return throwError(() => new ApiError('Unauthorized', 401));
+  }
+
+  private handleForbidden(): Observable<never> {
+    return throwError(() => new ApiError('Forbidden', 403));
+  }
+
+  private handleNotFound(): Observable<never> {
+    return throwError(() => new ApiError('Not Found', 404));
+  }
+
+  private handleGenericError(error: HttpErrorResponse): Observable<never> {
+    const apiError = new ApiError(
+      error.error.message || 'An error occurred',
+      error.status,
+      error.error
+    );
+    this.errorService.handleError(apiError);
+    return throwError(() => apiError);
+  }
+}
+
+// Error service
+@Injectable({
+  providedIn: 'root',
+})
+export class ErrorService {
+  private readonly errorSubject = new Subject<AppError>();
+  readonly errors$ = this.errorSubject.asObservable();
+
+  handleError(error: AppError): void {
+    this.errorSubject.next(error);
+    this.logError(error);
+  }
+
+  private logError(error: AppError): void {
+    console.error('Application error:', {
+      name: error.name,
+      message: error.message,
+      code: error.code,
+      details: error.details,
+      stack: error.stack,
+    });
+  }
+}
+```
+
+### Bad Examples
+
+```typescript
+// Basic error interceptor
+@Injectable()
+export class ErrorInterceptor implements HttpInterceptor {
+  intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
+    return next.handle(request).pipe(
+      catchError(error => {
+        console.error('Error:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+}
+
+// Service without proper error handling
+@Injectable({
+  providedIn: 'root',
+})
+export class ErrorService {
+  handleError(error: any): void {
+    console.error(error);
+  }
+}
+```
+
+## Error Reporting
+
+- Implement error logging
+- Use error tracking services
+- Handle error recovery
+- Provide error context
+
+### Good Examples
+
+```typescript
+// Error tracking service
+@Injectable({
+  providedIn: 'root',
+})
+export class ErrorTrackingService {
+  constructor(
+    private readonly errorService: ErrorService,
+    private readonly analytics: AnalyticsService
+  ) {
+    this.setupErrorTracking();
+  }
+
+  private setupErrorTracking(): void {
+    this.errorService.errors$.pipe(takeUntil(this.destroy$)).subscribe(error => {
+      this.trackError(error);
+    });
+  }
+
+  private trackError(error: AppError): void {
+    this.analytics.trackEvent('error', {
+      name: error.name,
+      code: error.code,
+      message: error.message,
+      details: error.details,
+      timestamp: new Date().toISOString(),
+      url: window.location.href,
+      userAgent: navigator.userAgent,
+    });
+  }
+
+  // Error recovery
+  recoverFromError(error: AppError): Observable<void> {
+    if (error instanceof ApiError && error.status === 401) {
+      return this.refreshToken().pipe(
+        catchError(() => {
+          this.router.navigate(['/login']);
+          return throwError(() => error);
+        })
+      );
+    }
+    return throwError(() => error);
+  }
+}
+```
+
+### Bad Examples
+
+```typescript
+// Basic error tracking
+@Injectable({
+  providedIn: 'root',
+})
+export class ErrorTrackingService {
+  trackError(error: any): void {
+    console.error('Error tracked:', error);
+  }
+
+  recoverFromError(error: any): void {
+    if (error.status === 401) {
+      this.router.navigate(['/login']);
+    }
+  }
+}
+```
+
+## Resources
+
+- [Angular Error Handling](mdc:https:/angular.io/guide/error-handling)
+- [Angular HTTP Error Handling](mdc:https:/angular.io/guide/http#error-handling)
+- [Angular Error Tracking](mdc:https:/angular.io/guide/error-tracking)

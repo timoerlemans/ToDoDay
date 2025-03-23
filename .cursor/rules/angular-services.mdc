@@ -1,0 +1,236 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Angular Services Rules
+
+## Overview
+
+This document outlines service standards for Angular applications, focusing on service organization, dependency injection, state management, and HTTP communication.
+
+## Service Organization
+
+- Use feature-based service organization
+- Implement proper dependency injection
+- Use interfaces for service contracts
+- Follow single responsibility principle
+
+### Good Examples
+
+```typescript
+// Service interface
+export interface TodoService {
+  getTodos(): Observable<Todo[]>;
+  getTodo(id: string): Observable<Todo>;
+  createTodo(todo: CreateTodoDto): Observable<Todo>;
+}
+
+// Service implementation
+@Injectable({
+  providedIn: 'root',
+})
+export class TodoServiceImpl implements TodoService {
+  constructor(
+    private readonly http: HttpClient,
+    private readonly errorHandler: ErrorHandler
+  ) {}
+
+  getTodos(): Observable<Todo[]> {
+    return this.http.get<Todo[]>('/api/todos').pipe(catchError(this.errorHandler.handleError));
+  }
+
+  getTodo(id: string): Observable<Todo> {
+    return this.http.get<Todo>(`/api/todos/${id}`).pipe(catchError(this.errorHandler.handleError));
+  }
+
+  createTodo(todo: CreateTodoDto): Observable<Todo> {
+    return this.http.post<Todo>('/api/todos', todo).pipe(catchError(this.errorHandler.handleError));
+  }
+}
+```
+
+### Bad Examples
+
+```typescript
+// Service without interface
+@Injectable({
+  providedIn: 'root',
+})
+export class TodoService {
+  constructor(private http: HttpClient) {}
+
+  getTodos() {
+    return this.http.get('/api/todos');
+  }
+
+  getTodo(id: string) {
+    return this.http.get(`/api/todos/${id}`);
+  }
+
+  createTodo(todo: any) {
+    return this.http.post('/api/todos', todo);
+  }
+}
+```
+
+## State Management
+
+- Use signals for local state
+- Implement proper state updates
+- Handle loading and error states
+- Use proper state initialization
+
+### Good Examples
+
+```typescript
+// State management with signals
+@Injectable({
+  providedIn: 'root',
+})
+export class TodoStateService {
+  private readonly todos = signal<Todo[]>([]);
+  private readonly loading = signal(false);
+  private readonly error = signal<Error | null>(null);
+
+  readonly todos$ = computed(() => this.todos());
+  readonly loading$ = computed(() => this.loading());
+  readonly error$ = computed(() => this.error());
+
+  constructor(private readonly todoService: TodoService) {}
+
+  loadTodos(): void {
+    this.loading.set(true);
+    this.error.set(null);
+
+    this.todoService
+      .getTodos()
+      .pipe(finalize(() => this.loading.set(false)))
+      .subscribe({
+        next: todos => this.todos.set(todos),
+        error: error => this.error.set(error),
+      });
+  }
+
+  addTodo(todo: CreateTodoDto): void {
+    this.loading.set(true);
+    this.error.set(null);
+
+    this.todoService
+      .createTodo(todo)
+      .pipe(finalize(() => this.loading.set(false)))
+      .subscribe({
+        next: newTodo => this.todos.update(todos => [...todos, newTodo]),
+        error: error => this.error.set(error),
+      });
+  }
+}
+```
+
+### Bad Examples
+
+```typescript
+// Service with mutable state
+@Injectable({
+  providedIn: 'root',
+})
+export class TodoService {
+  private todos: Todo[] = [];
+  private loading = false;
+  private error: Error | null = null;
+
+  constructor(private http: HttpClient) {}
+
+  loadTodos(): void {
+    this.loading = true;
+    this.error = null;
+
+    this.http.get<Todo[]>('/api/todos').subscribe({
+      next: todos => {
+        this.todos = todos;
+        this.loading = false;
+      },
+      error: error => {
+        this.error = error;
+        this.loading = false;
+      },
+    });
+  }
+}
+```
+
+## HTTP Communication
+
+- Use proper HTTP methods
+- Implement error handling
+- Use interceptors for common operations
+- Handle request/response transformations
+
+### Good Examples
+
+```typescript
+// HTTP interceptor
+@Injectable()
+export class ErrorInterceptor implements HttpInterceptor {
+  intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
+    return next.handle(request).pipe(
+      catchError(error => {
+        if (error.status === 401) {
+          return this.handleUnauthorized();
+        }
+        return throwError(() => error);
+      })
+    );
+  }
+
+  private handleUnauthorized(): Observable<never> {
+    // Handle unauthorized access
+    return throwError(() => new Error('Unauthorized'));
+  }
+}
+
+// HTTP service
+@Injectable({
+  providedIn: 'root',
+})
+export class ApiService {
+  constructor(
+    private readonly http: HttpClient,
+    private readonly errorHandler: ErrorHandler
+  ) {}
+
+  get<T>(url: string): Observable<T> {
+    return this.http.get<T>(url).pipe(catchError(this.errorHandler.handleError));
+  }
+
+  post<T>(url: string, data: unknown): Observable<T> {
+    return this.http.post<T>(url, data).pipe(catchError(this.errorHandler.handleError));
+  }
+}
+```
+
+### Bad Examples
+
+```typescript
+// Service without proper error handling
+@Injectable({
+  providedIn: 'root',
+})
+export class ApiService {
+  constructor(private http: HttpClient) {}
+
+  get<T>(url: string): Observable<T> {
+    return this.http.get<T>(url);
+  }
+
+  post<T>(url: string, data: unknown): Observable<T> {
+    return this.http.post<T>(url, data);
+  }
+}
+```
+
+## Resources
+
+- [Angular Services](mdc:https:/angular.io/guide/architecture-services)
+- [Angular Dependency Injection](mdc:https:/angular.io/guide/dependency-injection)
+- [Angular HTTP Client](mdc:https:/angular.io/guide/http)

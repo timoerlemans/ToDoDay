@@ -1,0 +1,276 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Angular TypeScript Rules
+
+## Overview
+
+This document outlines TypeScript standards for Angular applications, focusing on type safety, interfaces, generics, and best practices.
+
+## Type Safety
+
+- Use strict type checking
+- Avoid any type
+- Use proper type assertions
+- Implement proper error handling
+
+### Good Examples
+
+```typescript
+// Strong typing
+interface Todo {
+  id: string;
+  title: string;
+  completed: boolean;
+  createdAt: Date;
+}
+
+// Type-safe service
+@Injectable({
+  providedIn: 'root',
+})
+export class TodoService {
+  constructor(private readonly http: HttpClient) {}
+
+  getTodos(): Observable<Todo[]> {
+    return this.http.get<Todo[]>('/api/todos');
+  }
+
+  getTodo(id: string): Observable<Todo> {
+    return this.http.get<Todo>(`/api/todos/${id}`);
+  }
+
+  createTodo(todo: Omit<Todo, 'id' | 'createdAt'>): Observable<Todo> {
+    return this.http.post<Todo>('/api/todos', todo);
+  }
+}
+
+// Type-safe component
+@Component({
+  selector: 'app-todo-list',
+  template: `
+    <ul>
+      <li *ngFor="let todo of todos">
+        {{ todo.title }}
+      </li>
+    </ul>
+  `,
+})
+export class TodoListComponent {
+  @Input() todos: Todo[] = [];
+  @Output() todoSelected = new EventEmitter<Todo>();
+}
+```
+
+### Bad Examples
+
+```typescript
+// Using any type
+@Injectable({
+  providedIn: 'root',
+})
+export class TodoService {
+  constructor(private http: HttpClient) {}
+
+  getTodos(): Observable<any[]> {
+    return this.http.get('/api/todos');
+  }
+
+  getTodo(id: string): Observable<any> {
+    return this.http.get(`/api/todos/${id}`);
+  }
+
+  createTodo(todo: any): Observable<any> {
+    return this.http.post('/api/todos', todo);
+  }
+}
+
+// Component without proper typing
+@Component({
+  selector: 'app-todo-list',
+  template: `
+    <ul>
+      <li *ngFor="let todo of todos">
+        {{ todo.title }}
+      </li>
+    </ul>
+  `,
+})
+export class TodoListComponent {
+  @Input() todos: any[] = [];
+  @Output() todoSelected = new EventEmitter();
+}
+```
+
+## Interfaces and Types
+
+- Use interfaces for object shapes
+- Use type aliases for unions and intersections
+- Use proper type inheritance
+- Document complex types
+
+### Good Examples
+
+```typescript
+// Interface for data model
+interface Todo {
+  id: string;
+  title: string;
+  completed: boolean;
+  createdAt: Date;
+}
+
+// Type for API response
+type ApiResponse<T> = {
+  data: T;
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+  };
+};
+
+// Type for form state
+type TodoFormState = {
+  isSubmitting: boolean;
+  error: string | null;
+  data: Omit<Todo, 'id' | 'createdAt'>;
+};
+
+// Interface for service
+interface TodoService {
+  getTodos(): Observable<ApiResponse<Todo[]>>;
+  getTodo(id: string): Observable<ApiResponse<Todo>>;
+  createTodo(todo: Omit<Todo, 'id' | 'createdAt'>): Observable<ApiResponse<Todo>>;
+}
+```
+
+### Bad Examples
+
+```typescript
+// Using any for complex types
+interface Todo {
+  id: any;
+  title: any;
+  completed: any;
+  createdAt: any;
+}
+
+// Missing type documentation
+type ApiResponse = {
+  data: any;
+  meta: any;
+};
+
+// Inconsistent type usage
+interface TodoService {
+  getTodos(): Observable<any>;
+  getTodo(id: any): Observable<any>;
+  createTodo(todo: any): Observable<any>;
+}
+```
+
+## Generics
+
+- Use generics for reusable components
+- Use generic constraints
+- Use proper generic type parameters
+- Document generic types
+
+### Good Examples
+
+```typescript
+// Generic service
+@Injectable({
+  providedIn: 'root',
+})
+export class ApiService<T> {
+  constructor(
+    private readonly http: HttpClient,
+    private readonly endpoint: string
+  ) {}
+
+  getAll(): Observable<T[]> {
+    return this.http.get<T[]>(this.endpoint);
+  }
+
+  getById(id: string): Observable<T> {
+    return this.http.get<T>(`${this.endpoint}/${id}`);
+  }
+
+  create(data: Omit<T, 'id'>): Observable<T> {
+    return this.http.post<T>(this.endpoint, data);
+  }
+}
+
+// Generic component
+@Component({
+  selector: 'app-data-table',
+  template: `
+    <table>
+      <tr *ngFor="let item of data">
+        <td *ngFor="let column of columns">
+          {{ item[column.key] }}
+        </td>
+      </tr>
+    </table>
+  `,
+})
+export class DataTableComponent<T> {
+  @Input() data: T[] = [];
+  @Input() columns: Array<{ key: keyof T; label: string }> = [];
+}
+```
+
+### Bad Examples
+
+```typescript
+// Service without generics
+@Injectable({
+  providedIn: 'root',
+})
+export class ApiService {
+  constructor(
+    private http: HttpClient,
+    private endpoint: string
+  ) {}
+
+  getAll(): Observable<any[]> {
+    return this.http.get(this.endpoint);
+  }
+
+  getById(id: string): Observable<any> {
+    return this.http.get(`${this.endpoint}/${id}`);
+  }
+
+  create(data: any): Observable<any> {
+    return this.http.post(this.endpoint, data);
+  }
+}
+
+// Component without proper generic usage
+@Component({
+  selector: 'app-data-table',
+  template: `
+    <table>
+      <tr *ngFor="let item of data">
+        <td *ngFor="let column of columns">
+          {{ item[column.key] }}
+        </td>
+      </tr>
+    </table>
+  `,
+})
+export class DataTableComponent {
+  @Input() data: any[] = [];
+  @Input() columns: any[] = [];
+}
+```
+
+## Resources
+
+- [TypeScript Handbook](mdc:https:/www.typescriptlang.org/docs/handbook/intro.html)
+- [Angular TypeScript Configuration](mdc:https:/angular.io/guide/typescript-configuration)
+- [TypeScript Best Practices](mdc:https:/www.typescriptlang.org/docs/handbook/declaration-files/do-s-and-don-ts.html)
