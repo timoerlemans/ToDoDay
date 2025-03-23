@@ -34,7 +34,7 @@ export abstract class TaskBaseComponent {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((user: User | null) => {
         if (!user) {
-          this.router.navigate(['/login']);
+          void this.router.navigate(['/login']);
         }
       });
   }

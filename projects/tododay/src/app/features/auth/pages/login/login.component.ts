@@ -58,7 +58,7 @@ export class LoginComponent {
         .subscribe({
           next: (response: AuthResponse) => {
             if (response.success) {
-              this.router.navigate(['/tasks']);
+              void this.router.navigate(['/tasks']);
               this.notificationService.success(response.message);
             }
             this.isLoading = false;

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, DestroyRef } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AuthService } from '../../../../core/services/auth.service';
@@ -37,11 +37,11 @@ export class UpdatePasswordComponent extends AuthFormBaseComponent {
 
   constructor(
     private readonly authService: AuthService,
-    private readonly router: Router,
+    protected override readonly router: Router,
     private readonly notificationService: NotificationService,
-    private readonly destroyRef: DestroyRef
+    protected override readonly destroyRef: DestroyRef
   ) {
-    super();
+    super(router, destroyRef);
   }
 
   override async onSubmit(): Promise<void> {
@@ -54,14 +54,15 @@ export class UpdatePasswordComponent extends AuthFormBaseComponent {
     try {
       await this.authService.updatePassword(password);
       this.notificationService.success('Password updated successfully!');
-      await this.router.navigate(['/tasks']);
+      void this.router.navigate(['/tasks']);
     } catch (error) {
       this.notificationService.error('Failed to update password');
       console.error('Password update error:', error);
     }
   }
 
-  private passwordMatchValidator(group: FormGroup): { passwordMismatch: boolean } | null {
+  private passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
+    const group = control as FormGroup;
     const password = group.get('password')?.value;
     const confirmPassword = group.get('confirmPassword')?.value;
 

@@ -14,7 +14,7 @@ export const AuthGuard = () => {
     take(1),
     map(isAuthenticated => {
       if (!isAuthenticated) {
-        router.navigate(['/login']);
+        void router.navigate(['/login']);
         return false;
       }
       return true;
@@ -34,10 +34,10 @@ export const PublicGuard = () => {
     take(1),
     map(isAuthenticated => {
       if (isAuthenticated) {
-        router.navigate(['/']);
+        void router.navigate(['/']);
         return false;
       }
       return true;
     })
   );
-}; 
+};

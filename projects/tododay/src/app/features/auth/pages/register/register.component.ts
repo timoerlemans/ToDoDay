@@ -111,7 +111,7 @@ export class RegisterComponent {
           next: (response: AuthResponse) => {
             if (response.success) {
               this.notificationService.success(response.message);
-              this.router.navigate(['/login']);
+              void this.router.navigate(['/login']);
             } else {
               this.notificationService.error(response.message);
             }

@@ -27,11 +27,11 @@ export class ResetPasswordComponent extends AuthFormBaseComponent {
 
   constructor(
     private readonly authService: AuthService,
-    private readonly router: Router,
+    protected override readonly router: Router,
     private readonly notificationService: NotificationService,
-    private readonly destroyRef: DestroyRef
+    protected override readonly destroyRef: DestroyRef
   ) {
-    super();
+    super(router, destroyRef);
   }
 
   override async onSubmit(): Promise<void> {
@@ -44,7 +44,7 @@ export class ResetPasswordComponent extends AuthFormBaseComponent {
     try {
       await this.authService.resetPassword(email);
       this.notificationService.success('Password reset email sent successfully!');
-      await this.router.navigate(['/auth/login']);
+      void this.router.navigate(['/auth/login']);
     } catch (error) {
       this.notificationService.error('Failed to send password reset email');
       console.error('Password reset error:', error);
