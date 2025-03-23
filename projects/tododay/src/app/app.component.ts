@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DestroyRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, Inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NotificationService } from '@tododay/core/services/notification.service';
@@ -26,8 +26,8 @@ import { NotificationService } from '@tododay/core/services/notification.service
 })
 export class AppComponent {
   constructor(
-    private readonly notificationService: NotificationService,
-    private readonly destroyRef: DestroyRef
+    @Inject(NotificationService) private readonly notificationService: NotificationService,
+    @Inject(DestroyRef) private readonly destroyRef: DestroyRef
   ) {
     this.notificationService.notifications$
       .pipe(takeUntilDestroyed(this.destroyRef))

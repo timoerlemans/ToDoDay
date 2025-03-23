@@ -1,21 +1,25 @@
-import { NgModule } from '@angular/core';
+import { NgModule, Optional, SkipSelf } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { HttpClientModule } from '@angular/common/http';
 
 /**
  * Core module containing singleton services and application-wide providers.
  * This module should only be imported in the root AppModule.
  */
 @NgModule({
-  declarations: [],
-  imports: []
+  imports: [
+    CommonModule,
+    HttpClientModule
+  ],
+  providers: []
 })
 export class CoreModule {
-  constructor() {
-    // Ensure CoreModule is imported only by AppModule
-    if (CoreModule.guardConstructor) {
-      throw new Error('CoreModule is already loaded. Import it in the AppModule only.');
+  private static guardConstructor = false;
+
+  constructor(@Optional() @SkipSelf() parentModule?: CoreModule) {
+    if (parentModule) {
+      throw new Error('CoreModule is already loaded. Import it in the AppModule only');
     }
     CoreModule.guardConstructor = true;
   }
-
-  private static guardConstructor = false;
 }
