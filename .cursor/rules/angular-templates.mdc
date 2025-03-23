@@ -4,11 +4,6 @@ globs:
 alwaysApply: true
 ---
 ---
-description: 
-globs: 
-alwaysApply: true
----
----
 description: Angular template standards and best practices
 globs: ['**/*.html']
 alwaysApply: true
@@ -18,16 +13,16 @@ alwaysApply: true
 
 ## Overview
 
-Implementeer consistente en onderhoudbare templates in Angular applicaties met best practices voor template syntax en structuur.
+Implement consistent and maintainable templates in Angular applications with best practices for template syntax and structure.
 
 ## Rules
 
 ### Template Syntax
 
-- Gebruik nieuwe Angular template syntax (@if, @for)
-- Vermijd complexe template expressies
-- Gebruik trackBy met @for
-- Implementeer template referenties correct
+- Use new Angular template syntax (@if, @for)
+- Avoid complex template expressions
+- Use trackBy with @for
+- Implement proper template references
 
 ✅ Good:
 

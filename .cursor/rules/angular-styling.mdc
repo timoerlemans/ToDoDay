@@ -1,14 +1,4 @@
 ---
-description: 
-globs: 
-alwaysApply: true
----
----
-description: 
-globs: 
-alwaysApply: true
----
----
 description: Angular styling standards and best practices
 globs: ['**/*.scss', '**/*.css', '**/*.sass']
 alwaysApply: true
@@ -18,16 +8,16 @@ alwaysApply: true
 
 ## Overview
 
-Implementeer consistente en onderhoudbare styling in Angular applicaties met SCSS/CSS best practices.
+Implement consistent and maintainable styling in Angular applications with SCSS/CSS best practices.
 
 ## Rules
 
-### SCSS Structuur
+### SCSS Structure
 
-- Gebruik SCSS voor betere onderhoudbaarheid
-- Implementeer BEM methodologie
-- Organiseer styles in modules
-- Gebruik variabelen voor herbruikbare waardes
+- Use SCSS for better maintainability
+- Implement BEM methodology
+- Organize styles in modules
+- Use variables for reusable values
 
 ✅ Good:
 
