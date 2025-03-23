@@ -1,10 +1,11 @@
 import { Component, OnInit, ChangeDetectionStrategy, inject, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ThemeService, Theme } from '@tododay/app/core/services/theme.service';
+import { ThemeService, Theme } from '../../services/theme.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-    selector: 'app-theme-toggle',
+    selector: 'tododay-theme-toggle',
+    standalone: true,
     imports: [CommonModule],
     templateUrl: './theme-toggle.component.html',
     styleUrls: ['./theme-toggle.component.scss'],
