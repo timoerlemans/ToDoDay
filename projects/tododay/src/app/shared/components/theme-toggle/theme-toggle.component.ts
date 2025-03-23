@@ -1,7 +1,7 @@
-import { Component, OnInit, ChangeDetectionStrategy, inject, OnDestroy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ThemeService, Theme } from '../../../core/services/theme.service';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
     selector: 'tododay-theme-toggle',
@@ -11,21 +11,9 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     styleUrls: ['./theme-toggle.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ThemeToggleComponent implements OnInit, OnDestroy {
-  protected currentTheme: Theme = 'system';
+export class ThemeToggleComponent {
   private readonly themeService = inject(ThemeService);
-
-  ngOnInit(): void {
-    this.themeService.theme$
-      .pipe(takeUntilDestroyed())
-      .subscribe((theme: Theme) => {
-        this.currentTheme = theme;
-      });
-  }
-
-  ngOnDestroy(): void {
-    // Cleanup indien nodig
-  }
+  protected readonly currentTheme = toSignal(this.themeService.theme$, { initialValue: 'system' as Theme });
 
   toggleTheme(): void {
     this.themeService.toggleTheme();
@@ -34,4 +22,4 @@ export class ThemeToggleComponent implements OnInit, OnDestroy {
   setTheme(theme: Theme): void {
     this.themeService.setTheme(theme);
   }
-} 
+}

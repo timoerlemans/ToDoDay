@@ -8,8 +8,10 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class StorageService {
+  private readonly AUTH_PREFIX = 'sb-';
+
   /**
-   * Retrieves an item from local storage
+   * Retrieves an item from storage
    * @param key The key to retrieve
    * @returns The stored value or null if not found
    */
@@ -18,7 +20,7 @@ export class StorageService {
   }
 
   /**
-   * Stores an item in local storage
+   * Stores an item in storage
    * @param key The key to store under
    * @param value The value to store
    */
@@ -27,7 +29,7 @@ export class StorageService {
   }
 
   /**
-   * Removes an item from local storage
+   * Removes an item from storage
    * @param key The key to remove
    */
   removeItem(key: string): void {
@@ -35,7 +37,7 @@ export class StorageService {
   }
 
   /**
-   * Clears all items from local storage
+   * Clears all items from storage
    */
   clear(): void {
     localStorage.clear();

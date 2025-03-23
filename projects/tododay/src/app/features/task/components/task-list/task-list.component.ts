@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DestroyRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { Task, TaskStatus } from '../../../../core/models/task';
 import { TaskService } from '../../../../core/services/task.service';
@@ -23,10 +23,10 @@ export class TaskListComponent extends TaskBaseComponent {
     destroyRef: DestroyRef,
     taskService: TaskService,
     notificationService: NotificationService,
-    authService: AuthService
+    authService: AuthService,
+    cdr: ChangeDetectorRef
   ) {
-    super(router, destroyRef, taskService, notificationService, authService);
-    this.loadTasks();
+    super(router, destroyRef, taskService, notificationService, authService, cdr);
   }
 
   /**
@@ -38,7 +38,6 @@ export class TaskListComponent extends TaskBaseComponent {
       .subscribe({
         next: () => {
           this.notificationService.success('Task created successfully');
-          this.loadTasks();
         },
         error: (error: Error) => {
           this.notificationService.error('Failed to create task');
@@ -55,7 +54,6 @@ export class TaskListComponent extends TaskBaseComponent {
       .subscribe({
         next: () => {
           this.notificationService.success('Task status updated successfully');
-          this.loadTasks();
         },
         error: (error: Error) => {
           this.notificationService.error('Failed to update task status');
@@ -72,24 +70,9 @@ export class TaskListComponent extends TaskBaseComponent {
       .subscribe({
         next: () => {
           this.notificationService.success('Task deleted successfully');
-          this.loadTasks();
         },
         error: (error: Error) => {
           this.notificationService.error('Failed to delete task');
-        }
-      });
-  }
-
-  protected override loadTasks(): void {
-    this.taskService.getTasks()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (tasks: Task[]) => {
-          this.activeTasks = tasks.filter((task) => task.status !== TaskStatus.DONE);
-          this.completedTasks = tasks.filter((task) => task.status === TaskStatus.DONE);
-        },
-        error: (error: Error) => {
-          this.notificationService.error('Failed to load tasks');
         }
       });
   }

@@ -59,6 +59,7 @@ export interface CreateTaskDto {
   due_date?: Date;
   start_date?: Date;
   notify_at?: Date;
+  status?: TaskStatus;
 }
 
 export interface UpdateTaskDto {

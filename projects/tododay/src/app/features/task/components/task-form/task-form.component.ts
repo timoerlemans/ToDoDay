@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Task, TaskPriority, CreateTaskDto } from '../../../../core/models/task';
+import { Task, TaskPriority, CreateTaskDto, TaskStatus } from '../../../../core/models/task';
 
 interface TaskForm {
   title: FormControl<string>;
@@ -67,7 +67,8 @@ export class TaskFormComponent {
         labels: formData.labels || undefined,
         due_date: formData.due_date ? new Date(formData.due_date) : undefined,
         start_date: formData.start_date ? new Date(formData.start_date) : undefined,
-        notify_at: formData.notify_at ? new Date(formData.notify_at) : undefined
+        notify_at: formData.notify_at ? new Date(formData.notify_at) : undefined,
+        status: TaskStatus.TODO
       };
       this.submitted.emit(taskData as unknown as Task);
       this.taskForm.reset();

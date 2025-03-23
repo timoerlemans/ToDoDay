@@ -1,4 +1,4 @@
-import { Component, DestroyRef } from '@angular/core';
+import { Component, DestroyRef, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { Task, TaskStatus } from '../../../core/models/task';
 import { AuthService } from '../../../core/services/auth.service';
@@ -12,8 +12,8 @@ import { User } from '@supabase/supabase-js';
  * Provides common task operations and state management.
  */
 export abstract class TaskBaseComponent {
-  protected activeTasks: Task[] = [];
-  protected completedTasks: Task[] = [];
+  public activeTasks: Task[] = [];
+  public completedTasks: Task[] = [];
   protected availableProjects: string[] = [];
 
   constructor(
@@ -21,9 +21,11 @@ export abstract class TaskBaseComponent {
     protected readonly destroyRef: DestroyRef,
     protected readonly taskService: TaskService,
     protected readonly notificationService: NotificationService,
-    protected readonly authService: AuthService
+    protected readonly authService: AuthService,
+    protected readonly cdr: ChangeDetectorRef
   ) {
     this.setupAuthGuard();
+    this.setupTaskSubscription();
   }
 
   /**
@@ -40,18 +42,19 @@ export abstract class TaskBaseComponent {
   }
 
   /**
-   * Loads tasks and separates them into active and completed tasks
+   * Sets up subscription to task updates
    */
-  protected loadTasks(): void {
-    this.taskService.getTasks()
+  private setupTaskSubscription(): void {
+    this.taskService.tasks$
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((tasks: Task[]) => {
-        this.activeTasks = tasks.filter((task) => task.status !== TaskStatus.DONE);
+      .subscribe(tasks => {
+        this.activeTasks = tasks.filter((task) => !task.status || task.status !== TaskStatus.DONE);
         this.completedTasks = tasks.filter((task) => task.status === TaskStatus.DONE);
         this.availableProjects = [...new Set(tasks
           .filter((task): task is Task & { project: string } => task.project !== undefined)
           .map(task => task.project)
         )];
+        this.cdr.markForCheck();
       });
   }
 
@@ -61,8 +64,11 @@ export abstract class TaskBaseComponent {
   protected createTask(task: Task): void {
     this.taskService.createTask(task)
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => {
-        this.loadTasks();
+      .subscribe({
+        error: (error: Error) => {
+          console.error('Error creating task:', error);
+          this.notificationService.error('Failed to create task');
+        }
       });
   }
 
@@ -72,8 +78,11 @@ export abstract class TaskBaseComponent {
   protected updateTaskStatus(taskId: string, status: TaskStatus): void {
     this.taskService.updateTask(taskId, { status })
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => {
-        this.loadTasks();
+      .subscribe({
+        error: (error: Error) => {
+          console.error('Error updating task:', error);
+          this.notificationService.error('Failed to update task');
+        }
       });
   }
 
@@ -83,8 +92,11 @@ export abstract class TaskBaseComponent {
   protected deleteTask(taskId: string): void {
     this.taskService.deleteTask(taskId)
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => {
-        this.loadTasks();
+      .subscribe({
+        error: (error: Error) => {
+          console.error('Error deleting task:', error);
+          this.notificationService.error('Failed to delete task');
+        }
       });
   }
 }

@@ -8,6 +8,8 @@ import { TaskService } from '../../core/services/task.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { AuthService } from '../../core/services/auth.service';
 import { SharedModule } from '../../shared/shared.module';
+import { ThemeToggleComponent } from '../../shared/components/theme-toggle/theme-toggle.component';
+import { TaskRoutingModule } from './task-routing.module';
 
 @NgModule({
   declarations: [
@@ -18,7 +20,9 @@ import { SharedModule } from '../../shared/shared.module';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    SharedModule
+    SharedModule,
+    ThemeToggleComponent,
+    TaskRoutingModule
   ],
   providers: [
     TaskService,
