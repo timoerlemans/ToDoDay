@@ -7,8 +7,9 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from '../../../../core/services/auth.service';
+import { AuthService, AuthResponse, AuthError } from '../../../../core/services/auth.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { NotificationService } from '../../../../core/services/notification.service';
 
 interface RegisterForm {
   name: FormControl<string>;
@@ -67,7 +68,8 @@ export class RegisterComponent {
   constructor(
     private readonly authService: AuthService,
     private readonly router: Router,
-    private readonly destroyRef: DestroyRef
+    private readonly destroyRef: DestroyRef,
+    private readonly notificationService: NotificationService
   ) {}
 
   /**
@@ -103,17 +105,21 @@ export class RegisterComponent {
       const { email, password, name } = this.registerForm.getRawValue();
 
       this.authService
-        .signUp(email, password, name)
+        .signUp(email, password)
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
-          next: response => {
+          next: (response: AuthResponse) => {
             if (response.success) {
+              this.notificationService.success(response.message);
               this.router.navigate(['/login']);
+            } else {
+              this.notificationService.error(response.message);
             }
             this.isLoading.set(false);
           },
-          error: error => {
+          error: (error: AuthError) => {
             console.error('Registration error:', error);
+            this.notificationService.error(error.message || 'Registration failed. Please try again.');
             this.isLoading.set(false);
           },
         });

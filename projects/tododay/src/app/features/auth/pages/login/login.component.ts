@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, DestroyRef } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { AuthService } from '../../../../core/services/auth.service';
+import { AuthService, AuthResponse, AuthError } from '../../../../core/services/auth.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 
 interface LoginForm {
@@ -56,16 +56,16 @@ export class LoginComponent {
         .signIn(email, password)
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
-          next: response => {
+          next: (response: AuthResponse) => {
             if (response.success) {
               this.router.navigate(['/tasks']);
-              this.notificationService.success('Successfully logged in');
+              this.notificationService.success(response.message);
             }
             this.isLoading = false;
           },
-          error: error => {
+          error: (error: AuthError) => {
             console.error('Login error:', error);
-            this.notificationService.error('Failed to log in. Please check your credentials.');
+            this.notificationService.error(error.message || 'Failed to log in. Please check your credentials.');
             this.isLoading = false;
           },
         });
