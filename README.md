@@ -1,4 +1,4 @@
-# TodoDay
+# ToDoDay
 
 A modern todo application built with Angular and Supabase, featuring real-time task management and a beautiful user interface.
 
@@ -45,7 +45,6 @@ A modern todo application built with Angular and Supabase, featuring real-time t
 - Angular Signals for state management
 - Jest for unit testing
 - Cypress for end-to-end testing
-- Angular Material for UI components
 - Font Awesome for icons
 
 ## Development
