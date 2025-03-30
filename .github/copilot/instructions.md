@@ -18,9 +18,8 @@ These instructions define the standards and practices that should be followed wh
 - Use strict type checking - avoid any type
 - Use reactive forms instead of template-driven forms
 - Use OnPush change detection strategy for better performance
-- Implement trackBy functions in ngFor directives
 - Use proper component composition with content projection
-- Document all public methods, properties, and classes with JSDoc
+- Document all public methods, properties, and classes with TSDoc
 - Follow English-only convention for all comments, variables, and UI text
 - Use Angular signals for state management
 - Use SCSS with BEM methodology for styling
@@ -58,10 +57,12 @@ These instructions define the standards and practices that should be followed wh
 
 - Use CSS variables for theming
 - Implement responsive design
+- Use a mobile-first design approach
 - Use mixins for reusable styles
 - Maintain proper color contrast for accessibility
 - Use **Tailwind CSS** for utility-first styling
 - Use **SCSS** for custom components and theming
+- Use CSS variables where possible
 
 ## Testing
 
