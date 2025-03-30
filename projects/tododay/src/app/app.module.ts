@@ -1,7 +1,7 @@
 import { NgModule, isDevMode } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
-import { provideHttpClient, withInterceptors, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClient, withInterceptors, withInterceptorsFromDi } from '@angular/common/http';
 import { ServiceWorkerModule, provideServiceWorker } from '@angular/service-worker';
 
 import { AppComponent } from '@tododay/app.component';
@@ -16,12 +16,18 @@ import { securityInterceptor } from '@tododay/core/interceptors/security.interce
  * The AppModule is the main entry point of the application.
  * It imports all necessary modules and bootstraps the AppComponent.
  */
-@NgModule({ declarations: [AppComponent],
-    bootstrap: [AppComponent], imports: [BrowserModule,
-        CoreModule,
-        RouterModule.forRoot(routes),
-        ServiceWorkerModule.register('ngsw-worker.js', {
-            enabled: !isDevMode(),
-            registrationStrategy: 'registerWhenStable:30000',
-        })], providers: [provideHttpClient(withInterceptors([securityInterceptor])), provideHttpClient(withInterceptorsFromDi())] })
+@NgModule({
+  declarations: [AppComponent],
+  bootstrap: [AppComponent],
+  imports: [
+    BrowserModule,
+    CoreModule,
+    RouterModule.forRoot(routes),
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      registrationStrategy: 'registerWhenStable:30000',
+    }),
+  ],
+  providers: [provideHttpClient(withInterceptors([securityInterceptor]), withInterceptorsFromDi())],
+})
 export class AppModule {}
