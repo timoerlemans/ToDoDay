@@ -1,9 +1,9 @@
 import { ApplicationConfig } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { routes } from './app.routes';
+import { routes } from '@tododay/app.routes';
 import { provideClientHydration } from '@angular/platform-browser';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { securityInterceptor } from './core/interceptors/security.interceptor';
+import { securityInterceptor } from '@tododay/core/interceptors/security.interceptor';
 
 /**
  * Application-wide configuration.
@@ -16,6 +16,6 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
     provideClientHydration(),
-    provideHttpClient(withInterceptors([securityInterceptor]))
-  ]
+    provideHttpClient(withInterceptors([securityInterceptor])),
+  ],
 };
