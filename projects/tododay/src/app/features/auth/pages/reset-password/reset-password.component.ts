@@ -2,9 +2,9 @@ import { ChangeDetectionStrategy, Component, DestroyRef } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { AuthService } from '../../../../core/services/auth.service';
-import { NotificationService } from '../../../../core/services/notification.service';
-import { AuthFormBaseComponent } from '../../components/auth-form-base.component';
+import { AuthService } from '@tododay/core/services/auth.service';
+import { NotificationService } from '@tododay/core/services/notification.service';
+import { AuthFormBaseComponent } from '@tododay/features/auth/components/auth-form-base.component';
 
 /**
  * Reset password component that handles password reset requests.
@@ -20,8 +20,8 @@ export class ResetPasswordComponent extends AuthFormBaseComponent {
   override form = new FormGroup({
     email: new FormControl('', {
       nonNullable: true,
-      validators: [Validators.required, Validators.email]
-    })
+      validators: [Validators.required, Validators.email],
+    }),
   });
 
   constructor(
@@ -40,7 +40,8 @@ export class ResetPasswordComponent extends AuthFormBaseComponent {
 
     const { email } = this.form.getRawValue();
 
-    this.authService.resetPassword(email)
+    this.authService
+      .resetPassword(email)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
@@ -49,7 +50,7 @@ export class ResetPasswordComponent extends AuthFormBaseComponent {
         },
         error: () => {
           this.notificationService.error('Failed to send password reset email');
-        }
+        },
       });
   }
 }

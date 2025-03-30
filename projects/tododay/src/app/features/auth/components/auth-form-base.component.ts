@@ -1,14 +1,14 @@
 import { Component, DestroyRef, computed, signal } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
-import { FormErrors } from '../interfaces/auth-forms.interface';
+import { FormErrors } from '@tododay/features/auth/interfaces/auth-forms.interface';
 
 /**
  * Base component for authentication forms.
  * Provides common functionality for login and register forms.
  */
 @Component({
-  template: ''
+  template: '',
 })
 export abstract class AuthFormBaseComponent {
   private readonly submitting = signal(false);

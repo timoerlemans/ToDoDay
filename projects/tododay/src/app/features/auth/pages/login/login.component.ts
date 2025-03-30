@@ -2,8 +2,8 @@ import { ChangeDetectionStrategy, Component, DestroyRef } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { AuthService, AuthResponse, AuthError } from '../../../../core/services/auth.service';
-import { NotificationService } from '../../../../core/services/notification.service';
+import { AuthService, AuthResponse, AuthError } from '@tododay/core/services/auth.service';
+import { NotificationService } from '@tododay/core/services/notification.service';
 
 interface LoginForm {
   email: FormControl<string>;
@@ -65,7 +65,9 @@ export class LoginComponent {
           },
           error: (error: AuthError) => {
             console.error('Login error:', error);
-            this.notificationService.error(error.message || 'Failed to log in. Please check your credentials.');
+            this.notificationService.error(
+              error.message || 'Failed to log in. Please check your credentials.'
+            );
             this.isLoading = false;
           },
         });

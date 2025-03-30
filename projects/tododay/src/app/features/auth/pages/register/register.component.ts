@@ -7,9 +7,9 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService, AuthResponse, AuthError } from '../../../../core/services/auth.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { NotificationService } from '../../../../core/services/notification.service';
+import { AuthService, AuthResponse, AuthError } from '@tododay/core/services/auth.service';
+import { NotificationService } from '@tododay/core/services/notification.service';
 
 interface RegisterForm {
   name: FormControl<string>;
@@ -119,7 +119,9 @@ export class RegisterComponent {
           },
           error: (error: AuthError) => {
             console.error('Registration error:', error);
-            this.notificationService.error(error.message || 'Registration failed. Please try again.');
+            this.notificationService.error(
+              error.message || 'Registration failed. Please try again.'
+            );
             this.isLoading.set(false);
           },
         });
