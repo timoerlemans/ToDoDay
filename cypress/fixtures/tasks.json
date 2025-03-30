@@ -1,0 +1,26 @@
+[
+  {
+    "id": "1",
+    "title": "Complete project documentation",
+    "description": "Write comprehensive docs for API endpoints",
+    "status": "TODO",
+    "created_at": "2025-03-25T12:00:00Z",
+    "user_id": "test-user-id"
+  },
+  {
+    "id": "2",
+    "title": "Fix navigation bug",
+    "description": "Address the issue with back button not working correctly",
+    "status": "IN_PROGRESS",
+    "created_at": "2025-03-26T14:30:00Z",
+    "user_id": "test-user-id"
+  },
+  {
+    "id": "3",
+    "title": "Implement dark mode",
+    "description": "Add toggle for dark/light theme",
+    "status": "DONE",
+    "created_at": "2025-03-27T09:15:00Z",
+    "user_id": "test-user-id"
+  }
+]
