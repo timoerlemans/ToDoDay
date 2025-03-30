@@ -6,5 +6,6 @@ export interface Environment {
   };
   openai: {
     key: string;
+    apiUrl: string;
   };
 }

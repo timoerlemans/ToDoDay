@@ -5,6 +5,7 @@ export const environment = {
     key: '${SUPABASE_KEY}'
   },
   openai: {
-    key: '${OPENAI_API_KEY}'
+    key: '${OPENAI_API_KEY}',
+    apiUrl: '${OPENAI_API_URL}'
   }
 };
