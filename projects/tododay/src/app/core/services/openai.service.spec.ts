@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { OpenaiService } from './openai.service';
+import { OpenaiService } from '@tododay/core/services/openai.service';
 
 describe('OpenaiService', () => {
   let service: OpenaiService;

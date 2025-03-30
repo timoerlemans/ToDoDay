@@ -1,10 +1,11 @@
-import { Injectable, signal } from '@angular/core';
-import { toObservable } from '@angular/core/rxjs-interop';
+import { Injectable, signal, DestroyRef } from '@angular/core';
+import { toObservable, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Observable, from, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
-import { SupabaseService } from './supabase.service';
-import { NotificationService } from './notification.service';
 import { User } from '@supabase/supabase-js';
+
+import { SupabaseService } from '@tododay/core/services/supabase.service';
+import { NotificationService } from '@tododay/core/services/notification.service';
 
 /**
  * Authentication state interface
@@ -36,12 +37,12 @@ export interface AuthError {
  * Manages user authentication state and provides methods for sign in, sign up, and sign out.
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
   private readonly authState = signal<AuthState>({
     isAuthenticated: false,
-    user: null
+    user: null,
   });
 
   readonly authState$ = toObservable(this.authState);
@@ -49,12 +50,13 @@ export class AuthService {
 
   constructor(
     private readonly supabaseService: SupabaseService,
-    private readonly notificationService: NotificationService
+    private readonly notificationService: NotificationService,
+    private readonly destroyRef: DestroyRef
   ) {
-    this.supabaseService.currentUser$.subscribe(user => {
+    this.supabaseService.currentUser$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(user => {
       this.authState.set({
         isAuthenticated: !!user,
-        user
+        user,
       });
     });
   }
@@ -63,9 +65,7 @@ export class AuthService {
    * Checks if a user is currently authenticated
    */
   isAuthenticated(): Observable<boolean> {
-    return this.supabaseService.currentUser$.pipe(
-      map(user => !!user)
-    );
+    return this.supabaseService.currentUser$.pipe(map(user => !!user));
   }
 
   /**
@@ -77,7 +77,7 @@ export class AuthService {
     return from(this.supabaseService.signIn(email, password)).pipe(
       map(() => ({
         success: true,
-        message: 'Successfully logged in'
+        message: 'Successfully logged in',
       })),
       catchError((error: AuthError) => {
         this.notificationService.error(this.getErrorMessage(error));
@@ -95,7 +95,7 @@ export class AuthService {
     return from(this.supabaseService.signUp(email, password)).pipe(
       map(() => ({
         success: true,
-        message: 'Successfully registered'
+        message: 'Successfully registered',
       })),
       catchError((error: AuthError) => {
         this.notificationService.error(this.getErrorMessage(error));
@@ -111,7 +111,7 @@ export class AuthService {
     return from(this.supabaseService.signOut()).pipe(
       map(() => ({
         success: true,
-        message: 'Successfully logged out'
+        message: 'Successfully logged out',
       })),
       catchError((error: AuthError) => {
         this.notificationService.error(this.getErrorMessage(error));

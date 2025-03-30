@@ -4,8 +4,8 @@ import { Observable, throwError } from 'rxjs';
 import { DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { catchError, retry, timeout } from 'rxjs/operators';
-import { environment } from '../../../environments/environment';
-import { TaskEnrichment } from '../models/task';
+import { environment } from '@tododay/../environments/environment';
+import { TaskEnrichment } from '@tododay/core/models/task';
 
 /**
  * Interface for OpenAI API errors
@@ -49,7 +49,7 @@ Today is ${new Date().toISOString().split('T')[0]}.
  * Provides methods to enrich tasks with AI-generated metadata.
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class OpenaiService {
   private readonly apiUrl = environment.openai.apiUrl;
@@ -68,15 +68,17 @@ export class OpenaiService {
    * @throws An error if the API call fails
    */
   enrichTaskTitle(title: string): Observable<TaskEnrichment> {
-    return this.http.post<TaskEnrichment>(`${this.apiUrl}/enrich-task`, {
-      description: title,
-      systemPrompt: SYSTEM_PROMPT
-    }).pipe(
-      timeout(this.timeout),
-      retry(this.maxRetries),
-      catchError(error => this.handleError(error)),
-      takeUntilDestroyed(this.destroyRef)
-    );
+    return this.http
+      .post<TaskEnrichment>(`${this.apiUrl}/enrich-task`, {
+        description: title,
+        systemPrompt: SYSTEM_PROMPT,
+      })
+      .pipe(
+        timeout(this.timeout),
+        retry(this.maxRetries),
+        catchError(error => this.handleError(error)),
+        takeUntilDestroyed(this.destroyRef)
+      );
   }
 
   /**
@@ -86,15 +88,17 @@ export class OpenaiService {
    * @throws An error if the API call fails
    */
   enrichTask(taskDescription: string): Observable<TaskEnrichment> {
-    return this.http.post<TaskEnrichment>(`${this.apiUrl}/enrich-task`, {
-      description: taskDescription,
-      systemPrompt: SYSTEM_PROMPT
-    }).pipe(
-      timeout(this.timeout),
-      retry(this.maxRetries),
-      catchError(error => this.handleError(error)),
-      takeUntilDestroyed(this.destroyRef)
-    );
+    return this.http
+      .post<TaskEnrichment>(`${this.apiUrl}/enrich-task`, {
+        description: taskDescription,
+        systemPrompt: SYSTEM_PROMPT,
+      })
+      .pipe(
+        timeout(this.timeout),
+        retry(this.maxRetries),
+        catchError(error => this.handleError(error)),
+        takeUntilDestroyed(this.destroyRef)
+      );
   }
 
   /**
@@ -120,14 +124,14 @@ export class OpenaiService {
       return {
         status: error.status,
         message: error.message,
-        name: error.name
+        name: error.name,
       };
     }
 
     return {
       status: 0,
       message: error.message,
-      name: error.name
+      name: error.name,
     };
   }
 
