@@ -5,13 +5,30 @@ import { SupabaseService } from '@tododay/core/services/supabase.service';
 import { NotificationService } from '@tododay/core/services/notification.service';
 import { Task, TaskStatus } from '@tododay/core/models/task';
 
+/**
+ * Service responsible for managing tasks in the application.
+ * Provides methods to create, read, update, and delete tasks,
+ * as well as access to an observable of all tasks.
+ */
 @Injectable({
   providedIn: 'root',
 })
 export class TaskService {
   private readonly tasksSubject = new BehaviorSubject<Task[]>([]);
+
+  /**
+   * Observable of all tasks for the current user.
+   * Components can subscribe to this to react to task changes.
+   */
   readonly tasks$ = this.tasksSubject.asObservable();
 
+  /**
+   * Creates an instance of the TaskService.
+   * Automatically loads the current user's tasks on initialization.
+   *
+   * @param supabase - Service to interact with Supabase
+   * @param notificationService - Service to display notifications
+   */
   constructor(
     private readonly supabase: SupabaseService,
     private readonly notificationService: NotificationService
@@ -19,12 +36,19 @@ export class TaskService {
     this.loadTasks().subscribe();
   }
 
+  /**
+   * Gets an observable of all tasks for the current user.
+   *
+   * @returns Observable of task array
+   */
   getTasks(): Observable<Task[]> {
     return this.tasks$;
   }
 
   /**
-   * Load all tasks for the current user
+   * Load all tasks for the current user.
+   *
+   * @returns Observable that completes when tasks are loaded
    */
   private loadTasks(): Observable<void> {
     return from(
@@ -55,7 +79,11 @@ export class TaskService {
   }
 
   /**
-   * Create a new task
+   * Creates a new task.
+   *
+   * @param task - The task object to create
+   * @returns Observable of the created task
+   * @throws Error when user is not authenticated or task creation fails
    */
   createTask(task: Task): Observable<Task> {
     return from(this.supabase.getClient().auth.getSession()).pipe(
@@ -89,7 +117,12 @@ export class TaskService {
   }
 
   /**
-   * Update an existing task
+   * Updates an existing task.
+   *
+   * @param id - ID of the task to update
+   * @param updates - Partial task object containing fields to update
+   * @returns Observable of the updated task
+   * @throws Error when task update fails
    */
   updateTask(id: string, updates: Partial<Task>): Observable<Task> {
     return from(this.supabase.getClient().from('tasks').update(updates).eq('id', id).select()).pipe(
@@ -108,7 +141,10 @@ export class TaskService {
   }
 
   /**
-   * Delete a task
+   * Deletes a task by ID.
+   *
+   * @param id - ID of the task to delete
+   * @returns Observable that completes when the task is deleted
    */
   deleteTask(id: string): Observable<void> {
     return from(this.supabase.getClient().from('tasks').delete().eq('id', id)).pipe(

@@ -8,27 +8,34 @@ import { SupabaseService } from '@tododay/core/services/supabase.service';
 import { NotificationService } from '@tododay/core/services/notification.service';
 
 /**
- * Authentication state interface
+ * Represents the authentication state of the application.
  */
 export interface AuthState {
+  /** Whether a user is currently authenticated */
   isAuthenticated: boolean;
+  /** The currently authenticated user, or null if not authenticated */
   user: User | null;
 }
 
 /**
- * Authentication response interface
+ * Represents the response from an authentication operation.
  */
 export interface AuthResponse {
+  /** Whether the operation was successful */
   success: boolean;
+  /** A message describing the result of the operation */
   message: string;
 }
 
 /**
- * Authentication error interface
+ * Represents an authentication error.
  */
 export interface AuthError {
+  /** Error message */
   message: string;
+  /** HTTP status code, if applicable */
   status?: number;
+  /** Error name or type */
   name?: string;
 }
 
@@ -45,9 +52,24 @@ export class AuthService {
     user: null,
   });
 
+  /**
+   * Observable of the current authentication state.
+   */
   readonly authState$ = toObservable(this.authState);
+
+  /**
+   * Observable of the currently authenticated user.
+   */
   readonly currentUser$ = this.authState$.pipe(map(state => state.user));
 
+  /**
+   * Creates an instance of the AuthService.
+   * Sets up subscription to user changes from Supabase.
+   *
+   * @param supabaseService - Service to interact with Supabase authentication
+   * @param notificationService - Service to display notifications
+   * @param destroyRef - Reference used to automatically unsubscribe from observables
+   */
   constructor(
     private readonly supabaseService: SupabaseService,
     private readonly notificationService: NotificationService,
@@ -62,16 +84,21 @@ export class AuthService {
   }
 
   /**
-   * Checks if a user is currently authenticated
+   * Checks if a user is currently authenticated.
+   *
+   * @returns An Observable that emits true if a user is authenticated, false otherwise
    */
   isAuthenticated(): Observable<boolean> {
     return this.supabaseService.currentUser$.pipe(map(user => !!user));
   }
 
   /**
-   * Signs in a user with email and password
-   * @param email User's email
-   * @param password User's password
+   * Signs in a user with email and password.
+   *
+   * @param email - User's email address
+   * @param password - User's password
+   * @returns An Observable of the authentication response
+   * @throws AuthError if sign in fails
    */
   signIn(email: string, password: string): Observable<AuthResponse> {
     return from(this.supabaseService.signIn(email, password)).pipe(
@@ -87,9 +114,12 @@ export class AuthService {
   }
 
   /**
-   * Signs up a new user with email and password
-   * @param email User's email
-   * @param password User's password
+   * Signs up a new user with email and password.
+   *
+   * @param email - User's email address
+   * @param password - User's password
+   * @returns An Observable of the authentication response
+   * @throws AuthError if sign up fails
    */
   signUp(email: string, password: string): Observable<AuthResponse> {
     return from(this.supabaseService.signUp(email, password)).pipe(
@@ -105,7 +135,10 @@ export class AuthService {
   }
 
   /**
-   * Signs out the current user
+   * Signs out the current user.
+   *
+   * @returns An Observable of the authentication response
+   * @throws AuthError if sign out fails
    */
   signOut(): Observable<AuthResponse> {
     return from(this.supabaseService.signOut()).pipe(
@@ -121,8 +154,12 @@ export class AuthService {
   }
 
   /**
-   * Resets the password for a user with the given email
-   * @param email The user's email
+   * Resets the password for a user with the given email.
+   * Sends a password reset email to the user.
+   *
+   * @param email - The user's email address
+   * @returns An Observable that completes when the password reset email is sent
+   * @throws AuthError if the password reset fails
    */
   resetPassword(email: string): Observable<void> {
     return from(this.supabaseService.resetPassword(email)).pipe(
@@ -136,6 +173,13 @@ export class AuthService {
     );
   }
 
+  /**
+   * Updates the password for the currently authenticated user.
+   *
+   * @param password - The new password to set
+   * @returns An Observable that completes when the password is updated
+   * @throws AuthError if the password update fails
+   */
   updatePassword(password: string): Observable<void> {
     return from(this.supabaseService.updatePassword(password)).pipe(
       map(() => {
@@ -149,8 +193,10 @@ export class AuthService {
   }
 
   /**
-   * Gets a user-friendly error message from an authentication error
-   * @param error The authentication error
+   * Gets a user-friendly error message from an authentication error.
+   *
+   * @param error - The authentication error
+   * @returns A user-friendly error message
    */
   private getErrorMessage(error: AuthError): string {
     if (error?.message) {
@@ -160,7 +206,9 @@ export class AuthService {
   }
 
   /**
-   * Gets the current authentication state
+   * Gets the current authentication state.
+   *
+   * @returns An Observable of the current authentication state
    */
   getAuthState(): Observable<AuthState> {
     return this.authState$;
