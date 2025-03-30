@@ -30,6 +30,7 @@ These instructions define the standards and practices that should be followed wh
 - **Add takeUntilDestroyed() operator** to every subscription
 - **Use constructor-based injection** instead of inject() function
 - **Use functional guards instead of class-based guards**, which are an exception on the `constructor-based injection` instruction.
+- **Use Angular CLI to update** to a newer version of Angular when needed
 
 ## Code Structure
 
@@ -43,6 +44,7 @@ These instructions define the standards and practices that should be followed wh
 - **Always use separate files** for templates (.html) and styles (.scss or .css) instead of inline definitions
 - Consistently name files using kebab-case (todo-list.component.ts) and classes using PascalCase (TodoListComponent)
 - Use Angular CLI commands to generate components, services, modules, and pipes for consistent project structure
+- **Make sure the code and folder structure follows Angular conventions**
 
 ## Templates
 
@@ -52,6 +54,7 @@ These instructions define the standards and practices that should be followed wh
 - Use ngTemplateOutlet for complex template composition
 - Avoid complex logic in templates
 - Use trackBy with @for
+- **Make sure all texts are in English**
 
 ## Styling
 
@@ -63,6 +66,7 @@ These instructions define the standards and practices that should be followed wh
 - Use **Tailwind CSS** for utility-first styling
 - Use **SCSS** for custom components and theming
 - Use CSS variables where possible
+- **Use BEM methodology in SCSS**
 
 ## Testing
 
@@ -154,3 +158,13 @@ These instructions define the standards and practices that should be followed wh
 - Use the following commit types: feat, fix, docs, style, refactor, perf, test, build, ci, chore
 - Structure commit messages with type(scope?), subject, body, and footer
 - Use commit messages in English only
+- **Make sure to do atomic commits using the commitizen naming convention**
+
+## Code Style & Formatting
+
+- **Use Prettier for opinionated code formatting**
+- **Make sure Prettier and ESLint are configured to be compatible with each other**
+- Follow consistent code style across the project
+- Use meaningful variable and function names
+- Prefer const over let when variables aren't reassigned
+- Avoid magic numbers and strings, use constants instead
