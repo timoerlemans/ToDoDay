@@ -12,10 +12,10 @@ import { AuthFormBaseComponent } from '@tododay/features/auth/components/auth-fo
  */
 @Component({
   selector: 'app-reset-password',
+  standalone: false,
   templateUrl: './reset-password.component.html',
   styleUrls: ['./reset-password.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: false
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ResetPasswordComponent extends AuthFormBaseComponent {
   override form = new FormGroup({

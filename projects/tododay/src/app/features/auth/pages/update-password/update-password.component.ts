@@ -12,10 +12,10 @@ import { AuthFormBaseComponent } from '../../components/auth-form-base.component
  */
 @Component({
   selector: 'app-update-password',
+  standalone: false,
   templateUrl: './update-password.component.html',
   styleUrls: ['./update-password.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: false
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UpdatePasswordComponent extends AuthFormBaseComponent {
   override form = new FormGroup({

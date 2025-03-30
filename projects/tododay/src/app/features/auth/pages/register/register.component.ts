@@ -24,9 +24,9 @@ interface RegisterForm {
  */
 @Component({
   selector: 'app-register',
+  standalone: false,
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.scss'],
-  standalone: false
+  styleUrls: ['./register.component.scss']
 })
 export class RegisterComponent {
   readonly registerForm = new FormGroup<RegisterForm>(
