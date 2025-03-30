@@ -8,12 +8,19 @@
         "eslint:recommended",
         "plugin:@typescript-eslint/recommended",
         "plugin:@angular-eslint/recommended",
-        "plugin:@angular-eslint/template/process-inline-templates"
+        "plugin:@angular-eslint/template/process-inline-templates",
+        "plugin:prettier/recommended"
       ],
-      "plugins": ["@typescript-eslint", "tsdoc"],
+      "plugins": ["@typescript-eslint", "tsdoc", "prettier"],
       "rules": {
+        "prettier/prettier": "error",
         "tsdoc/syntax": "warn",
-        "@typescript-eslint/no-relative-import-paths": ["error", { "allowSameFolder": true }],
+        "@typescript-eslint/no-relative-import-paths": [
+          "error",
+          {
+            "allowSameFolder": true
+          }
+        ],
         "@angular-eslint/no-form-builder": "error",
         "@angular-eslint/template/no-any": "error",
         "@angular-eslint/template/use-track-by-function": "error",
@@ -24,7 +31,12 @@
         "@typescript-eslint/no-explicit-any": "error",
         "@typescript-eslint/explicit-function-return-type": "error",
         "@typescript-eslint/no-unused-vars": "error",
-        "no-console": ["error", { "allow": ["warn", "error"] }],
+        "no-console": [
+          "error",
+          {
+            "allow": ["warn", "error"]
+          }
+        ],
         "prefer-const": "error",
         "no-var": "error",
         "eqeqeq": "error",
@@ -52,7 +64,8 @@
     },
     {
       "files": ["*.html"],
-      "extends": ["plugin:@angular-eslint/template/recommended"],
+      "extends": ["plugin:@angular-eslint/template/recommended", "plugin:prettier/recommended"],
+      "parser": "@angular-eslint/template-parser",
       "rules": {
         "@angular-eslint/template/accessibility-alt-text": "error",
         "@angular-eslint/template/accessibility-elements-content": "error",
