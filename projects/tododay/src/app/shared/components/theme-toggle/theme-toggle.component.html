@@ -3,7 +3,7 @@
     <button
       (click)="setTheme('light')"
       class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-      [class.text-yellow-500]="currentTheme() === 'light'"
+      [class]="{ 'text-yellow-500': currentTheme() === 'light' }"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -24,7 +24,7 @@
     <button
       (click)="setTheme('dark')"
       class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-      [class.text-blue-500]="currentTheme() === 'dark'"
+      [class]="{ 'text-blue-500': currentTheme() === 'dark' }"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -45,7 +45,7 @@
     <button
       (click)="setTheme('system')"
       class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-      [class.text-green-500]="currentTheme() === 'system'"
+      [class]="{ 'text-green-500': currentTheme() === 'system' }"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
