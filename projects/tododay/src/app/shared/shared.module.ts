@@ -10,7 +10,8 @@ import { ThemeToggleComponent } from '@tododay/shared/components/theme-toggle/th
  * shared across multiple feature modules.
  */
 @NgModule({
-  imports: [CommonModule, ThemeToggleComponent],
+  declarations: [ThemeToggleComponent],
+  imports: [CommonModule],
   exports: [ThemeToggleComponent]
 })
 export class SharedModule {}

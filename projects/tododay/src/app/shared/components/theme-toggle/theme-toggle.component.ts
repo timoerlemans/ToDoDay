@@ -5,7 +5,7 @@ import { Theme, ThemeService } from '@tododay/core/services/theme.service';
 
 @Component({
   selector: 'tododay-theme-toggle',
-  imports: [CommonModule],
+  standalone: false,
   templateUrl: './theme-toggle.component.html',
   styleUrls: ['./theme-toggle.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
