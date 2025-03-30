@@ -1,6 +1,6 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, input, Output, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Task, TaskPriority, CreateTaskDto, TaskStatus } from '../../../../core/models/task';
+import { Task, TaskPriority, CreateTaskDto, TaskStatus } from '@tododay/core/models/task';
 
 interface TaskForm {
   title: FormControl<string>;
@@ -16,42 +16,49 @@ interface TaskForm {
 @Component({
   selector: 'app-task-form',
   templateUrl: './task-form.component.html',
-  styleUrls: ['./task-form.component.scss']
+  styleUrls: ['./task-form.component.scss'],
 })
-export class TaskFormComponent {
-  @Input() task?: Task;
+export class TaskFormComponent implements OnInit {
+  task = input<Task | undefined>(undefined);
   @Output() submitted = new EventEmitter<Task>();
 
   taskForm = new FormGroup<TaskForm>({
     title: new FormControl('', {
       nonNullable: true,
-      validators: [Validators.required, Validators.minLength(3)]
+      validators: [Validators.required, Validators.minLength(3)],
     }),
     description: new FormControl('', {
       nonNullable: true,
-      validators: [Validators.required]
+      validators: [Validators.required],
     }),
     priority: new FormControl<TaskPriority | null>(null),
     project: new FormControl<string | null>(null),
     labels: new FormControl<string[] | null>(null),
     due_date: new FormControl<string | null>(null),
     start_date: new FormControl<string | null>(null),
-    notify_at: new FormControl<string | null>(null)
+    notify_at: new FormControl<string | null>(null),
   });
 
   TaskPriority = TaskPriority;
 
   ngOnInit(): void {
-    if (this.task) {
+    if (this.task()) {
+      const taskData = this.task();
       this.taskForm.patchValue({
-        title: this.task.title,
-        description: this.task.description || '',
-        priority: this.task.priority || null,
-        project: this.task.project || null,
-        labels: this.task.labels || null,
-        due_date: this.task.due_date ? new Date(this.task.due_date).toISOString().split('T')[0] : null,
-        start_date: this.task.start_date ? new Date(this.task.start_date).toISOString().split('T')[0] : null,
-        notify_at: this.task.notify_at ? new Date(this.task.notify_at).toISOString().split('T')[0] : null
+        title: taskData!.title,
+        description: taskData!.description || '',
+        priority: taskData!.priority || null,
+        project: taskData!.project || null,
+        labels: taskData!.labels || null,
+        due_date: taskData!.due_date
+          ? new Date(taskData!.due_date).toISOString().split('T')[0]
+          : null,
+        start_date: taskData!.start_date
+          ? new Date(taskData!.start_date).toISOString().split('T')[0]
+          : null,
+        notify_at: taskData!.notify_at
+          ? new Date(taskData!.notify_at).toISOString().split('T')[0]
+          : null,
       });
     }
   }
@@ -68,7 +75,7 @@ export class TaskFormComponent {
         due_date: formData.due_date ? new Date(formData.due_date) : undefined,
         start_date: formData.start_date ? new Date(formData.start_date) : undefined,
         notify_at: formData.notify_at ? new Date(formData.notify_at) : undefined,
-        status: TaskStatus.TODO
+        status: TaskStatus.TODO,
       };
       this.submitted.emit(taskData as unknown as Task);
       this.taskForm.reset();
@@ -78,7 +85,8 @@ export class TaskFormComponent {
   protected getErrorMessage(field: string): string {
     const control = this.taskForm.get(field);
     if (control?.errors?.['required']) return 'Dit veld is verplicht';
-    if (control?.errors?.['minlength']) return `Minimaal ${control.errors['minlength'].requiredLength} karakters`;
+    if (control?.errors?.['minlength'])
+      return `Minimaal ${control.errors['minlength'].requiredLength} karakters`;
     return '';
   }
 }

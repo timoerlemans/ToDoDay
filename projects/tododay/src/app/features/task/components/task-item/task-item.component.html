@@ -1,24 +1,24 @@
 <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-4">
   <div class="flex items-start justify-between">
     <div class="flex-1">
-      <h3 id="task-title-{{ task.id }}" class="text-lg font-medium text-gray-900 dark:text-white">
-        {{ task.title }}
+      <h3 id="task-title-{{ task().id }}" class="text-lg font-medium text-gray-900 dark:text-white">
+        {{ task().title }}
       </h3>
-      @if (task.description) {
+      @if (task().description) {
         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          {{ task.description }}
+          {{ task().description }}
         </p>
       }
       <div class="mt-2 flex flex-wrap gap-2">
-        @if (task.project) {
+        @if (task().project) {
           <span
             class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
           >
-            {{ task.project }}
+            {{ task().project }}
           </span>
         }
-        @if (task.labels && task.labels.length > 0) {
-          @for (label of task.labels; track label) {
+        @if (task().labels && task().labels!.length > 0) {
+          @for (label of task().labels; track label) {
             <span
               class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200"
             >
@@ -26,45 +26,46 @@
             </span>
           }
         }
-        @if (task.priority) {
+        @if (task().priority) {
           <span
             class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
             [ngClass]="{
-              'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200': task.priority === 'high',
+              'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200':
+                task().priority === 'high',
               'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200':
-                task.priority === 'medium',
+                task().priority === 'medium',
               'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200':
-                task.priority === 'low',
+                task().priority === 'low',
             }"
           >
-            {{ task.priority }}
+            {{ task().priority }}
           </span>
         }
       </div>
       <div class="mt-2 flex flex-wrap gap-4 text-sm text-gray-500 dark:text-gray-400">
-        @if (task.due_date) {
+        @if (task().due_date) {
           <span>
             <i class="fas fa-clock mr-1"></i>
-            Deadline: {{ task.due_date | date: 'mediumDate' }}
+            Deadline: {{ task().due_date | date: 'mediumDate' }}
           </span>
         }
-        @if (task.start_date) {
+        @if (task().start_date) {
           <span>
             <i class="fas fa-play mr-1"></i>
-            Start: {{ task.start_date | date: 'mediumDate' }}
+            Start: {{ task().start_date | date: 'mediumDate' }}
           </span>
         }
-        @if (task.notify_at) {
+        @if (task().notify_at) {
           <span>
             <i class="fas fa-bell mr-1"></i>
-            Reminder: {{ task.notify_at | date: 'medium' }}
+            Reminder: {{ task().notify_at | date: 'medium' }}
           </span>
         }
       </div>
     </div>
     <div class="ml-4 flex items-center space-x-2">
       <select
-        [value]="task.status"
+        [value]="task().status"
         (change)="onStatusChange($any($event.target).value)"
         class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm"
       >

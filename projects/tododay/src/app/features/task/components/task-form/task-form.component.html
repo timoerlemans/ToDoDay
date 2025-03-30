@@ -19,12 +19,11 @@
         formControlName="title"
         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600"
       />
-      <p
-        class="mt-1 text-sm text-red-600"
-        *ngIf="taskForm.get('title')?.invalid && taskForm.get('title')?.touched"
-      >
-        {{ getErrorMessage('title') }}
-      </p>
+      @if (taskForm.get('title')?.invalid && taskForm.get('title')?.touched) {
+        <p class="mt-1 text-sm text-red-600">
+          {{ getErrorMessage('title') }}
+        </p>
+      }
     </div>
 
     <!-- Description -->
@@ -38,12 +37,11 @@
         rows="3"
         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600"
       ></textarea>
-      <p
-        class="mt-1 text-sm text-red-600"
-        *ngIf="taskForm.get('description')?.invalid && taskForm.get('description')?.touched"
-      >
-        {{ getErrorMessage('description') }}
-      </p>
+      @if (taskForm.get('description')?.invalid && taskForm.get('description')?.touched) {
+        <p class="mt-1 text-sm text-red-600">
+          {{ getErrorMessage('description') }}
+        </p>
+      }
     </div>
 
     <!-- Project -->

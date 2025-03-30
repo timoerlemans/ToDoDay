@@ -1,11 +1,12 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
-import { Task, TaskStatus } from '../../../../core/models/task';
-import { TaskService } from '../../../../core/services/task.service';
-import { NotificationService } from '../../../../core/services/notification.service';
-import { AuthService } from '../../../../core/services/auth.service';
-import { TaskBaseComponent } from '../task-base.component';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
+import { Task, TaskStatus } from '@tododay/core/models/task';
+import { TaskService } from '@tododay/core/services/task.service';
+import { NotificationService } from '@tododay/core/services/notification.service';
+import { AuthService } from '@tododay/core/services/auth.service';
+import { TaskBaseComponent } from '@tododay/features/task/components/task-base.component';
 
 /**
  * Task list component that displays and manages tasks.
@@ -15,7 +16,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   selector: 'app-task-list',
   templateUrl: './task-list.component.html',
   styleUrls: ['./task-list.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TaskListComponent extends TaskBaseComponent {
   constructor(
@@ -33,7 +34,8 @@ export class TaskListComponent extends TaskBaseComponent {
    * Handles task submission from the task form
    */
   onTaskSubmit(task: Task): void {
-    this.taskService.createTask(task)
+    this.taskService
+      .createTask(task)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
@@ -41,7 +43,7 @@ export class TaskListComponent extends TaskBaseComponent {
         },
         error: (error: Error) => {
           this.notificationService.error('Failed to create task');
-        }
+        },
       });
   }
 
@@ -49,7 +51,8 @@ export class TaskListComponent extends TaskBaseComponent {
    * Handles task status changes
    */
   onStatusChange(taskId: string, event: { status: TaskStatus }): void {
-    this.taskService.updateTask(taskId, { status: event.status })
+    this.taskService
+      .updateTask(taskId, { status: event.status })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
@@ -57,7 +60,7 @@ export class TaskListComponent extends TaskBaseComponent {
         },
         error: (error: Error) => {
           this.notificationService.error('Failed to update task status');
-        }
+        },
       });
   }
 
@@ -65,7 +68,8 @@ export class TaskListComponent extends TaskBaseComponent {
    * Handles task deletion
    */
   onDeleteTask(taskId: string): void {
-    this.taskService.deleteTask(taskId)
+    this.taskService
+      .deleteTask(taskId)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
@@ -73,7 +77,7 @@ export class TaskListComponent extends TaskBaseComponent {
         },
         error: (error: Error) => {
           this.notificationService.error('Failed to delete task');
-        }
+        },
       });
   }
 }
