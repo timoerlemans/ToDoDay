@@ -1,14 +1,14 @@
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthService } from '../services/auth.service';
 import { map, take } from 'rxjs/operators';
+import { AuthService } from '@tododay/core/services/auth.service';
 
 /**
- * Auth Guard voor het beveiligen van routes die alleen toegankelijk zijn voor ingelogde gebruikers
+ * Auth Guard for securing routes that should only be accessible to logged-in users
  */
 export const AuthGuard = () => {
   const router = inject(Router);
-  const authService = inject<AuthService>(AuthService);
+  const authService = inject(AuthService);
 
   return authService.isAuthenticated().pipe(
     take(1),
@@ -23,12 +23,12 @@ export const AuthGuard = () => {
 };
 
 /**
- * Auth Guard voor het beveiligen van routes die alleen toegankelijk zijn voor niet-ingelogde gebruikers
- * (bijvoorbeeld login en register pagina's)
+ * Public Guard for securing routes that should only be accessible to non-logged-in users
+ * (like login and register pages)
  */
 export const PublicGuard = () => {
   const router = inject(Router);
-  const authService = inject<AuthService>(AuthService);
+  const authService = inject(AuthService);
 
   return authService.isAuthenticated().pipe(
     take(1),
