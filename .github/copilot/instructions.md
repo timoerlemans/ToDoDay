@@ -39,7 +39,7 @@ These instructions define the standards and practices that should be followed wh
 - **Use namespace imports** instead of relative paths (use @tododay with an alias pointing to projects/tododay/src/app)
 - Implement lazy loading for feature modules
 - Follow single responsibility principle for services
-- Create standalone components only when shared across multiple modules
+- **DO NOT USE STAND-ALONE COMPONENTS IN ANGULAR**
 - **Store sensitive data and API keys in .env files**, avoid hard-coding credentials
 - **Always use separate files** for templates (.html) and styles (.scss or .css) instead of inline definitions
 - Consistently name files using kebab-case (todo-list.component.ts) and classes using PascalCase (TodoListComponent)
@@ -168,3 +168,16 @@ These instructions define the standards and practices that should be followed wh
 - Use meaningful variable and function names
 - Prefer const over let when variables aren't reassigned
 - Avoid magic numbers and strings, use constants instead
+
+## Configuration Files
+
+- ESLint config can be found in `.eslintrc.json` (in root AND in project)
+- Prettier config can be found in `.prettierrc`
+- TSConfig can be found at `tsconfig.*.json` at different levels of this project
+- Tailwind can be found at `tailwind.config.json`
+- Babelconfig can be found at `babel.config.js`
+- PostCSS config can be found at `postcss.config.js`
+- Cypress config can be found at `cypress.config.ts`
+- dotenv config can be found at `.env`
+- Angular config can be found at `angular.json`
+- Jest config can be found at `jest.config.js`
