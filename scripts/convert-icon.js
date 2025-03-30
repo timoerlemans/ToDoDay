@@ -6,4 +6,4 @@ sharp(path.join(__dirname, '../projects/tododay/src/assets/icons/apple-touch-ico
   .png()
   .toFile(path.join(__dirname, '../projects/tododay/src/assets/icons/apple-touch-icon.png'))
   .then(() => console.log('Icon converted successfully'))
-  .catch(err => console.error('Error converting icon:', err)); 
+  .catch(err => console.error('Error converting icon:', err));

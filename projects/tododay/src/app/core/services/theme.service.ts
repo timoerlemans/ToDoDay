@@ -14,7 +14,7 @@ export type Theme = 'light' | 'dark' | 'system';
  * Provides methods to change, toggle, and observe the current theme.
  */
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class ThemeService {
   private themeSubject = new BehaviorSubject<Theme>('system');
@@ -27,15 +27,6 @@ export class ThemeService {
 
   constructor() {
     this.initializeTheme();
-  }
-
-  private initializeTheme(): void {
-    const savedTheme = localStorage.getItem('theme') as Theme;
-    if (savedTheme) {
-      this.setTheme(savedTheme);
-    } else {
-      this.setTheme('system');
-    }
   }
 
   /**
@@ -58,6 +49,15 @@ export class ThemeService {
     const currentTheme = this.themeSubject.value;
     const newTheme = currentTheme === 'light' ? 'dark' : 'light';
     this.setTheme(newTheme);
+  }
+
+  private initializeTheme(): void {
+    const savedTheme = localStorage.getItem('theme') as Theme;
+    if (savedTheme) {
+      this.setTheme(savedTheme);
+    } else {
+      this.setTheme('system');
+    }
   }
 
   private applyTheme(theme: Theme): void {

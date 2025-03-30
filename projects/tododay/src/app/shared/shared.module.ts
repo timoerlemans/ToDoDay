@@ -1,5 +1,5 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
 import { ThemeToggleComponent } from '@tododay/shared/components/theme-toggle/theme-toggle.component';
 
 /**
@@ -11,6 +11,6 @@ import { ThemeToggleComponent } from '@tododay/shared/components/theme-toggle/th
  */
 @NgModule({
   imports: [CommonModule, ThemeToggleComponent],
-  exports: [ThemeToggleComponent],
+  exports: [ThemeToggleComponent]
 })
 export class SharedModule {}

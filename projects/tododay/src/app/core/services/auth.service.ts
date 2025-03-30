@@ -1,11 +1,11 @@
-import { Injectable, signal, DestroyRef } from '@angular/core';
-import { toObservable, takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Observable, from, throwError } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
+import { DestroyRef, Injectable, signal } from '@angular/core';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { User } from '@supabase/supabase-js';
+import { NotificationService } from '@tododay/core/services/notification.service';
 
 import { SupabaseService } from '@tododay/core/services/supabase.service';
-import { NotificationService } from '@tododay/core/services/notification.service';
+import { from, Observable, throwError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 
 /**
  * Represents the authentication state of the application.
@@ -44,19 +44,17 @@ export interface AuthError {
  * Manages user authentication state and provides methods for sign in, sign up, and sign out.
  */
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class AuthService {
   private readonly authState = signal<AuthState>({
     isAuthenticated: false,
-    user: null,
+    user: null
   });
-
   /**
    * Observable of the current authentication state.
    */
   readonly authState$ = toObservable(this.authState);
-
   /**
    * Observable of the currently authenticated user.
    */
@@ -78,7 +76,7 @@ export class AuthService {
     this.supabaseService.currentUser$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(user => {
       this.authState.set({
         isAuthenticated: !!user,
-        user,
+        user
       });
     });
   }
@@ -104,7 +102,7 @@ export class AuthService {
     return from(this.supabaseService.signIn(email, password)).pipe(
       map(() => ({
         success: true,
-        message: 'Successfully logged in',
+        message: 'Successfully logged in'
       })),
       catchError((error: AuthError) => {
         this.notificationService.error(this.getErrorMessage(error));
@@ -125,7 +123,7 @@ export class AuthService {
     return from(this.supabaseService.signUp(email, password)).pipe(
       map(() => ({
         success: true,
-        message: 'Successfully registered',
+        message: 'Successfully registered'
       })),
       catchError((error: AuthError) => {
         this.notificationService.error(this.getErrorMessage(error));
@@ -144,7 +142,7 @@ export class AuthService {
     return from(this.supabaseService.signOut()).pipe(
       map(() => ({
         success: true,
-        message: 'Successfully logged out',
+        message: 'Successfully logged out'
       })),
       catchError((error: AuthError) => {
         this.notificationService.error(this.getErrorMessage(error));
@@ -193,6 +191,15 @@ export class AuthService {
   }
 
   /**
+   * Gets the current authentication state.
+   *
+   * @returns An Observable of the current authentication state
+   */
+  getAuthState(): Observable<AuthState> {
+    return this.authState$;
+  }
+
+  /**
    * Gets a user-friendly error message from an authentication error.
    *
    * @param error - The authentication error
@@ -203,14 +210,5 @@ export class AuthService {
       return error.message;
     }
     return 'An error occurred. Please try again later.';
-  }
-
-  /**
-   * Gets the current authentication state.
-   *
-   * @returns An Observable of the current authentication state
-   */
-  getAuthState(): Observable<AuthState> {
-    return this.authState$;
   }
 }

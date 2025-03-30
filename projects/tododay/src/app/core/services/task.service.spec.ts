@@ -1,9 +1,8 @@
 import { TestBed } from '@angular/core/testing';
-import { TaskService } from './task.service';
-import { SupabaseService } from './supabase.service';
-import { NotificationService } from './notification.service';
-import { of } from 'rxjs';
 import { Task, TaskStatus } from '@tododay/core/models/task';
+import { NotificationService } from './notification.service';
+import { SupabaseService } from './supabase.service';
+import { TaskService } from './task.service';
 
 describe('TaskService', () => {
   let service: TaskService;
@@ -17,7 +16,7 @@ describe('TaskService', () => {
       description: 'Test Description 1',
       status: TaskStatus.TODO,
       created_at: new Date(),
-      user_id: 'user1',
+      user_id: 'user1'
     },
     {
       id: '2',
@@ -25,8 +24,8 @@ describe('TaskService', () => {
       description: 'Test Description 2',
       status: TaskStatus.IN_PROGRESS,
       created_at: new Date(),
-      user_id: 'user1',
-    },
+      user_id: 'user1'
+    }
   ];
 
   const mockSupabaseClient = {
@@ -34,7 +33,7 @@ describe('TaskService', () => {
     select: jest.fn().mockReturnThis(),
     order: jest.fn().mockReturnValue({
       data: mockTasks,
-      error: null,
+      error: null
     }),
     insert: jest.fn().mockReturnThis(),
     update: jest.fn().mockReturnThis(),
@@ -42,47 +41,47 @@ describe('TaskService', () => {
     eq: jest.fn().mockReturnValue({
       select: jest.fn().mockReturnValue({
         data: [mockTasks[0]],
-        error: null,
+        error: null
       }),
       data: null,
-      error: null,
+      error: null
     }),
     single: jest.fn().mockReturnValue({
       data: mockTasks[0],
-      error: null,
-    }),
+      error: null
+    })
   };
 
   const mockAuthClient = {
     getSession: jest.fn().mockResolvedValue({
       data: {
         session: {
-          user: { id: 'user1' },
-        },
-      },
-    }),
+          user: { id: 'user1' }
+        }
+      }
+    })
   };
 
   beforeEach(() => {
     supabaseMock = {
       getClient: jest.fn().mockReturnValue({
         from: mockSupabaseClient.from,
-        auth: mockAuthClient,
-      }),
+        auth: mockAuthClient
+      })
     } as unknown as jest.Mocked<SupabaseService>;
 
     notificationServiceMock = {
       error: jest.fn(),
       success: jest.fn(),
-      info: jest.fn(),
+      info: jest.fn()
     } as unknown as jest.Mocked<NotificationService>;
 
     TestBed.configureTestingModule({
       providers: [
         TaskService,
         { provide: SupabaseService, useValue: supabaseMock },
-        { provide: NotificationService, useValue: notificationServiceMock },
-      ],
+        { provide: NotificationService, useValue: notificationServiceMock }
+      ]
     });
 
     service = TestBed.inject(TaskService);
@@ -106,7 +105,7 @@ describe('TaskService', () => {
       description: 'New Description',
       status: TaskStatus.TODO,
       user_id: 'user1',
-      created_at: new Date(),
+      created_at: new Date()
     };
 
     service.createTask(newTask).subscribe(task => {

@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
-import { createClient, SupabaseClient, AuthResponse, User } from '@supabase/supabase-js';
+import { AuthResponse, createClient, SupabaseClient, User } from '@supabase/supabase-js';
 import { environment } from '@tododay/../environments/environment';
 import { StorageService } from '@tododay/core/services/storage.service';
 
@@ -9,7 +9,7 @@ import { StorageService } from '@tododay/core/services/storage.service';
  * Provides methods for authentication operations and access to the Supabase client.
  */
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class SupabaseService {
   private supabase: SupabaseClient;
@@ -44,19 +44,19 @@ export class SupabaseService {
               console.error('Failed to set auth storage item', error);
             }
           },
-          removeItem: (key: string) => this.storageService.removeItem(key),
+          removeItem: (key: string) => this.storageService.removeItem(key)
         },
         persistSession: true,
         autoRefreshToken: true,
         // Configure to avoid locks when multiple tabs are open
         detectSessionInUrl: true,
-        flowType: 'pkce',
+        flowType: 'pkce'
       },
       global: {
         headers: {
-          'x-app-version': '1.0.0',
-        },
-      },
+          'x-app-version': '1.0.0'
+        }
+      }
     });
 
     // Set initial auth state

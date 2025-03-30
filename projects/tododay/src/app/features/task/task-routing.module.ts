@@ -5,12 +5,12 @@ import { TaskListComponent } from '@tododay/features/task/components/task-list/t
 const routes: Routes = [
   {
     path: '',
-    component: TaskListComponent,
-  },
+    component: TaskListComponent
+  }
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule],
+  exports: [RouterModule]
 })
 export class TaskRoutingModule {}

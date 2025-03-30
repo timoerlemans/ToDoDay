@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, DestroyRef } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NotificationService } from '@tododay/core/services/notification.service';
 
@@ -19,11 +18,11 @@ import { NotificationService } from '@tododay/core/services/notification.service
  * ```
  */
 @Component({
-    selector: 'app-root',
-    templateUrl: './app.component.html',
-    styleUrls: ['./app.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false
 })
 export class AppComponent {
   constructor(

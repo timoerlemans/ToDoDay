@@ -42,7 +42,7 @@ describe('NotificationService', () => {
       id: '123',
       message: 'Test notification',
       type: 'info',
-      duration: 3000,
+      duration: 3000
     };
 
     // Use service's actual info method or mock it
@@ -50,7 +50,7 @@ describe('NotificationService', () => {
     service.info = jest.fn((message: string) => {
       service.notifications$.next([
         ...service.notifications$.getValue(),
-        { ...mockNotification, message },
+        { ...mockNotification, message }
       ]);
       return mockNotification;
     });
@@ -72,7 +72,7 @@ describe('NotificationService', () => {
     const mockNotification = {
       id: '123',
       message: 'Test notification',
-      type: 'info',
+      type: 'info'
     };
 
     service.notifications$.next([mockNotification]);
@@ -92,7 +92,7 @@ describe('NotificationService', () => {
     const mockNotifications = [
       { id: '1', message: 'Info notification', type: 'info' },
       { id: '2', message: 'Success notification', type: 'success' },
-      { id: '3', message: 'Error notification', type: 'error' },
+      { id: '3', message: 'Error notification', type: 'error' }
     ];
 
     service.notifications$.next(mockNotifications);

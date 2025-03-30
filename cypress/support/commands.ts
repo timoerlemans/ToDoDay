@@ -13,7 +13,9 @@ declare global {
   namespace Cypress {
     interface Chainable {
       login(email: string, password: string): Chainable<void>;
+
       logout(): Chainable<void>;
+
       createTask(title: string, description?: string): Chainable<void>;
     }
   }

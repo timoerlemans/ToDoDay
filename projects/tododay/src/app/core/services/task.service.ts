@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Observable, from, BehaviorSubject } from 'rxjs';
-import { map, tap, switchMap } from 'rxjs/operators';
-import { SupabaseService } from '@tododay/core/services/supabase.service';
-import { NotificationService } from '@tododay/core/services/notification.service';
 import { Task, TaskStatus } from '@tododay/core/models/task';
+import { NotificationService } from '@tododay/core/services/notification.service';
+import { SupabaseService } from '@tododay/core/services/supabase.service';
+import { BehaviorSubject, from, Observable } from 'rxjs';
+import { map, switchMap, tap } from 'rxjs/operators';
 
 /**
  * Service responsible for managing tasks in the application.
@@ -11,7 +11,7 @@ import { Task, TaskStatus } from '@tododay/core/models/task';
  * as well as access to an observable of all tasks.
  */
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class TaskService {
   private readonly tasksSubject = new BehaviorSubject<Task[]>([]);
@@ -46,39 +46,6 @@ export class TaskService {
   }
 
   /**
-   * Load all tasks for the current user.
-   *
-   * @returns Observable that completes when tasks are loaded
-   */
-  private loadTasks(): Observable<void> {
-    return from(
-      this.supabase.getClient().from('tasks').select('*').order('created_at', { ascending: false })
-    ).pipe(
-      tap(({ data, error }) => {
-        if (error) {
-          this.notificationService.error('Failed to load tasks');
-          throw error;
-        }
-
-        const tasks = (data || []).map(task => ({
-          ...task,
-          status: (task.status as TaskStatus) || TaskStatus.TODO,
-        }));
-
-        this.tasksSubject.next(tasks);
-
-        // Update any tasks with null status
-        tasks.forEach(task => {
-          if (!task.status) {
-            this.updateTask(task.id, { status: TaskStatus.TODO }).subscribe();
-          }
-        });
-      }),
-      map(() => void 0)
-    );
-  }
-
-  /**
    * Creates a new task.
    *
    * @param task - The task object to create
@@ -95,7 +62,7 @@ export class TaskService {
         const taskWithUserId = {
           ...task,
           user_id: session.user.id,
-          status: task.status || TaskStatus.TODO,
+          status: task.status || TaskStatus.TODO
         };
 
         return from(
@@ -108,7 +75,7 @@ export class TaskService {
         }
         const newTask = {
           ...response.data,
-          status: (response.data.status as TaskStatus) || TaskStatus.TODO,
+          status: (response.data.status as TaskStatus) || TaskStatus.TODO
         };
         this.tasksSubject.next([...this.tasksSubject.value, newTask]);
         return newTask;
@@ -127,10 +94,12 @@ export class TaskService {
   updateTask(id: string, updates: Partial<Task>): Observable<Task> {
     return from(this.supabase.getClient().from('tasks').update(updates).eq('id', id).select()).pipe(
       map(response => {
-        if (!response.data?.[0]) throw new Error('Failed to update task');
+        if (!response.data?.[0]) {
+          throw new Error('Failed to update task');
+        }
         const updatedTask = {
           ...response.data[0],
-          status: (response.data[0].status as TaskStatus) || TaskStatus.TODO,
+          status: (response.data[0].status as TaskStatus) || TaskStatus.TODO
         };
         this.tasksSubject.next(
           this.tasksSubject.value.map(task => (task.id === id ? updatedTask : task))
@@ -150,6 +119,39 @@ export class TaskService {
     return from(this.supabase.getClient().from('tasks').delete().eq('id', id)).pipe(
       tap(() => {
         this.tasksSubject.next(this.tasksSubject.value.filter(task => task.id !== id));
+      }),
+      map(() => void 0)
+    );
+  }
+
+  /**
+   * Load all tasks for the current user.
+   *
+   * @returns Observable that completes when tasks are loaded
+   */
+  private loadTasks(): Observable<void> {
+    return from(
+      this.supabase.getClient().from('tasks').select('*').order('created_at', { ascending: false })
+    ).pipe(
+      tap(({ data, error }) => {
+        if (error) {
+          this.notificationService.error('Failed to load tasks');
+          throw error;
+        }
+
+        const tasks = (data || []).map(task => ({
+          ...task,
+          status: (task.status as TaskStatus) || TaskStatus.TODO
+        }));
+
+        this.tasksSubject.next(tasks);
+
+        // Update any tasks with null status
+        tasks.forEach(task => {
+          if (!task.status) {
+            this.updateTask(task.id, { status: TaskStatus.TODO }).subscribe();
+          }
+        });
       }),
       map(() => void 0)
     );

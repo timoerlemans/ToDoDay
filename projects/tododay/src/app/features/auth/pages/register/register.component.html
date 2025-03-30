@@ -8,31 +8,31 @@
       </h1>
     </div>
     <form
-      class="mt-8 space-y-6"
-      [formGroup]="registerForm"
-      (ngSubmit)="onSubmit()"
-      aria-label="Registration form"
       #form="ngForm"
+      (ngSubmit)="onSubmit()"
       [attr.aria-busy]="isLoading$()"
+      [formGroup]="registerForm"
+      aria-label="Registration form"
+      class="mt-8 space-y-6"
     >
       <div class="rounded-md -space-y-px">
         <!-- Name field -->
         <div class="form-group mb-4">
-          <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" for="name">
             Full name
-            <span class="text-red-500" aria-hidden="true">*</span>
+            <span aria-hidden="true" class="text-red-500">*</span>
             <span class="sr-only">required</span>
           </label>
           <input
+            [attr.aria-describedby]="formErrors().name ? 'name-error' : null"
+            [attr.aria-invalid]="formErrors().name !== null"
+            aria-required="true"
+            class="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            formControlName="name"
             id="name"
             name="name"
-            type="text"
-            formControlName="name"
             required
-            class="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-            [attr.aria-invalid]="formErrors().name !== null"
-            [attr.aria-describedby]="formErrors().name ? 'name-error' : null"
-            aria-required="true"
+            type="text"
           />
           @if (formErrors().name) {
             <div id="name-error" class="text-red-500 text-sm mt-1" role="alert">
@@ -49,23 +49,23 @@
         <!-- Email field -->
         <div class="form-group mb-4">
           <label
-            for="email"
             class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+            for="email"
           >
             Email address
-            <span class="text-red-500" aria-hidden="true">*</span>
+            <span aria-hidden="true" class="text-red-500">*</span>
             <span class="sr-only">required</span>
           </label>
           <input
+            [attr.aria-describedby]="formErrors().email ? 'email-error' : null"
+            [attr.aria-invalid]="formErrors().email !== null"
+            aria-required="true"
+            class="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            formControlName="email"
             id="email"
             name="email"
-            type="email"
-            formControlName="email"
             required
-            class="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-            [attr.aria-invalid]="formErrors().email !== null"
-            [attr.aria-describedby]="formErrors().email ? 'email-error' : null"
-            aria-required="true"
+            type="email"
           />
           @if (formErrors().email) {
             <div id="email-error" class="text-red-500 text-sm mt-1" role="alert">
@@ -82,23 +82,23 @@
         <!-- Password field -->
         <div class="form-group mb-4">
           <label
-            for="password"
             class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+            for="password"
           >
             Password
-            <span class="text-red-500" aria-hidden="true">*</span>
+            <span aria-hidden="true" class="text-red-500">*</span>
             <span class="sr-only">required</span>
           </label>
           <input
+            [attr.aria-describedby]="formErrors().password ? 'password-error' : null"
+            [attr.aria-invalid]="formErrors().password !== null"
+            aria-required="true"
+            class="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            formControlName="password"
             id="password"
             name="password"
-            type="password"
-            formControlName="password"
             required
-            class="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-            [attr.aria-invalid]="formErrors().password !== null"
-            [attr.aria-describedby]="formErrors().password ? 'password-error' : null"
-            aria-required="true"
+            type="password"
           />
           @if (formErrors().password) {
             <div id="password-error" class="text-red-500 text-sm mt-1" role="alert">
@@ -115,27 +115,27 @@
         <!-- Confirm Password field -->
         <div class="form-group mb-4">
           <label
-            for="confirmPassword"
             class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+            for="confirmPassword"
           >
             Confirm password
-            <span class="text-red-500" aria-hidden="true">*</span>
+            <span aria-hidden="true" class="text-red-500">*</span>
             <span class="sr-only">required</span>
           </label>
           <input
-            id="confirmPassword"
-            name="confirmPassword"
-            type="password"
-            formControlName="confirmPassword"
-            required
-            class="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-            [attr.aria-invalid]="formErrors().confirmPassword !== null || formErrors().mismatch"
             [attr.aria-describedby]="
               formErrors().confirmPassword || formErrors().mismatch
                 ? 'confirm-password-error'
                 : null
             "
+            [attr.aria-invalid]="formErrors().confirmPassword !== null || formErrors().mismatch"
             aria-required="true"
+            class="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            formControlName="confirmPassword"
+            id="confirmPassword"
+            name="confirmPassword"
+            required
+            type="password"
           />
           @if (formErrors().confirmPassword || formErrors().mismatch) {
             <div id="confirm-password-error" class="text-red-500 text-sm mt-1" role="alert">
@@ -152,11 +152,11 @@
 
       <div>
         <button
-          type="submit"
-          [disabled]="!registerForm.valid || isLoading$()"
-          class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
           [attr.aria-busy]="isLoading$()"
+          [disabled]="!registerForm.valid || isLoading$()"
           aria-label="Create account"
+          class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          type="submit"
         >
           @if (!isLoading$()) {
             <span>Create account</span>
@@ -194,9 +194,9 @@
         <p class="text-sm text-gray-600 dark:text-gray-400">
           Already have an account?
           <a
-            routerLink="/login"
-            class="font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300"
             aria-label="Go to login page"
+            class="font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300"
+            routerLink="/login"
           >
             Sign in here
           </a>

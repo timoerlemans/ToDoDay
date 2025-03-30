@@ -9,7 +9,7 @@ const mock = () => {
     getItem: (key: string) => (key in storage ? storage[key] : null),
     setItem: (key: string, value: string) => (storage[key] = value || ''),
     removeItem: (key: string) => delete storage[key],
-    clear: () => (storage = {}),
+    clear: () => (storage = {})
   };
 };
 
@@ -18,7 +18,7 @@ Object.defineProperty(window, 'sessionStorage', { value: mock() });
 Object.defineProperty(window, 'CSS', { value: null });
 
 Object.defineProperty(document, 'doctype', {
-  value: '<!DOCTYPE html>',
+  value: '<!DOCTYPE html>'
 });
 
 Object.defineProperty(window, 'getComputedStyle', {
@@ -26,9 +26,9 @@ Object.defineProperty(window, 'getComputedStyle', {
     return {
       display: 'none',
       appearance: ['-webkit-appearance'],
-      getPropertyValue: () => '',
+      getPropertyValue: () => ''
     };
-  },
+  }
 });
 
 /**
@@ -39,7 +39,7 @@ Object.defineProperty(document.body.style, 'transform', {
   value: () => {
     return {
       enumerable: true,
-      configurable: true,
+      configurable: true
     };
-  },
+  }
 });

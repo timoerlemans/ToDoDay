@@ -28,4 +28,4 @@ export const environment: Environment = {
 const environmentPath = path.join(__dirname, '../projects/tododay/src/environments/environment.ts');
 
 fs.writeFileSync(environmentPath, environmentTemplate);
-console.log('Environment file generated successfully!'); 
+console.log('Environment file generated successfully!');

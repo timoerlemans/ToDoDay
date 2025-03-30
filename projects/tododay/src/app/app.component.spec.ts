@@ -1,9 +1,9 @@
+import { DestroyRef } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { AppComponent } from './app.component';
 import { RouterTestingModule } from '@angular/router/testing';
 import { NotificationService } from '@tododay/core/services/notification.service';
 import { BehaviorSubject } from 'rxjs';
-import { DestroyRef } from '@angular/core';
+import { AppComponent } from './app.component';
 
 // Create a mock Notification type that matches your actual type
 interface Notification {
@@ -21,12 +21,12 @@ describe('AppComponent', () => {
   beforeEach(async () => {
     // Create a mock for NotificationService
     notificationServiceMock = {
-      notifications$: new BehaviorSubject<Notification[]>([]),
+      notifications$: new BehaviorSubject<Notification[]>([])
     };
 
     // Create a mock for DestroyRef
     const destroyRefMock = {
-      onDestroy: jest.fn(),
+      onDestroy: jest.fn()
     } as unknown as DestroyRef;
 
     await TestBed.configureTestingModule({
@@ -34,8 +34,8 @@ describe('AppComponent', () => {
       declarations: [AppComponent],
       providers: [
         { provide: NotificationService, useValue: notificationServiceMock },
-        { provide: DestroyRef, useValue: destroyRefMock },
-      ],
+        { provide: DestroyRef, useValue: destroyRefMock }
+      ]
     }).compileComponents();
 
     // Spy on console.log
@@ -60,7 +60,7 @@ describe('AppComponent', () => {
       id: '1',
       message: 'Test notification',
       type: 'info',
-      duration: 3000,
+      duration: 3000
     };
 
     notificationServiceMock.notifications$.next([testNotification]);

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AuthService } from '../../../../core/services/auth.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { AuthFormBaseComponent } from '../../components/auth-form-base.component';
@@ -11,26 +11,21 @@ import { AuthFormBaseComponent } from '../../components/auth-form-base.component
  * Provides a form for users to set a new password.
  */
 @Component({
-    selector: 'app-update-password',
-    templateUrl: './update-password.component.html',
-    styleUrls: ['./update-password.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+  selector: 'app-update-password',
+  templateUrl: './update-password.component.html',
+  styleUrls: ['./update-password.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false
 })
 export class UpdatePasswordComponent extends AuthFormBaseComponent {
   override form = new FormGroup({
     password: new FormControl('', {
       nonNullable: true,
-      validators: [
-        Validators.required,
-        Validators.minLength(8),
-      ]
+      validators: [Validators.required, Validators.minLength(8)]
     }),
     confirmPassword: new FormControl('', {
       nonNullable: true,
-      validators: [
-        Validators.required,
-      ]
+      validators: [Validators.required]
     })
   });
 
@@ -50,7 +45,8 @@ export class UpdatePasswordComponent extends AuthFormBaseComponent {
 
     const { password } = this.form.getRawValue();
 
-    this.authService.updatePassword(password)
+    this.authService
+      .updatePassword(password)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {

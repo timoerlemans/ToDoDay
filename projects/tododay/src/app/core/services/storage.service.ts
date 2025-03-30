@@ -6,7 +6,7 @@ import { Injectable } from '@angular/core';
  * Includes handling for Navigator LockManager conflicts.
  */
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class StorageService {
   private readonly AUTH_PREFIX = 'sb-';

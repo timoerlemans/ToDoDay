@@ -1,9 +1,6 @@
 import { HttpHandlerFn, HttpRequest } from '@angular/common/http';
 
-export function securityInterceptor(
-  request: HttpRequest<unknown>,
-  next: HttpHandlerFn
-) {
+export function securityInterceptor(request: HttpRequest<unknown>, next: HttpHandlerFn) {
   // Voeg security headers toe aan uitgaande requests
   const secureRequest = request.clone({
     setHeaders: {
@@ -15,4 +12,4 @@ export function securityInterceptor(
   });
 
   return next(secureRequest);
-} 
+}

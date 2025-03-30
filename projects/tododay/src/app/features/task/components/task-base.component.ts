@@ -1,6 +1,6 @@
-import { Component, DestroyRef, ChangeDetectorRef } from '@angular/core';
-import { Router } from '@angular/router';
+import { ChangeDetectorRef, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Router } from '@angular/router';
 import { User } from '@supabase/supabase-js';
 
 import { Task, TaskStatus } from '@tododay/core/models/task';
@@ -30,6 +30,51 @@ export abstract class TaskBaseComponent {
   }
 
   /**
+   * Creates a new task
+   */
+  protected createTask(task: Task): void {
+    this.taskService
+      .createTask(task)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        error: (error: Error) => {
+          console.error('Error creating task:', error);
+          this.notificationService.error('Failed to create task');
+        }
+      });
+  }
+
+  /**
+   * Updates task status
+   */
+  protected updateTaskStatus(taskId: string, status: TaskStatus): void {
+    this.taskService
+      .updateTask(taskId, { status })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        error: (error: Error) => {
+          console.error('Error updating task:', error);
+          this.notificationService.error('Failed to update task');
+        }
+      });
+  }
+
+  /**
+   * Deletes a task
+   */
+  protected deleteTask(taskId: string): void {
+    this.taskService
+      .deleteTask(taskId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        error: (error: Error) => {
+          console.error('Error deleting task:', error);
+          this.notificationService.error('Failed to delete task');
+        }
+      });
+  }
+
+  /**
    * Sets up authentication guard to redirect to login if user is not authenticated
    */
   private setupAuthGuard(): void {
@@ -54,54 +99,9 @@ export abstract class TaskBaseComponent {
           tasks
             .filter((task): task is Task & { project: string } => task.project !== undefined)
             .map(task => task.project)
-        ),
+        )
       ];
       this.cdr.markForCheck();
     });
-  }
-
-  /**
-   * Creates a new task
-   */
-  protected createTask(task: Task): void {
-    this.taskService
-      .createTask(task)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        error: (error: Error) => {
-          console.error('Error creating task:', error);
-          this.notificationService.error('Failed to create task');
-        },
-      });
-  }
-
-  /**
-   * Updates task status
-   */
-  protected updateTaskStatus(taskId: string, status: TaskStatus): void {
-    this.taskService
-      .updateTask(taskId, { status })
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        error: (error: Error) => {
-          console.error('Error updating task:', error);
-          this.notificationService.error('Failed to update task');
-        },
-      });
-  }
-
-  /**
-   * Deletes a task
-   */
-  protected deleteTask(taskId: string): void {
-    this.taskService
-      .deleteTask(taskId)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        error: (error: Error) => {
-          console.error('Error deleting task:', error);
-          this.notificationService.error('Failed to delete task');
-        },
-      });
   }
 }

@@ -1,8 +1,8 @@
-import { NgModule, isDevMode } from '@angular/core';
+import { provideHttpClient, withInterceptors, withInterceptorsFromDi } from '@angular/common/http';
+import { isDevMode, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
-import { provideHttpClient, withInterceptors, withInterceptorsFromDi } from '@angular/common/http';
-import { ServiceWorkerModule, provideServiceWorker } from '@angular/service-worker';
+import { ServiceWorkerModule } from '@angular/service-worker';
 
 import { AppComponent } from '@tododay/app.component';
 import { routes } from '@tododay/app.routes';
@@ -25,9 +25,9 @@ import { securityInterceptor } from '@tododay/core/interceptors/security.interce
     RouterModule.forRoot(routes),
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: !isDevMode(),
-      registrationStrategy: 'registerWhenStable:30000',
-    }),
+      registrationStrategy: 'registerWhenStable:30000'
+    })
   ],
-  providers: [provideHttpClient(withInterceptors([securityInterceptor]), withInterceptorsFromDi())],
+  providers: [provideHttpClient(withInterceptors([securityInterceptor]), withInterceptorsFromDi())]
 })
 export class AppModule {}

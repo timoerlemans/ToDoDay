@@ -14,16 +14,16 @@ export const routes: Routes = [
   {
     path: '',
     redirectTo: 'auth',
-    pathMatch: 'full',
+    pathMatch: 'full'
   },
   {
     path: 'auth',
     canActivate: [PublicGuard],
-    loadChildren: () => import('@tododay/features/auth/auth.module').then(m => m.AuthModule),
+    loadChildren: () => import('@tododay/features/auth/auth.module').then(m => m.AuthModule)
   },
   {
     path: 'tasks',
     canActivate: [AuthGuard],
-    loadChildren: () => import('@tododay/features/task/task.module').then(m => m.TaskModule),
-  },
+    loadChildren: () => import('@tododay/features/task/task.module').then(m => m.TaskModule)
+  }
 ];

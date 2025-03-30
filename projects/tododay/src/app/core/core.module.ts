@@ -1,6 +1,6 @@
-import { NgModule, Optional, SkipSelf } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { NgModule, Optional, SkipSelf } from '@angular/core';
 
 /**
  * Core module containing singleton services and application-wide providers.

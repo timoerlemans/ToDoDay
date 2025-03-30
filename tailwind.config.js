@@ -1,8 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: [
-    "./projects/tododay/src/**/*.{html,ts}",
-  ],
+  content: ['./projects/tododay/src/**/*.{html,ts}'],
   darkMode: 'class',
   theme: {
     extend: {
@@ -17,22 +15,20 @@ module.exports = {
           600: '#7c3aed',
           700: '#6d28d9',
           800: '#5b21b6',
-          900: '#4c1d95',
-        },
+          900: '#4c1d95'
+        }
       },
       fontFamily: {
-        sans: ['Inter var', 'sans-serif'],
+        sans: ['Inter var', 'sans-serif']
       },
       spacing: {
-        '128': '32rem',
-        '144': '36rem',
+        128: '32rem',
+        144: '36rem'
       },
       borderRadius: {
-        '4xl': '2rem',
-      },
-    },
+        '4xl': '2rem'
+      }
+    }
   },
-  plugins: [
-    require('@tailwindcss/forms'),
-  ],
-} 
+  plugins: [require('@tailwindcss/forms')]
+};

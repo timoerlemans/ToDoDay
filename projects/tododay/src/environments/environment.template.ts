@@ -7,4 +7,4 @@ export const environment = {
   openai: {
     key: '${OPENAI_API_KEY}'
   }
-}; 
+};

@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { AuthService, AuthResponse, AuthError } from '@tododay/core/services/auth.service';
+import { AuthError, AuthResponse, AuthService } from '@tododay/core/services/auth.service';
 import { NotificationService } from '@tododay/core/services/notification.service';
 
 interface LoginForm {
@@ -15,23 +15,23 @@ interface LoginForm {
  * Provides a form for users to sign in with their email and password.
  */
 @Component({
-    selector: 'app-login',
-    templateUrl: './login.component.html',
-    styleUrls: ['./login.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+  selector: 'app-login',
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false
 })
 export class LoginComponent {
   /** Form group for login credentials */
   loginForm = new FormGroup<LoginForm>({
     email: new FormControl('', {
       validators: [Validators.required, Validators.email],
-      nonNullable: true,
+      nonNullable: true
     }),
     password: new FormControl('', {
       validators: [Validators.required, Validators.minLength(6)],
-      nonNullable: true,
-    }),
+      nonNullable: true
+    })
   });
 
   /** Loading state for the form submission */
@@ -70,7 +70,7 @@ export class LoginComponent {
               error.message || 'Failed to log in. Please check your credentials.'
             );
             this.isLoading = false;
-          },
+          }
         });
     }
   }

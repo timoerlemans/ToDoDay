@@ -1,14 +1,14 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { ThemeService, Theme } from '@tododay/core/services/theme.service';
+import { Theme, ThemeService } from '@tododay/core/services/theme.service';
 
 @Component({
-    selector: 'tododay-theme-toggle',
-    imports: [CommonModule],
-    templateUrl: './theme-toggle.component.html',
-    styleUrls: ['./theme-toggle.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+  selector: 'tododay-theme-toggle',
+  imports: [CommonModule],
+  templateUrl: './theme-toggle.component.html',
+  styleUrls: ['./theme-toggle.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ThemeToggleComponent {
   protected readonly currentTheme;

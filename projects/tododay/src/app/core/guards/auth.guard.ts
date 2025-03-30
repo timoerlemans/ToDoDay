@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { map, take } from 'rxjs/operators';
 import { AuthService } from '@tododay/core/services/auth.service';
+import { map, take } from 'rxjs/operators';
 
 /**
  * Auth Guard for securing routes that should only be accessible to logged-in users

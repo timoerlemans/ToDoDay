@@ -1,11 +1,10 @@
-import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { DestroyRef } from '@angular/core';
+import { DestroyRef, Injectable } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { catchError, retry, timeout } from 'rxjs/operators';
 import { environment } from '@tododay/../environments/environment';
 import { TaskEnrichment } from '@tododay/core/models/task';
+import { Observable, throwError } from 'rxjs';
+import { catchError, retry, timeout } from 'rxjs/operators';
 
 /**
  * Interface for OpenAI API errors
@@ -49,7 +48,7 @@ Today is ${new Date().toISOString().split('T')[0]}.
  * Provides methods to enrich tasks with AI-generated metadata.
  */
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class OpenaiService {
   private readonly apiUrl = environment.openai.apiUrl;
@@ -71,7 +70,7 @@ export class OpenaiService {
     return this.http
       .post<TaskEnrichment>(`${this.apiUrl}/enrich-task`, {
         description: title,
-        systemPrompt: SYSTEM_PROMPT,
+        systemPrompt: SYSTEM_PROMPT
       })
       .pipe(
         timeout(this.timeout),
@@ -91,7 +90,7 @@ export class OpenaiService {
     return this.http
       .post<TaskEnrichment>(`${this.apiUrl}/enrich-task`, {
         description: taskDescription,
-        systemPrompt: SYSTEM_PROMPT,
+        systemPrompt: SYSTEM_PROMPT
       })
       .pipe(
         timeout(this.timeout),
@@ -124,14 +123,14 @@ export class OpenaiService {
       return {
         status: error.status,
         message: error.message,
-        name: error.name,
+        name: error.name
       };
     }
 
     return {
       status: 0,
       message: error.message,
-      name: error.name,
+      name: error.name
     };
   }
 

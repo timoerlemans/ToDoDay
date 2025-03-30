@@ -25,6 +25,8 @@ pnpm-debug.log*
 # IDEs and editors
 .idea/
 .vscode/
+.github/
+/.cursor/
 *.suo
 *.ntvs*
 *.njsproj
@@ -33,3 +35,4 @@ pnpm-debug.log*
 # generated files
 *.js.map
 *.d.ts
+

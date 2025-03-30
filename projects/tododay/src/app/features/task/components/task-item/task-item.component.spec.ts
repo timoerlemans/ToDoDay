@@ -1,7 +1,7 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TaskItemComponent } from './task-item.component';
-import { TaskStatus } from '@tododay/core/models/task';
 import { NgClass, NgIf } from '@angular/common';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TaskStatus } from '@tododay/core/models/task';
+import { TaskItemComponent } from './task-item.component';
 
 describe('TaskItemComponent', () => {
   let component: TaskItemComponent;
@@ -12,7 +12,7 @@ describe('TaskItemComponent', () => {
       // Use declarations for non-standalone components, or imports for standalone
       declarations: [TaskItemComponent],
       // Add any other required modules or components
-      imports: [NgIf, NgClass],
+      imports: [NgIf, NgClass]
     }).compileComponents();
 
     fixture = TestBed.createComponent(TaskItemComponent);
@@ -25,7 +25,7 @@ describe('TaskItemComponent', () => {
       description: 'Test Description',
       status: TaskStatus.TODO,
       created_at: new Date(),
-      user_id: 'user1',
+      user_id: 'user1'
     };
 
     fixture.detectChanges();

@@ -1,11 +1,11 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, ChangeDetectorRef } from '@angular/core';
-import { Router } from '@angular/router';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Router } from '@angular/router';
 
 import { Task, TaskStatus } from '@tododay/core/models/task';
-import { TaskService } from '@tododay/core/services/task.service';
-import { NotificationService } from '@tododay/core/services/notification.service';
 import { AuthService } from '@tododay/core/services/auth.service';
+import { NotificationService } from '@tododay/core/services/notification.service';
+import { TaskService } from '@tododay/core/services/task.service';
 import { TaskBaseComponent } from '@tododay/features/task/components/task-base.component';
 
 /**
@@ -13,11 +13,11 @@ import { TaskBaseComponent } from '@tododay/features/task/components/task-base.c
  * Provides functionality to create, update, and delete tasks.
  */
 @Component({
-    selector: 'app-task-list',
-    templateUrl: './task-list.component.html',
-    styleUrls: ['./task-list.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+  selector: 'app-task-list',
+  templateUrl: './task-list.component.html',
+  styleUrls: ['./task-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false
 })
 export class TaskListComponent extends TaskBaseComponent {
   constructor(
@@ -44,7 +44,7 @@ export class TaskListComponent extends TaskBaseComponent {
         },
         error: (error: Error) => {
           this.notificationService.error('Failed to create task');
-        },
+        }
       });
   }
 
@@ -61,7 +61,7 @@ export class TaskListComponent extends TaskBaseComponent {
         },
         error: (error: Error) => {
           this.notificationService.error('Failed to update task status');
-        },
+        }
       });
   }
 
@@ -78,7 +78,7 @@ export class TaskListComponent extends TaskBaseComponent {
         },
         error: (error: Error) => {
           this.notificationService.error('Failed to delete task');
-        },
+        }
       });
   }
 }

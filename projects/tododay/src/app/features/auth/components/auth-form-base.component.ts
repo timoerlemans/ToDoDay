@@ -1,4 +1,4 @@
-import { Component, DestroyRef, computed, signal } from '@angular/core';
+import { Component, computed, DestroyRef, signal } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { FormErrors } from '@tododay/features/auth/interfaces/auth-forms.interface';
@@ -8,13 +8,11 @@ import { FormErrors } from '@tododay/features/auth/interfaces/auth-forms.interfa
  * Provides common functionality for login and register forms.
  */
 @Component({
-    template: '',
-    standalone: false
+  template: '',
+  standalone: false
 })
 export abstract class AuthFormBaseComponent {
-  private readonly submitting = signal(false);
-  readonly isSubmitting = this.submitting.asReadonly();
-
+  abstract form: FormGroup;
   protected readonly formErrors = computed(() => {
     if (!this.form) {
       return {};
@@ -30,8 +28,8 @@ export abstract class AuthFormBaseComponent {
       return errors;
     }, {} as FormErrors);
   });
-
-  abstract form: FormGroup;
+  private readonly submitting = signal(false);
+  readonly isSubmitting = this.submitting.asReadonly();
 
   constructor(
     protected readonly router: Router,

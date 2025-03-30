@@ -36,9 +36,9 @@ describe('Authentication', () => {
         refresh_token: 'fake-refresh-token',
         user: {
           id: 'test-user-id',
-          email: testEmail,
-        },
-      },
+          email: testEmail
+        }
+      }
     }).as('loginRequest');
 
     cy.get('[data-cy=email-input]').type(testEmail);

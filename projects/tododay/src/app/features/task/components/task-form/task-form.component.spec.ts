@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TaskFormComponent } from './task-form.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { TaskStatus } from '@tododay/core/models/task';
+import { TaskFormComponent } from './task-form.component';
 
 describe('TaskFormComponent', () => {
   let component: TaskFormComponent;
@@ -12,7 +12,7 @@ describe('TaskFormComponent', () => {
       // Use declarations for non-standalone components, or imports for standalone
       declarations: [TaskFormComponent],
       // Add ReactiveFormsModule which is likely needed for form functionality
-      imports: [ReactiveFormsModule],
+      imports: [ReactiveFormsModule]
     }).compileComponents();
 
     fixture = TestBed.createComponent(TaskFormComponent);
@@ -25,7 +25,7 @@ describe('TaskFormComponent', () => {
       description: '',
       status: TaskStatus.TODO,
       created_at: new Date(),
-      user_id: '',
+      user_id: ''
     };
 
     fixture.detectChanges();
