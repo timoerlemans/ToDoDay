@@ -19,10 +19,10 @@ import { NotificationService } from '@tododay/core/services/notification.service
  */
 @Component({
   selector: 'app-root',
+  standalone: false,
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: false
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppComponent {
   constructor(

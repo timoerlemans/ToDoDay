@@ -4,7 +4,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
 import { ServiceWorkerModule } from '@angular/service-worker';
 
-import { AppComponent } from '@tododay/app.component';
+import { AppComponent } from './app.component';
 import { routes } from '@tododay/app.routes';
 import { CoreModule } from '@tododay/core/core.module';
 import { securityInterceptor } from '@tododay/core/interceptors/security.interceptor';
