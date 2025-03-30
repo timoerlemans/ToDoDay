@@ -10,7 +10,9 @@
         "plugin:@angular-eslint/recommended",
         "plugin:@angular-eslint/template/process-inline-templates"
       ],
+      "plugins": ["@typescript-eslint", "tsdoc"],
       "rules": {
+        "tsdoc/syntax": "warn",
         "@typescript-eslint/no-relative-import-paths": ["error", { "allowSameFolder": true }],
         "@angular-eslint/no-form-builder": "error",
         "@angular-eslint/template/no-any": "error",
