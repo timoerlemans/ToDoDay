@@ -2,17 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const environmentTemplate = `
-export interface Environment {
-  production: boolean;
-  supabase: {
-    url: string;
-    key: string;
-  };
-  openai: {
-    key: string;
-  }
-}
-
+import { Environment } from './environment.interface.ts'
 export const environment: Environment = {
   production: false,
   supabase: {
@@ -20,7 +10,8 @@ export const environment: Environment = {
     key: process.env.SUPABASE_ANON_KEY || ''
   },
   openai: {
-    key: process.env.OPENAI_API_KEY || ''
+    key: process.env.OPENAI_API_KEY || '',
+    apiUrl: process.env.OPENAI_API_URL || ''
   }
 };
 `;
