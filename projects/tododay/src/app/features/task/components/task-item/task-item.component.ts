@@ -6,9 +6,10 @@ import { Task, TaskStatus } from '@tododay/core/models/task';
  * Provides UI for viewing task details and performing actions like status changes and deletion.
  */
 @Component({
-  selector: 'app-task-item',
-  templateUrl: './task-item.component.html',
-  styleUrls: ['./task-item.component.scss'],
+    selector: 'app-task-item',
+    templateUrl: './task-item.component.html',
+    styleUrls: ['./task-item.component.scss'],
+    standalone: false
 })
 export class TaskItemComponent {
   /**

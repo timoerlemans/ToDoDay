@@ -13,10 +13,11 @@ import { TaskBaseComponent } from '@tododay/features/task/components/task-base.c
  * Provides functionality to create, update, and delete tasks.
  */
 @Component({
-  selector: 'app-task-list',
-  templateUrl: './task-list.component.html',
-  styleUrls: ['./task-list.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-task-list',
+    templateUrl: './task-list.component.html',
+    styleUrls: ['./task-list.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class TaskListComponent extends TaskBaseComponent {
   constructor(

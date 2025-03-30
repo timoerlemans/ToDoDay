@@ -11,10 +11,11 @@ import { AuthFormBaseComponent } from '@tododay/features/auth/components/auth-fo
  * Provides a form for users to request a password reset using their email.
  */
 @Component({
-  selector: 'app-reset-password',
-  templateUrl: './reset-password.component.html',
-  styleUrls: ['./reset-password.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-reset-password',
+    templateUrl: './reset-password.component.html',
+    styleUrls: ['./reset-password.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ResetPasswordComponent extends AuthFormBaseComponent {
   override form = new FormGroup({

@@ -8,7 +8,8 @@ import { FormErrors } from '@tododay/features/auth/interfaces/auth-forms.interfa
  * Provides common functionality for login and register forms.
  */
 @Component({
-  template: '',
+    template: '',
+    standalone: false
 })
 export abstract class AuthFormBaseComponent {
   private readonly submitting = signal(false);

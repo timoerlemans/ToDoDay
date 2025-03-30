@@ -23,9 +23,10 @@ interface RegisterForm {
  * Provides a form for users to create a new account with email and password.
  */
 @Component({
-  selector: 'app-register',
-  templateUrl: './register.component.html',
-  styleUrls: ['./register.component.scss'],
+    selector: 'app-register',
+    templateUrl: './register.component.html',
+    styleUrls: ['./register.component.scss'],
+    standalone: false
 })
 export class RegisterComponent {
   private readonly isLoading = signal(false);

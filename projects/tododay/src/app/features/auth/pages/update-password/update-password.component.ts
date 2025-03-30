@@ -11,10 +11,11 @@ import { AuthFormBaseComponent } from '../../components/auth-form-base.component
  * Provides a form for users to set a new password.
  */
 @Component({
-  selector: 'app-update-password',
-  templateUrl: './update-password.component.html',
-  styleUrls: ['./update-password.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-update-password',
+    templateUrl: './update-password.component.html',
+    styleUrls: ['./update-password.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class UpdatePasswordComponent extends AuthFormBaseComponent {
   override form = new FormGroup({
