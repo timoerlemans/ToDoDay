@@ -15,9 +15,9 @@ interface TaskForm {
 
 @Component({
   selector: 'app-task-form',
+  standalone: false,
   templateUrl: './task-form.component.html',
-  styleUrls: ['./task-form.component.scss'],
-  standalone: false
+  styleUrls: ['./task-form.component.scss']
 })
 export class TaskFormComponent implements OnInit {
   task = input<Task | undefined>(undefined);

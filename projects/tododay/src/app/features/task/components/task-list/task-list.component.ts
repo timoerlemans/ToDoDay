@@ -15,9 +15,8 @@ import { TaskBaseComponent } from '@tododay/features/task/components/task-base.c
 @Component({
   selector: 'app-task-list',
   templateUrl: './task-list.component.html',
-  styleUrls: ['./task-list.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: false
+  styleUrls: ['./task-list.component.scss'],  standalone: false,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TaskListComponent extends TaskBaseComponent {
   constructor(

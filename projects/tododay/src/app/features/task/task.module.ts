@@ -18,7 +18,6 @@ import { TaskRoutingModule } from './task-routing.module';
     CommonModule,
     ReactiveFormsModule,
     SharedModule,
-    ThemeToggleComponent,
     TaskRoutingModule
   ],
   providers: [TaskService, NotificationService, AuthService],

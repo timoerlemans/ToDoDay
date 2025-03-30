@@ -7,9 +7,9 @@ import { Task, TaskStatus } from '@tododay/core/models/task';
  */
 @Component({
   selector: 'app-task-item',
+  standalone: false,
   templateUrl: './task-item.component.html',
-  styleUrls: ['./task-item.component.scss'],
-  standalone: false
+  styleUrls: ['./task-item.component.scss']
 })
 export class TaskItemComponent {
   /**
