@@ -1,9 +1,15 @@
 {
   "root": true,
-  "ignorePatterns": ["coverage/**/*", "dist/**/*", "node_modules/**/*"],
+  "ignorePatterns": [
+    "coverage/**/*",
+    "dist/**/*",
+    "node_modules/**/*"
+  ],
   "overrides": [
     {
-      "files": ["*.ts"],
+      "files": [
+        "*.ts"
+      ],
       "extends": [
         "eslint:recommended",
         "plugin:@typescript-eslint/recommended",
@@ -11,7 +17,11 @@
         "plugin:@angular-eslint/template/process-inline-templates",
         "plugin:prettier/recommended"
       ],
-      "plugins": ["@typescript-eslint", "tsdoc", "prettier"],
+      "plugins": [
+        "@typescript-eslint",
+        "tsdoc",
+        "prettier"
+      ],
       "rules": {
         "prettier/prettier": "error",
         "tsdoc/syntax": "warn",
@@ -22,8 +32,6 @@
           }
         ],
         "@angular-eslint/no-form-builder": "error",
-        "@angular-eslint/template/no-any": "error",
-        "@angular-eslint/template/use-track-by-function": "error",
         "@angular-eslint/no-lifecycle-call": "error",
         "@angular-eslint/no-input-prefix": "error",
         "@angular-eslint/use-lifecycle-interface": "error",
@@ -34,7 +42,10 @@
         "no-console": [
           "error",
           {
-            "allow": ["warn", "error"]
+            "allow": [
+              "warn",
+              "error"
+            ]
           }
         ],
         "prefer-const": "error",
@@ -58,16 +69,24 @@
         ]
       },
       "parserOptions": {
-        "project": ["tsconfig.json"],
+        "project": [
+          "tsconfig.json"
+        ],
         "createDefaultProgram": true
       }
     },
     {
-      "files": ["*.html"],
-      "extends": ["plugin:@angular-eslint/template/recommended", "plugin:prettier/recommended"],
+      "files": [
+        "*.html"
+      ],
+      "extends": [
+        "plugin:@angular-eslint/template/recommended",
+        "plugin:prettier/recommended"
+      ],
       "parser": "@angular-eslint/template-parser",
       "rules": {
-        "@angular-eslint/template/no-any": "off"
+        "@angular-eslint/template/no-any": "error",
+        "@angular-eslint/template/use-track-by-function": "error"
       }
     }
   ]

@@ -13,7 +13,7 @@ module.exports = {
   coverageReporters: ['html', 'lcov', 'text-summary'],
   coverageDirectory: 'coverage',
   moduleNameMapper: {
-    '@tododay/(.*)': '<rootDir>/projects/tododay/src/app/$1'
+    '@tododay/(.*)': '<rootDir>/src/app/$1'
   },
   testEnvironment: 'jsdom'
 };
