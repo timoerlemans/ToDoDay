@@ -16,6 +16,7 @@ describe('TaskService', () => {
       description: 'Test Description 1',
       status: TaskStatus.TODO,
       created_at: new Date(),
+      updated_at: new Date(), // Adding the missing updated_at field
       user_id: 'user1'
     },
     {
@@ -24,33 +25,32 @@ describe('TaskService', () => {
       description: 'Test Description 2',
       status: TaskStatus.IN_PROGRESS,
       created_at: new Date(),
+      updated_at: new Date(), // Adding the missing updated_at field
       user_id: 'user1'
     }
   ];
 
-  const mockSupabaseClient = {
-    from: jest.fn().mockReturnThis(),
-    select: jest.fn().mockReturnThis(),
-    order: jest.fn().mockReturnValue({
-      data: mockTasks,
-      error: null
-    }),
-    insert: jest.fn().mockReturnThis(),
-    update: jest.fn().mockReturnThis(),
-    delete: jest.fn().mockReturnThis(),
-    eq: jest.fn().mockReturnValue({
+  // Create a proper chain of mock methods
+  const selectMock = jest.fn().mockReturnValue({
+    order: jest.fn().mockReturnValue({ data: mockTasks, error: null })
+  });
+
+  const fromMock = jest.fn().mockReturnValue({
+    select: selectMock,
+    insert: jest.fn().mockReturnValue({
       select: jest.fn().mockReturnValue({
-        data: [mockTasks[0]],
-        error: null
-      }),
-      data: null,
-      error: null
+        single: jest.fn().mockReturnValue({ data: mockTasks[0], error: null })
+      })
     }),
-    single: jest.fn().mockReturnValue({
-      data: mockTasks[0],
-      error: null
+    update: jest.fn().mockReturnValue({
+      eq: jest.fn().mockReturnValue({
+        select: jest.fn().mockReturnValue({ data: [mockTasks[0]], error: null })
+      })
+    }),
+    delete: jest.fn().mockReturnValue({
+      eq: jest.fn().mockReturnValue({ data: null, error: null })
     })
-  };
+  });
 
   const mockAuthClient = {
     getSession: jest.fn().mockResolvedValue({
@@ -63,9 +63,13 @@ describe('TaskService', () => {
   };
 
   beforeEach(() => {
+    // Reset the mocks
+    fromMock.mockClear();
+    selectMock.mockClear();
+
     supabaseMock = {
       getClient: jest.fn().mockReturnValue({
-        from: mockSupabaseClient.from,
+        from: fromMock,
         auth: mockAuthClient
       })
     } as unknown as jest.Mocked<SupabaseService>;
@@ -105,7 +109,8 @@ describe('TaskService', () => {
       description: 'New Description',
       status: TaskStatus.TODO,
       user_id: 'user1',
-      created_at: new Date()
+      created_at: new Date(),
+      updated_at: new Date() // Adding the missing updated_at field
     };
 
     service.createTask(newTask).subscribe(task => {

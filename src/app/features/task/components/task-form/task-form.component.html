@@ -1,0 +1,207 @@
+<div class="task-form bg-white dark:bg-gray-800 p-4 rounded-lg shadow mb-8">
+  <h2
+    class="task-form__title text-xl font-semibold text-gray-900 dark:text-white mb-3"
+    id="form-title"
+  >
+    New Task
+  </h2>
+
+  <form
+    (ngSubmit)="onSubmit()"
+    [formGroup]="taskForm"
+    aria-labelledby="form-title"
+    class="task-form__form space-y-4"
+    role="form"
+  >
+    <!-- Smart Input Field - Natural Language Command Entry -->
+    <div class="task-form__smart-input mb-4">
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="smartInput">
+        Quick Add Task
+      </label>
+      <input
+        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 py-3 px-4 text-lg"
+        formControlName="smartInput"
+        id="smartInput"
+        type="text"
+        placeholder="Enter task like: Submit report @work #urgent next monday 12:00"
+        autocomplete="off"
+      />
+      @if (taskForm.get('smartInput')?.invalid && taskForm.get('smartInput')?.touched) {
+        <p class="mt-1 text-sm text-red-600">
+          {{ getErrorMessage('smartInput') }}
+        </p>
+      }
+    </div>
+
+    <!-- Toggle Button for Detailed Fields -->
+    <div class="task-form__toggle mb-2 flex justify-end">
+      <button
+        type="button"
+        (click)="toggleDetailedFields()"
+        class="text-sm text-gray-600 dark:text-gray-400 flex items-center hover:text-primary-600 transition-colors"
+      >
+        <span>{{ showDetailedFields() ? 'Hide details' : 'Show details' }}</span>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-4 w-4 ml-1 transition-transform"
+          [ngClass]="{ 'transform rotate-180': showDetailedFields() }"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M19 9l-7 7-7-7"
+          />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Detailed Fields Container - Collapsible -->
+    <div
+      class="task-form__detailed-fields overflow-hidden transition-all duration-300 ease-in-out"
+      [ngClass]="{
+        'max-h-0 opacity-0 scale-y-95': !showDetailedFields(),
+        'max-h-screen opacity-100 scale-y-100 mb-4': showDetailedFields()
+      }"
+    >
+      <!-- Title -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="title">
+          Title
+        </label>
+        <input
+          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600"
+          formControlName="title"
+          id="title"
+          type="text"
+        />
+        @if (taskForm.get('title')?.invalid && taskForm.get('title')?.touched) {
+          <p class="mt-1 text-sm text-red-600">
+            {{ getErrorMessage('title') }}
+          </p>
+        }
+      </div>
+
+      <!-- Description -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="description">
+          Description
+        </label>
+        <textarea
+          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600"
+          formControlName="description"
+          id="description"
+          rows="3"
+        ></textarea>
+        @if (taskForm.get('description')?.invalid && taskForm.get('description')?.touched) {
+          <p class="mt-1 text-sm text-red-600">
+            {{ getErrorMessage('description') }}
+          </p>
+        }
+      </div>
+      <!-- Project -->
+      <div class="task-form__field mb-4">
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="project">
+          Project
+        </label>
+        <input
+          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600"
+          formControlName="project"
+          id="project"
+          type="text"
+          placeholder="@projectname"
+        />
+        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+          Tip: Use &#64;projectname in smart input
+        </p>
+      </div>
+
+      <!-- Priority -->
+      <div class="task-form__field mb-4">
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="priority">
+          Priority
+        </label>
+        <select
+          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600"
+          formControlName="priority"
+          id="priority"
+        >
+          <option [ngValue]="null">No priority</option>
+          <option [value]="TaskPriority.LOW">Low</option>
+          <option [value]="TaskPriority.MEDIUM">Medium</option>
+          <option [value]="TaskPriority.HIGH">High</option>
+        </select>
+      </div>
+
+      <!-- Due Date -->
+      <div class="task-form__field mb-4">
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="due_date">
+          Deadline
+        </label>
+        <input
+          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600"
+          formControlName="due_date"
+          id="due_date"
+          type="date"
+        />
+        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+          Tip: Type dates like "next monday" in smart input
+        </p>
+      </div>
+
+      <!-- Start Date -->
+      <div class="task-form__field mb-4">
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="start_date">
+          Start Date
+        </label>
+        <input
+          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600"
+          formControlName="start_date"
+          id="start_date"
+          type="date"
+        />
+      </div>
+      <!-- Notify At -->
+      <div class="task-form__field mb-4">
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="notify_at">
+          Reminder
+        </label>
+        <input
+          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600"
+          formControlName="notify_at"
+          id="notify_at"
+          type="datetime-local"
+        />
+      </div>
+
+      <!-- Labels -->
+      <div class="task-form__field mb-4">
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="labels">
+          Labels
+        </label>
+        <input
+          [formControlName]="'labels'"
+          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600"
+          id="labels"
+          placeholder="project, urgent, review"
+          type="text"
+        />
+        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+          Tip: Use #label in smart input (e.g., #urgent #work)
+        </p>
+      </div>
+    </div>
+
+    <div class="task-form__actions flex justify-end mt-4">
+      <button
+        class="task-form__submit-button inline-flex justify-center rounded-md border border-transparent bg-primary-600 py-2 px-6 text-sm font-medium text-white shadow-sm hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-colors"
+        type="submit"
+      >
+        Save Task
+      </button>
+    </div>
+  </form>
+</div>

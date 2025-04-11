@@ -14,30 +14,30 @@
           "style": "scss"
         }
       },
-      "root": "projects/tododay",
-      "sourceRoot": "projects/tododay/src",
+      "root": "./",
+      "sourceRoot": "./src",
       "prefix": "app",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
             "outputPath": {
-              "base": "dist/tododay"
+              "base": "dist"
             },
-            "index": "projects/tododay/src/index.html",
+            "index": "src/index.html",
             "polyfills": ["zone.js"],
-            "tsConfig": "projects/tododay/tsconfig.app.json",
+            "tsConfig": "tsconfig.app.json",
             "assets": [
-              "projects/tododay/src/favicon.ico",
-              "projects/tododay/src/assets",
-              "projects/tododay/src/manifest.webmanifest"
+              "src/favicon.ico",
+              "src/assets",
+              "src/manifest.webmanifest"
             ],
-            "styles": ["projects/tododay/src/styles.scss"],
+            "styles": ["src/styles.scss"],
             "scripts": [],
             "fileReplacements": [
               {
-                "replace": "projects/tododay/src/environments/environment.ts",
-                "with": "projects/tododay/src/environments/environment.development.ts"
+                "replace": "src/environments/environment.ts",
+                "with": "src/environments/environment.development.ts"
               }
             ],
             "allowedCommonJsDependencies": ["@supabase/supabase-js"],
@@ -46,17 +46,17 @@
             "sourceMap": true,
             "namedChunks": true,
             "stylePreprocessorOptions": {
-              "includePaths": ["projects/tododay/src/styles"]
+              "includePaths": ["src/styles"]
             },
-            "serviceWorker": "projects/tododay/ngsw-config.json",
-            "browser": "projects/tododay/src/main.ts"
+            "serviceWorker": "ngsw-config.json",
+            "browser": "src/main.ts"
           },
           "configurations": {
             "production": {
               "fileReplacements": [
                 {
-                  "replace": "projects/tododay/src/environments/environment.ts",
-                  "with": "projects/tododay/src/environments/environment.production.ts"
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.production.ts"
                 }
               ],
               "optimization": true,
@@ -111,16 +111,16 @@
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
             "polyfills": ["zone.js", "zone.js/testing"],
-            "tsConfig": "projects/tododay/tsconfig.spec.json",
-            "assets": ["projects/tododay/src/favicon.ico", "projects/tododay/src/assets"],
-            "styles": ["projects/tododay/src/styles.scss"],
+            "tsConfig": "tsconfig.spec.json",
+            "assets": ["src/favicon.ico", "src/assets"],
+            "styles": ["src/styles.scss"],
             "scripts": []
           }
         },
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": ["projects/tododay/**/*.ts", "projects/tododay/**/*.html"]
+            "lintFilePatterns": ["**/*.ts", "**/*.html"]
           }
         }
       }

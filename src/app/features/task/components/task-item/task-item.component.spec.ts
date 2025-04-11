@@ -18,15 +18,19 @@ describe('TaskItemComponent', () => {
     fixture = TestBed.createComponent(TaskItemComponent);
     component = fixture.componentInstance;
 
-    // Provide the required inputs for the component
-    component.task = {
+    // Create a mock task with the required updated_at field
+    const mockTask = {
       id: '1',
       title: 'Test Task',
       description: 'Test Description',
       status: TaskStatus.TODO,
       created_at: new Date(),
+      updated_at: new Date(), // Add the missing updated_at
       user_id: 'user1'
     };
+
+    // Set the input via the proper method for signals
+    component.task.set(mockTask);
 
     fixture.detectChanges();
   });
