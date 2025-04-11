@@ -36,7 +36,7 @@ These instructions define the standards and practices that should be followed wh
 
 - Organize imports: Angular core first, third-party libraries second, local imports third
 - Use barrel files (index.ts) for module exports
-- **Use namespace imports** instead of relative paths (use @tododay with an alias pointing to projects/tododay/src/app)
+- **Use namespace imports** instead of relative paths (use @tododay with an alias pointing to src/app)
 - Implement lazy loading for feature modules
 - Follow single responsibility principle for services
 - **DO NOT USE STAND-ALONE COMPONENTS IN ANGULAR**

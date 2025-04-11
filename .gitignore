@@ -47,9 +47,9 @@ Thumbs.db
 .env
 .env.local
 .env.*.local
-projects/tododay/src/environments/environment.ts
-projects/tododay/src/environments/environment.development.ts
-projects/tododay/src/environments/environment.production.ts
+src/environments/environment.ts
+src/environments/environment.development.ts
+src/environments/environment.production.ts
 
 # Firebase
 .firebase/

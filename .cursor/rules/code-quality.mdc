@@ -1,16 +1,16 @@
 ---
-description: 
-globs: 
+description:
+globs:
 alwaysApply: true
 ---
 ---
-description: 
-globs: 
+description:
+globs:
 alwaysApply: true
 ---
 **Angular Code Quality Standards**
 
-- **Use namespace imports** instead of relative paths (use `@tododay` with an alias pointing to `projects/tododay/src/app`). There\'s an exception for all the files that are directly in the `projects/tododay/src` folder, like main.ts.
+- **Use namespace imports** instead of relative paths (use `@tododay` with an alias pointing to `src/app`). There\'s an exception for all the files that are directly in the `src` folder, like main.ts.
 - **Prefer Reactive Forms** (`new FormControl()`, `new FormGroup()`) over the FormBuilder service.
 - **Adopt the new template syntax** (`@if { } @else { }`) instead of legacy `*ngIf`.
 - \*\*Use \*\***`destroyRef`** instead of managing destruction manually with `destroy$` subject or subscriptions.
