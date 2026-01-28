@@ -1,11 +1,23 @@
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
+import cookie from '@fastify/cookie';
+import jwt from '@fastify/jwt';
+import { sql } from 'drizzle-orm';
 import { env } from './config/env';
+import { db } from './db';
 import { authRoutes } from './routes/auth';
 import { daysRoutes } from './routes/days';
 import { itemsRoutes } from './routes/items';
 import { settingsRoutes } from './routes/settings';
 import { errorHandler } from './middleware/error-handler';
+
+// Extend FastifyRequest to include user
+declare module '@fastify/jwt' {
+  interface FastifyJWT {
+    payload: { userId: string; email: string };
+    user: { userId: string; email: string };
+  }
+}
 
 async function buildApp() {
   const app = Fastify({
@@ -27,11 +39,57 @@ async function buildApp() {
     credentials: true,
   });
 
+  // Register Cookie plugin
+  await app.register(cookie);
+
+  // Register JWT plugin
+  await app.register(jwt, {
+    secret: env.JWT_SECRET,
+    sign: {
+      expiresIn: '15m',
+    },
+    cookie: {
+      cookieName: 'accessToken',
+      signed: false,
+    },
+  });
+
   // Error handler
   app.setErrorHandler(errorHandler);
 
-  // Health check
-  app.get('/health', async () => ({ status: 'ok', timestamp: new Date().toISOString() }));
+  // Health check helper function
+  const getHealthStatus = async () => {
+    const timestamp = new Date().toISOString();
+    let dbStatus: 'ok' | 'error' = 'ok';
+    let dbError: string | undefined;
+    let dbResponseTime: number | undefined;
+
+    try {
+      const start = Date.now();
+      await db.execute(sql`SELECT 1`);
+      dbResponseTime = Date.now() - start;
+    } catch (error) {
+      dbStatus = 'error';
+      dbError = error instanceof Error ? error.message : 'Unknown database error';
+    }
+
+    return {
+      status: dbStatus === 'ok' ? 'ok' : 'degraded',
+      timestamp,
+      services: {
+        api: { status: 'ok' },
+        database: {
+          status: dbStatus,
+          responseTime: dbResponseTime,
+          error: dbError,
+        },
+      },
+    };
+  };
+
+  // Health check endpoints
+  app.get('/health', async () => getHealthStatus());
+  app.get('/api/health', async () => getHealthStatus());
 
   // API routes
   await app.register(authRoutes, { prefix: '/api/auth' });
