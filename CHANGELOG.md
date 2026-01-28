@@ -27,12 +27,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - API package skeleton (@tododay/api)
   - Fastify, Drizzle ORM, PostgreSQL dependencies
   - JWT authentication dependencies (argon2, @fastify/jwt)
-- Web package skeleton (@tododay/web)
+- Web package (@tododay/web)
   - React 19, Vite, TypeScript setup
-  - Tailwind CSS 4.0 with Vite plugin
+  - Tailwind CSS 4.0 with Vite plugin and custom color tokens
   - shadcn/ui component dependencies
   - TanStack Query and Zustand for state management
   - ESLint config for React/TypeScript
+  - MainLayout with header navigation
+  - HomePage with spiral canvas and task list sidebar
+  - LoginPage with authentication form
+  - SettingsPage for workday and display preferences
+  - TaskList, TaskItem, TaskForm components
+  - Interactive SpiralCanvas with:
+    - SVG-based spiral visualization
+    - Color-coded segments (blue tasks, yellow events, gray completed, red urgent)
+    - Hour markers around the spiral
+    - Current time indicator line
+    - Hover tooltips for items
+    - Click-to-select segments
+  - SpiralSegment component for rendering arc segments
+- Database schema with Drizzle ORM:
+  - users, sessions, user_settings tables
+  - days and items tables with proper relationships
+  - Unique index on days(user_id, date)
+  - Index on items(day_id, sort_order)
 - .gitignore with proper environment variable handling
 - .prettierrc configuration
 
