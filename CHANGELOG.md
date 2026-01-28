@@ -18,6 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Removed unused imports (`NewUser`, `NewItem`, `env`)
   - Removed unused function parameters
 - Lint error: Changed `console.log` to `console.error` in ErrorPage error reporting
+- SpiralCanvas useCallback now properly memoizes hover callback by passing itemId through onHover
+- Added trustProxy configuration for correct client IP detection behind reverse proxies
+- Expired sessions now cleaned up on startup and hourly (was dead code)
 - Session persistence across page refresh
   - Added `checkAuth` action to auth store that attempts token refresh on app load
   - Added `hasCheckedAuth` flag to prevent premature login redirects
