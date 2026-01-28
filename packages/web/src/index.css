@@ -1,15 +1,17 @@
-@import 'tailwindcss';
-
-@theme {
-  --color-task: #4A90D9;
-  --color-event: #F5A623;
-  --color-completed: #D0D0D0;
-  --color-urgent: #D64545;
-  --color-current-time: #E74C3C;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @layer base {
   :root {
+    /* Spiral colors */
+    --color-task: #4A90D9;
+    --color-event: #F5A623;
+    --color-completed: #D0D0D0;
+    --color-urgent: #D64545;
+    --color-current-time: #E74C3C;
+
+    /* shadcn/ui colors */
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
@@ -33,6 +35,14 @@
   }
 
   .dark {
+    /* Spiral colors (dark mode) */
+    --color-task: #5BA0E9;
+    --color-event: #FFB833;
+    --color-completed: #606060;
+    --color-urgent: #E65555;
+    --color-current-time: #F75C4C;
+
+    /* shadcn/ui colors */
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
     --card: 222.2 84% 4.9%;
