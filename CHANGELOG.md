@@ -8,6 +8,61 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+
+#### Phase 2: Core Features Implementation
+
+**API Backend:**
+- Authentication service with secure token handling
+  - bcrypt password hashing (12 salt rounds)
+  - SHA-256 hashed refresh tokens (never stored raw)
+  - 15-minute access tokens, 7-day refresh tokens
+  - Token rotation on refresh for security
+  - httpOnly cookies for refresh tokens
+- Auth routes: register, login, refresh, logout, me
+- Day service with getOrCreate, relations loading
+- Item service with text parsing using TimeParser/DurationParser
+- Scheduling algorithm ported from obsidian-nautilus:
+  - Events scheduled at fixed times (immovable)
+  - Completed tasks pinned at completedAt time
+  - Pending tasks fill available slots from current time
+  - Tracks overflow items and free minutes remaining
+- Settings routes with validation (workday bounds check)
+- Enhanced health endpoint with database status and response times
+- JWT middleware with @fastify/jwt
+- All routes protected with authentication
+
+**Frontend:**
+- React Error Boundary with stack trace display (dev only)
+- Health Page dashboard with real-time status monitoring
+- API client with JWT interceptor and automatic token refresh
+- TanStack Query hooks for all API endpoints
+- Zustand stores for auth and day state with persistence
+- AuthGuard component for protected routes
+- RegisterPage for new user signup
+- Working LoginPage with error handling
+- TaskList connected to API with create/complete/delete
+- TaskItem with delete button on hover
+- TaskForm with loading state during creation
+- SpiralCanvas fetching schedule from API
+- SettingsPage with load/save to API
+- MainLayout with user display and logout button
+
+### Changed
+- Updated Tailwind CSS from v4 to v3-compatible configuration
+  - Changed from `@import 'tailwindcss'` to `@tailwind` directives
+  - Added tailwind.config.js and postcss.config.js
+  - Removed @tailwindcss/vite plugin in favor of PostCSS
+- Protected routes (/, /settings) wrapped with AuthGuard
+- All frontend components now fetch data from API instead of sample data
+
+### Fixed
+- CSS MIME type error from Tailwind v4 syntax
+
+---
+
+## Phase 1: Foundation (Previous)
+
+### Added
 - Initial monorepo structure with pnpm workspaces and Turborepo
 - Root package.json with dev, build, test, lint, and typecheck scripts
 - Base TypeScript configuration (tsconfig.base.json)
@@ -29,7 +84,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - JWT authentication dependencies (argon2, @fastify/jwt)
 - Web package (@tododay/web)
   - React 19, Vite, TypeScript setup
-  - Tailwind CSS 4.0 with Vite plugin and custom color tokens
+  - Tailwind CSS with custom color tokens
   - shadcn/ui component dependencies
   - TanStack Query and Zustand for state management
   - ESLint config for React/TypeScript
