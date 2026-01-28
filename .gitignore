@@ -39,3 +39,7 @@ pnpm-debug.log*
 # Misc
 .cache/
 tmp/
+
+# AI 
+.claude
+.claude/
