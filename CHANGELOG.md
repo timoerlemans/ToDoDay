@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Session persistence across page refresh
+  - Added `checkAuth` action to auth store that attempts token refresh on app load
+  - Added `hasCheckedAuth` flag to prevent premature login redirects
+  - AuthGuard now calls `checkAuth()` on mount before redirecting to login
+  - Uses HttpOnly refresh token cookie to recover session silently
+
 ### Added
 
 #### Phase 2: Core Features Implementation

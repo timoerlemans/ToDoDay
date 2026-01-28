@@ -9,19 +9,29 @@ interface AuthGuardProps {
 export function AuthGuard({ children }: AuthGuardProps) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { isAuthenticated, isLoading } = useAuthStore();
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const isLoading = useAuthStore((state) => state.isLoading);
+  const hasCheckedAuth = useAuthStore((state) => state.hasCheckedAuth);
+  const checkAuth = useAuthStore((state) => state.checkAuth);
+
+  // Try to recover session on mount
+  useEffect(() => {
+    if (!hasCheckedAuth) {
+      checkAuth();
+    }
+  }, [hasCheckedAuth, checkAuth]);
 
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
+    if (!isLoading && hasCheckedAuth && !isAuthenticated) {
       // Save the attempted URL for redirect after login
       navigate('/login', {
         replace: true,
         state: { from: location.pathname },
       });
     }
-  }, [isAuthenticated, isLoading, navigate, location]);
+  }, [isAuthenticated, isLoading, hasCheckedAuth, navigate, location]);
 
-  if (isLoading) {
+  if (isLoading || !hasCheckedAuth) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
