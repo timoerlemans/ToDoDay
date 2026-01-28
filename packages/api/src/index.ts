@@ -32,6 +32,8 @@ async function buildApp() {
             }
           : undefined,
     },
+    // Trust proxy headers in production for correct client IP detection
+    trustProxy: env.NODE_ENV === 'production',
   });
 
   // Register CORS
