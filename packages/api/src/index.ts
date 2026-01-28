@@ -11,6 +11,7 @@ import { daysRoutes } from './routes/days';
 import { itemsRoutes } from './routes/items';
 import { settingsRoutes } from './routes/settings';
 import { errorHandler } from './middleware/error-handler';
+import { cleanupExpiredSessions } from './services/auth.service';
 
 // Extend FastifyRequest to include user
 declare module '@fastify/jwt' {
@@ -114,6 +115,21 @@ async function start() {
   try {
     await app.listen({ port: env.PORT, host: env.HOST });
     app.log.info(`Server listening on ${env.HOST}:${env.PORT}`);
+
+    // Run session cleanup on startup and every hour
+    const runCleanup = async () => {
+      try {
+        const count = await cleanupExpiredSessions();
+        if (count > 0) {
+          app.log.info(`Cleaned up ${count} expired sessions`);
+        }
+      } catch (err) {
+        app.log.error({ err }, 'Failed to cleanup expired sessions');
+      }
+    };
+
+    await runCleanup();
+    setInterval(runCleanup, 60 * 60 * 1000); // Every hour
   } catch (err) {
     app.log.error(err);
     process.exit(1);
