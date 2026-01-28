@@ -1,4 +1,4 @@
-import { ErrorInfo } from 'react';
+import { ErrorInfo, useState } from 'react';
 
 interface ErrorPageProps {
   error: Error | null;
@@ -8,9 +8,43 @@ interface ErrorPageProps {
 
 export function ErrorPage({ error, errorInfo, onReset }: ErrorPageProps) {
   const isDevelopment = import.meta.env.DEV;
+  const [copied, setCopied] = useState(false);
+
+  const getDebugInfo = () => {
+    return `Error Details (Development Only)
+
+This information is only visible in development mode
+Error Message:
+
+${error?.message ?? 'No error message'}
+
+Stack Trace:
+
+${error?.stack ?? 'No stack trace'}
+
+Component Stack:
+
+${errorInfo?.componentStack ?? 'No component stack'}
+
+Debug Info:
+- Timestamp: ${new Date().toISOString()}
+- URL: ${window.location.href}
+- User Agent: ${navigator.userAgent}
+`;
+  };
+
+  const handleCopyError = async () => {
+    const debugInfo = getDebugInfo();
+    try {
+      await navigator.clipboard.writeText(debugInfo);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
 
   const handleReportError = () => {
-    // Log to console for now - could be integrated with error reporting service
     console.log('Error reported:', {
       error: error?.message,
       stack: error?.stack,
@@ -59,13 +93,35 @@ export function ErrorPage({ error, errorInfo, onReset }: ErrorPageProps) {
 
         {isDevelopment && error && (
           <div className="bg-card border border-border rounded-lg p-4 space-y-4">
-            <div>
-              <h2 className="text-lg font-semibold text-destructive">
-                Error Details (Development Only)
-              </h2>
-              <p className="text-sm text-muted-foreground">
-                This information is only visible in development mode
-              </p>
+            <div className="flex justify-between items-start">
+              <div>
+                <h2 className="text-lg font-semibold text-destructive">
+                  Error Details (Development Only)
+                </h2>
+                <p className="text-sm text-muted-foreground">
+                  This information is only visible in development mode
+                </p>
+              </div>
+              <button
+                onClick={handleCopyError}
+                className="px-3 py-1.5 text-sm bg-secondary text-secondary-foreground rounded-md font-medium hover:bg-secondary/90 transition-colors flex items-center gap-1.5"
+              >
+                {copied ? (
+                  <>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    Copied!
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                    Copy
+                  </>
+                )}
+              </button>
             </div>
 
             <div className="space-y-2">
