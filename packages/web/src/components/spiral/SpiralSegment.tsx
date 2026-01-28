@@ -8,7 +8,7 @@ interface SpiralSegmentProps {
   color: string;
   layer?: number;
   onClick?: () => void;
-  onHover?: (hovered: boolean) => void;
+  onHover?: (itemId: string, hovered: boolean) => void;
 }
 
 export const SpiralSegment = memo(function SpiralSegment({
@@ -38,8 +38,8 @@ export const SpiralSegment = memo(function SpiralSegment({
     <g
       className="cursor-pointer transition-opacity"
       onClick={onClick}
-      onMouseEnter={() => onHover?.(true)}
-      onMouseLeave={() => onHover?.(false)}
+      onMouseEnter={() => onHover?.(scheduledItem.item.id, true)}
+      onMouseLeave={() => onHover?.(scheduledItem.item.id, false)}
     >
       <path
         d={path}

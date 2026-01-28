@@ -92,7 +92,7 @@ export function SpiralCanvas({ onItemClick }: SpiralCanvasProps) {
   const freeMinutes = scheduleData?.data?.freeMinutes ?? (settings.workdayEnd - settings.workdayStart) * 60;
 
   const handleItemHover = useCallback(
-    (itemId: string) => (hovered: boolean) => setHoveredItem(hovered ? itemId : null),
+    (itemId: string, hovered: boolean) => setHoveredItem(hovered ? itemId : null),
     []
   );
 
@@ -145,7 +145,7 @@ export function SpiralCanvas({ onItemClick }: SpiralCanvasProps) {
               false
             )}
             onClick={() => onItemClick?.(scheduledItem.item)}
-            onHover={handleItemHover(scheduledItem.item.id)}
+            onHover={handleItemHover}
           />
         ))}
 
