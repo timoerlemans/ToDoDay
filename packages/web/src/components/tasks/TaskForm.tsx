@@ -2,15 +2,16 @@ import { useState } from 'react';
 
 interface TaskFormProps {
   onAdd: (text: string, type: 'task' | 'event') => void;
+  isLoading?: boolean;
 }
 
-export function TaskForm({ onAdd }: TaskFormProps) {
+export function TaskForm({ onAdd, isLoading }: TaskFormProps) {
   const [text, setText] = useState('');
   const [type, setType] = useState<'task' | 'event'>('task');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (text.trim()) {
+    if (text.trim() && !isLoading) {
       onAdd(text.trim(), type);
       setText('');
     }
@@ -24,14 +25,15 @@ export function TaskForm({ onAdd }: TaskFormProps) {
           value={text}
           onChange={e => setText(e.target.value)}
           placeholder="Add a task or event..."
-          className="flex-1 px-3 py-2 border border-input rounded-md bg-background text-sm"
+          disabled={isLoading}
+          className="flex-1 px-3 py-2 border border-input rounded-md bg-background text-sm disabled:opacity-50"
         />
         <button
           type="submit"
-          disabled={!text.trim()}
+          disabled={!text.trim() || isLoading}
           className="px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Add
+          {isLoading ? 'Adding...' : 'Add'}
         </button>
       </div>
 
@@ -43,6 +45,7 @@ export function TaskForm({ onAdd }: TaskFormProps) {
             value="task"
             checked={type === 'task'}
             onChange={() => setType('task')}
+            disabled={isLoading}
             className="w-4 h-4 accent-[#4A90D9]"
           />
           <span className="text-[#4A90D9]">Task</span>
@@ -54,6 +57,7 @@ export function TaskForm({ onAdd }: TaskFormProps) {
             value="event"
             checked={type === 'event'}
             onChange={() => setType('event')}
+            disabled={isLoading}
             className="w-4 h-4 accent-[#F5A623]"
           />
           <span className="text-[#F5A623]">Event</span>

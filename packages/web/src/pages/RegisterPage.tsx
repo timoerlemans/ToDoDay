@@ -1,27 +1,36 @@
 import { useState } from 'react';
-import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '@/stores/auth';
 
-export function LoginPage() {
+export function RegisterPage() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const { login, isLoading } = useAuthStore();
+  const { register, isLoading } = useAuthStore();
 
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
-
-  const from = (location.state as { from?: string })?.from || '/';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters');
+      return;
+    }
+
     try {
-      await login(email, password);
-      navigate(from, { replace: true });
+      await register(email, password, name || undefined);
+      navigate('/', { replace: true });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Login failed');
+      setError(err instanceof Error ? err.message : 'Registration failed');
     }
   };
 
@@ -31,12 +40,12 @@ export function LoginPage() {
         <div className="text-center">
           <h1 className="text-3xl font-bold">ToDoDay</h1>
           <p className="text-muted-foreground mt-2">
-            Visualize your day as an interactive spiral
+            Create your account to get started
           </p>
         </div>
 
         <div className="bg-card border border-border rounded-lg p-6 space-y-4">
-          <h2 className="text-xl font-semibold">Sign in</h2>
+          <h2 className="text-xl font-semibold">Sign up</h2>
 
           {error && (
             <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-md text-destructive text-sm">
@@ -45,6 +54,20 @@ export function LoginPage() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <label htmlFor="name" className="text-sm font-medium">
+                Name (optional)
+              </label>
+              <input
+                id="name"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Your name"
+                className="w-full px-3 py-2 border border-input rounded-md bg-background"
+              />
+            </div>
+
             <div className="space-y-2">
               <label htmlFor="email" className="text-sm font-medium">
                 Email
@@ -69,7 +92,23 @@ export function LoginPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter your password"
+                placeholder="At least 8 characters"
+                required
+                minLength={8}
+                className="w-full px-3 py-2 border border-input rounded-md bg-background"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="confirmPassword" className="text-sm font-medium">
+                Confirm Password
+              </label>
+              <input
+                id="confirmPassword"
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Repeat your password"
                 required
                 className="w-full px-3 py-2 border border-input rounded-md bg-background"
               />
@@ -80,14 +119,14 @@ export function LoginPage() {
               disabled={isLoading}
               className="w-full py-2 px-4 bg-primary text-primary-foreground rounded-md font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
             >
-              {isLoading ? 'Signing in...' : 'Sign in'}
+              {isLoading ? 'Creating account...' : 'Create account'}
             </button>
           </form>
 
           <div className="text-center text-sm text-muted-foreground">
-            Don&apos;t have an account?{' '}
-            <Link to="/register" className="text-primary hover:underline">
-              Sign up
+            Already have an account?{' '}
+            <Link to="/login" className="text-primary hover:underline">
+              Sign in
             </Link>
           </div>
         </div>

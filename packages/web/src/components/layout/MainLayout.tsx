@@ -1,5 +1,6 @@
-import { Outlet, Link, useLocation } from 'react-router-dom';
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
+import { useAuthStore } from '@/stores/auth';
 
 export function MainLayout() {
   const location = useLocation();
@@ -15,6 +16,14 @@ export function MainLayout() {
 }
 
 function Header({ currentPath }: { currentPath: string }) {
+  const navigate = useNavigate();
+  const { user, logout } = useAuthStore();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
+  };
+
   return (
     <header className="border-b border-border bg-card">
       <div className="flex items-center justify-between px-6 py-3">
@@ -31,14 +40,18 @@ function Header({ currentPath }: { currentPath: string }) {
           </NavLink>
         </nav>
 
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">
-            {new Date().toLocaleDateString('en-US', {
-              weekday: 'long',
-              month: 'long',
-              day: 'numeric',
-            })}
-          </span>
+        <div className="flex items-center gap-4">
+          {user && (
+            <span className="text-sm text-muted-foreground">
+              {user.name || user.email}
+            </span>
+          )}
+          <button
+            onClick={handleLogout}
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Sign out
+          </button>
         </div>
       </div>
     </header>

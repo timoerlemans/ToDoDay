@@ -10,128 +10,22 @@ import {
   type NautilusItem,
 } from '@tododay/shared';
 import { SpiralSegment } from './SpiralSegment';
-
-// Sample data for demonstration
-const SAMPLE_ITEMS: NautilusItem[] = [
-  {
-    id: '1',
-    type: 'event',
-    text: 'Team standup',
-    sortOrder: 0,
-    completed: false,
-    startTime: new Date(new Date().setHours(9, 0, 0, 0)),
-    endTime: new Date(new Date().setHours(9, 30, 0, 0)),
-    duration: 30,
-    priority: 'normal',
-  },
-  {
-    id: '2',
-    type: 'task',
-    text: 'Review pull requests',
-    sortOrder: 1,
-    completed: true,
-    completedAt: new Date(new Date().setHours(9, 30, 0, 0)),
-    duration: 45,
-    priority: 'normal',
-  },
-  {
-    id: '3',
-    type: 'task',
-    text: 'Implement user authentication',
-    sortOrder: 2,
-    completed: false,
-    duration: 120,
-    priority: 'urgent',
-  },
-  {
-    id: '4',
-    type: 'event',
-    text: 'Lunch with client',
-    sortOrder: 3,
-    completed: false,
-    startTime: new Date(new Date().setHours(12, 0, 0, 0)),
-    endTime: new Date(new Date().setHours(13, 0, 0, 0)),
-    duration: 60,
-    priority: 'normal',
-  },
-  {
-    id: '5',
-    type: 'task',
-    text: 'Write documentation',
-    sortOrder: 4,
-    completed: false,
-    duration: 60,
-    priority: 'normal',
-  },
-];
-
-// Simple scheduler for demo purposes
-function scheduleItems(items: NautilusItem[], currentTime: Date): ScheduledItem[] {
-  const scheduled: ScheduledItem[] = [];
-  let nextStart = new Date(currentTime);
-
-  // Set to start of workday if before
-  if (nextStart.getHours() < 9) {
-    nextStart.setHours(9, 0, 0, 0);
-  }
-
-  for (const item of items) {
-    // Events with fixed times
-    if (item.type === 'event' && item.startTime && item.endTime) {
-      scheduled.push({
-        item,
-        scheduledStart: item.startTime,
-        scheduledEnd: item.endTime,
-        overflows: false,
-      });
-      continue;
-    }
-
-    // Completed tasks with completion time
-    if (item.completed && item.completedAt) {
-      const endTime = new Date(item.completedAt.getTime() + item.duration * 60 * 1000);
-      scheduled.push({
-        item,
-        scheduledStart: item.completedAt,
-        scheduledEnd: endTime,
-        overflows: false,
-      });
-      continue;
-    }
-
-    // Pending tasks - schedule from next available time
-    if (!item.completed) {
-      // Skip past events
-      for (const s of scheduled) {
-        if (s.item.type === 'event' && s.scheduledEnd > nextStart && s.scheduledStart < nextStart) {
-          nextStart = new Date(s.scheduledEnd);
-        }
-      }
-
-      const endTime = new Date(nextStart.getTime() + item.duration * 60 * 1000);
-      scheduled.push({
-        item,
-        scheduledStart: new Date(nextStart),
-        scheduledEnd: endTime,
-        overflows: endTime.getHours() >= 17,
-      });
-      nextStart = endTime;
-    }
-  }
-
-  return scheduled;
-}
+import { useDayStore } from '@/stores/day';
+import { useSchedule, useSettings } from '@/api/hooks';
 
 interface SpiralCanvasProps {
-  items?: NautilusItem[];
   onItemClick?: (item: NautilusItem) => void;
 }
 
-export function SpiralCanvas({ items = SAMPLE_ITEMS, onItemClick }: SpiralCanvasProps) {
+export function SpiralCanvas({ onItemClick }: SpiralCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 600, height: 600 });
   const [currentTime, setCurrentTime] = useState(new Date());
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+
+  const { currentDate } = useDayStore();
+  const { data: scheduleData, isLoading: scheduleLoading } = useSchedule(currentDate);
+  const { data: settingsData } = useSettings();
 
   // Update dimensions on resize
   useEffect(() => {
@@ -157,19 +51,44 @@ export function SpiralCanvas({ items = SAMPLE_ITEMS, onItemClick }: SpiralCanvas
   }, []);
 
   const settings = {
-    workdayStart: 9,
-    workdayEnd: 17,
-    defaultDuration: 30,
-    timestampFormat: '24h' as const,
-    colorScheme: 'system' as const,
+    workdayStart: settingsData?.data?.workdayStart ?? 9,
+    workdayEnd: settingsData?.data?.workdayEnd ?? 17,
+    defaultDuration: settingsData?.data?.defaultDuration ?? 30,
+    timestampFormat: settingsData?.data?.timestampFormat ?? '24h',
+    colorScheme: settingsData?.data?.colorScheme ?? 'system',
   };
 
   const config = getDefaultConfig(dimensions.width, dimensions.height, settings);
   const hourMarkers = generateHourMarkers(config);
-  const scheduledItems = scheduleItems(items, currentTime);
+
+  // Convert API schedule data to ScheduledItem format
+  const scheduledItems: ScheduledItem[] = scheduleData?.data?.scheduled?.map((item) => ({
+    item: {
+      id: item.item.id,
+      type: item.item.type,
+      text: item.item.text,
+      sortOrder: 0,
+      completed: item.item.completed,
+      duration: item.item.duration,
+      priority: item.item.priority,
+      startTime: new Date(item.scheduledStart),
+      endTime: new Date(item.scheduledEnd),
+    },
+    scheduledStart: new Date(item.scheduledStart),
+    scheduledEnd: new Date(item.scheduledEnd),
+    overflows: item.overflows,
+  })) ?? [];
+
+  const freeMinutes = scheduleData?.data?.freeMinutes ?? (settings.workdayEnd - settings.workdayStart) * 60;
 
   return (
-    <div ref={containerRef} className="w-full h-full flex items-center justify-center p-8">
+    <div ref={containerRef} className="w-full h-full flex items-center justify-center p-8 relative">
+      {scheduleLoading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-background/50 z-10">
+          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+        </div>
+      )}
+
       <svg
         width={dimensions.width}
         height={dimensions.height}
@@ -225,7 +144,7 @@ export function SpiralCanvas({ items = SAMPLE_ITEMS, onItemClick }: SpiralCanvas
             dominantBaseline="middle"
             className="fill-muted-foreground text-xs pointer-events-none"
           >
-            {formatHour(hour, '24h')}
+            {formatHour(hour, settings.timestampFormat)}
           </text>
         ))}
 
@@ -235,23 +154,31 @@ export function SpiralCanvas({ items = SAMPLE_ITEMS, onItemClick }: SpiralCanvas
         {/* Center text */}
         <text
           x={config.center.x}
-          y={config.center.y - 10}
+          y={config.center.y - 20}
           textAnchor="middle"
           className="fill-foreground text-lg font-semibold pointer-events-none"
         >
           {currentTime.toLocaleTimeString('en-US', {
             hour: '2-digit',
             minute: '2-digit',
-            hour12: false,
+            hour12: settings.timestampFormat === '12h',
           })}
         </text>
         <text
           x={config.center.x}
-          y={config.center.y + 15}
+          y={config.center.y + 5}
           textAnchor="middle"
           className="fill-muted-foreground text-sm pointer-events-none"
         >
-          Today
+          {formatDate(currentDate)}
+        </text>
+        <text
+          x={config.center.x}
+          y={config.center.y + 25}
+          textAnchor="middle"
+          className="fill-muted-foreground text-xs pointer-events-none"
+        >
+          {Math.floor(freeMinutes / 60)}h {freeMinutes % 60}m free
         </text>
       </svg>
 
@@ -263,6 +190,21 @@ export function SpiralCanvas({ items = SAMPLE_ITEMS, onItemClick }: SpiralCanvas
       )}
     </div>
   );
+}
+
+function formatDate(dateStr: string): string {
+  const date = new Date(dateStr);
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  if (date.toDateString() === today.toDateString()) {
+    return 'Today';
+  }
+  if (date.toDateString() === tomorrow.toDateString()) {
+    return 'Tomorrow';
+  }
+  return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
 }
 
 function TimeIndicator({ currentTime, config }: { currentTime: Date; config: SpiralConfig }) {
@@ -293,8 +235,8 @@ function ItemTooltip({ item }: { item?: NautilusItem }) {
     <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-popover text-popover-foreground border border-border rounded-lg shadow-lg px-4 py-2 text-sm">
       <p className="font-medium">{item.text}</p>
       <p className="text-muted-foreground text-xs">
-        {item.type === 'event' ? 'Event' : 'Task'} • {item.duration}min
-        {item.completed && ' • Completed'}
+        {item.type === 'event' ? 'Event' : 'Task'} &middot; {item.duration}min
+        {item.completed && ' \u2022 Completed'}
       </p>
     </div>
   );
