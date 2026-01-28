@@ -1,47 +1,16 @@
-import { useEffect } from 'react';
 import { TaskItem } from './TaskItem';
 import { TaskForm } from './TaskForm';
-import { useDayStore, selectAllItemsSorted } from '@/stores/day';
+import { useDayStore } from '@/stores/day';
 import { useDay, useCreateItem, useCompleteItem, useDeleteItem } from '@/api/hooks';
 import type { NautilusItem } from '@tododay/shared';
 
 export function TaskList() {
-  const { currentDate, setItems, setLoading, setError } = useDayStore();
-  const items = useDayStore(selectAllItemsSorted);
+  const currentDate = useDayStore((state) => state.currentDate);
 
   const { data: dayData, isLoading, error } = useDay(currentDate);
   const createItemMutation = useCreateItem(currentDate);
   const completeItemMutation = useCompleteItem();
   const deleteItemMutation = useDeleteItem();
-
-  // Sync API data to store
-  useEffect(() => {
-    setLoading(isLoading);
-  }, [isLoading, setLoading]);
-
-  useEffect(() => {
-    if (error) {
-      setError(error instanceof Error ? error.message : 'Failed to load items');
-    }
-  }, [error, setError]);
-
-  useEffect(() => {
-    if (dayData?.data?.items) {
-      const mappedItems = dayData.data.items.map((item) => ({
-        id: item.id,
-        type: item.type,
-        text: item.text,
-        sortOrder: item.sortOrder,
-        completed: item.completed,
-        completedAt: item.completedAt,
-        startTime: item.startTime,
-        endTime: item.endTime,
-        duration: item.duration,
-        priority: item.priority,
-      }));
-      setItems(mappedItems);
-    }
-  }, [dayData, setItems]);
 
   const handleToggleComplete = async (id: string) => {
     try {
@@ -67,8 +36,8 @@ export function TaskList() {
     }
   };
 
-  // Convert store items to NautilusItem format for TaskItem
-  const toNautilusItem = (item: typeof items[0]): NautilusItem => ({
+  // Convert API item to NautilusItem format
+  const toNautilusItem = (item: NonNullable<typeof dayData>['data']['items'][0]): NautilusItem => ({
     id: item.id,
     type: item.type,
     text: item.text,
@@ -81,6 +50,7 @@ export function TaskList() {
     priority: item.priority,
   });
 
+  const items = dayData?.data?.items ?? [];
   const pendingItems = items.filter(item => !item.completed);
   const completedItems = items.filter(item => item.completed);
 
@@ -90,6 +60,17 @@ export function TaskList() {
         <TaskForm onAdd={handleAddItem} isLoading={createItemMutation.isPending} />
         <div className="flex items-center justify-center py-8">
           <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <TaskForm onAdd={handleAddItem} isLoading={createItemMutation.isPending} />
+        <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-md text-destructive text-sm">
+          Failed to load items: {error instanceof Error ? error.message : 'Unknown error'}
         </div>
       </div>
     );
