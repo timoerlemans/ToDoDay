@@ -3,18 +3,9 @@
   "semi": true,
   "tabWidth": 2,
   "useTabs": false,
-  "trailingComma": "none",
+  "trailingComma": "es5",
   "printWidth": 100,
   "bracketSpacing": true,
   "endOfLine": "auto",
-  "arrowParens": "avoid",
-  "htmlWhitespaceSensitivity": "css",
-  "overrides": [
-    {
-      "files": "*.html",
-      "options": {
-        "parser": "angular"
-      }
-    }
-    ]
+  "arrowParens": "avoid"
 }
