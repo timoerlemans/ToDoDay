@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import {
   getDefaultConfig,
   generateHourMarkers,
@@ -50,36 +50,51 @@ export function SpiralCanvas({ onItemClick }: SpiralCanvasProps) {
     return () => clearInterval(interval);
   }, []);
 
-  const settings = {
+  const settings = useMemo(() => ({
     workdayStart: settingsData?.data?.workdayStart ?? 9,
     workdayEnd: settingsData?.data?.workdayEnd ?? 17,
     defaultDuration: settingsData?.data?.defaultDuration ?? 30,
     timestampFormat: settingsData?.data?.timestampFormat ?? '24h',
     colorScheme: settingsData?.data?.colorScheme ?? 'system',
-  };
+  }), [settingsData]);
 
-  const config = getDefaultConfig(dimensions.width, dimensions.height, settings);
-  const hourMarkers = generateHourMarkers(config);
+  const config = useMemo(
+    () => getDefaultConfig(dimensions.width, dimensions.height, settings),
+    [dimensions.width, dimensions.height, settings]
+  );
+
+  const hourMarkers = useMemo(
+    () => generateHourMarkers(config),
+    [config]
+  );
 
   // Convert API schedule data to ScheduledItem format
-  const scheduledItems: ScheduledItem[] = scheduleData?.data?.scheduled?.map((item) => ({
-    item: {
-      id: item.item.id,
-      type: item.item.type,
-      text: item.item.text,
-      sortOrder: 0,
-      completed: item.item.completed,
-      duration: item.item.duration,
-      priority: item.item.priority,
-      startTime: new Date(item.scheduledStart),
-      endTime: new Date(item.scheduledEnd),
-    },
-    scheduledStart: new Date(item.scheduledStart),
-    scheduledEnd: new Date(item.scheduledEnd),
-    overflows: item.overflows,
-  })) ?? [];
+  const scheduledItems: ScheduledItem[] = useMemo(() =>
+    scheduleData?.data?.scheduled?.map((item) => ({
+      item: {
+        id: item.item.id,
+        type: item.item.type,
+        text: item.item.text,
+        sortOrder: 0,
+        completed: item.item.completed,
+        duration: item.item.duration,
+        priority: item.item.priority,
+        startTime: new Date(item.scheduledStart),
+        endTime: new Date(item.scheduledEnd),
+      },
+      scheduledStart: new Date(item.scheduledStart),
+      scheduledEnd: new Date(item.scheduledEnd),
+      overflows: item.overflows,
+    })) ?? [],
+    [scheduleData]
+  );
 
   const freeMinutes = scheduleData?.data?.freeMinutes ?? (settings.workdayEnd - settings.workdayStart) * 60;
+
+  const handleItemHover = useCallback(
+    (itemId: string) => (hovered: boolean) => setHoveredItem(hovered ? itemId : null),
+    []
+  );
 
   return (
     <div ref={containerRef} className="w-full h-full flex items-center justify-center p-8 relative">
@@ -130,7 +145,7 @@ export function SpiralCanvas({ onItemClick }: SpiralCanvasProps) {
               false
             )}
             onClick={() => onItemClick?.(scheduledItem.item)}
-            onHover={hovered => setHoveredItem(hovered ? scheduledItem.item.id : null)}
+            onHover={handleItemHover(scheduledItem.item.id)}
           />
         ))}
 

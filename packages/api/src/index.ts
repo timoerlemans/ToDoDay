@@ -2,6 +2,7 @@ import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import cookie from '@fastify/cookie';
 import jwt from '@fastify/jwt';
+import rateLimit from '@fastify/rate-limit';
 import { sql } from 'drizzle-orm';
 import { env } from './config/env';
 import { db } from './db';
@@ -41,6 +42,11 @@ async function buildApp() {
 
   // Register Cookie plugin
   await app.register(cookie);
+
+  // Register rate limiting
+  await app.register(rateLimit, {
+    global: false,
+  });
 
   // Register JWT plugin
   await app.register(jwt, {

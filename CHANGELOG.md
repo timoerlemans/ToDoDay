@@ -8,13 +8,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Fixed
+- Dutch time parser now correctly converts afternoon hours for all notations
+  - `kwart over 3` now returns 15:15 (was returning 03:15)
+  - `kwart voor 4` now returns 15:45 (was returning 03:45)
+  - `half 3` now returns 14:30 (was returning 02:30)
+  - All Dutch time patterns (N over X, N voor X, etc.) now apply afternoon conversion
+- API TypeScript errors resolved:
+  - Fixed Drizzle ORM `gt()` comparison in expired session cleanup
+  - Removed unused imports (`NewUser`, `NewItem`, `env`)
+  - Removed unused function parameters
+- Lint error: Changed `console.log` to `console.error` in ErrorPage error reporting
 - Session persistence across page refresh
   - Added `checkAuth` action to auth store that attempts token refresh on app load
   - Added `hasCheckedAuth` flag to prevent premature login redirects
   - AuthGuard now calls `checkAuth()` on mount before redirecting to login
   - Uses HttpOnly refresh token cookie to recover session silently
 
+### Security
+- Changed cookie SameSite from 'none' to 'strict' for better CSRF protection
+- Added rate limiting to auth endpoints (5 requests/minute for login, register, refresh)
+
 ### Added
+- Vitest test suite for shared package with comprehensive Dutch time notation tests
+- Performance optimizations in SpiralCanvas:
+  - Memoized SpiralSegment component with React.memo()
+  - Memoized settings, config, hourMarkers, and scheduledItems arrays with useMemo()
+  - Optimized hover callbacks with useCallback()
 
 #### Phase 2: Core Features Implementation
 

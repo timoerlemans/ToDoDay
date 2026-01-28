@@ -1,4 +1,4 @@
-import type { FastifyInstance } from 'fastify';
+import type { FastifyInstance, FastifyRequest } from 'fastify';
 import { z } from 'zod';
 import {
   createUser,
@@ -17,6 +17,13 @@ import {
 import { HttpError } from '../middleware/error-handler';
 import { env } from '../config/env';
 
+// Rate limit configuration for auth endpoints
+const authRateLimit = {
+  max: 5,
+  timeWindow: '1 minute',
+  keyGenerator: (request: FastifyRequest) => request.ip,
+};
+
 // Validation schemas
 const registerSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -31,7 +38,7 @@ const loginSchema = z.object({
 
 export async function authRoutes(app: FastifyInstance): Promise<void> {
   // POST /api/auth/register
-  app.post('/register', async (request, reply) => {
+  app.post('/register', { config: { rateLimit: authRateLimit } }, async (request, reply) => {
     const body = registerSchema.parse(request.body);
 
     // Check if user already exists
@@ -75,7 +82,7 @@ export async function authRoutes(app: FastifyInstance): Promise<void> {
   });
 
   // POST /api/auth/login
-  app.post('/login', async (request, reply) => {
+  app.post('/login', { config: { rateLimit: authRateLimit } }, async (request, reply) => {
     const body = loginSchema.parse(request.body);
 
     // Find user
@@ -122,7 +129,7 @@ export async function authRoutes(app: FastifyInstance): Promise<void> {
   });
 
   // POST /api/auth/refresh
-  app.post('/refresh', async (request, reply) => {
+  app.post('/refresh', { config: { rateLimit: authRateLimit } }, async (request, reply) => {
     // Get refresh token from cookie or body
     const refreshToken = request.cookies.refreshToken ||
       (request.body as { refreshToken?: string })?.refreshToken;

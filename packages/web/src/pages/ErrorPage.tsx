@@ -45,7 +45,7 @@ Debug Info:
   };
 
   const handleReportError = () => {
-    console.log('Error reported:', {
+    console.error('Error reported:', {
       error: error?.message,
       stack: error?.stack,
       componentStack: errorInfo?.componentStack,

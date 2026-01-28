@@ -115,7 +115,8 @@ export function parseDutchTime(text: string): ParsedTime | null {
     const minutes = parseInt(matchOverHalf[1], 10);
     const referenceHour = parseInt(matchOverHalf[2], 10);
     // "half X" = X-1:30, so "N over half X" = X-1:30+N
-    const hours = normalizeHour(referenceHour - 1);
+    const baseHour = dutchHourTo24(referenceHour);
+    const hours = normalizeHour(baseHour - 1);
     return { hours, minutes: 30 + minutes };
   }
 
@@ -125,22 +126,24 @@ export function parseDutchTime(text: string): ParsedTime | null {
     const minutes = parseInt(matchVoorHalf[1], 10);
     const referenceHour = parseInt(matchVoorHalf[2], 10);
     // "half X" = X-1:30, so "N voor half X" = X-1:30-N
-    const hours = normalizeHour(referenceHour - 1);
+    const baseHour = dutchHourTo24(referenceHour);
+    const hours = normalizeHour(baseHour - 1);
     return { hours, minutes: 30 - minutes };
   }
 
-  // "kwart over X" - e.g., "kwart over 3" = 3:15
+  // "kwart over X" - e.g., "kwart over 3" = 15:15
   const matchKwartOver = text.match(DUTCH_KWART_OVER);
   if (matchKwartOver) {
     const hours = parseInt(matchKwartOver[1], 10);
-    return { hours: normalizeHour(hours), minutes: 15 };
+    return { hours: dutchHourTo24(hours), minutes: 15 };
   }
 
-  // "kwart voor X" - e.g., "kwart voor 4" = 3:45
+  // "kwart voor X" - e.g., "kwart voor 4" = 15:45
   const matchKwartVoor = text.match(DUTCH_KWART_VOOR);
   if (matchKwartVoor) {
     const referenceHour = parseInt(matchKwartVoor[1], 10);
-    return { hours: normalizeHour(referenceHour - 1), minutes: 45 };
+    const baseHour = dutchHourTo24(referenceHour);
+    return { hours: normalizeHour(baseHour - 1), minutes: 45 };
   }
 
   // "half X" - e.g., "half 1" = 12:30
@@ -148,23 +151,25 @@ export function parseDutchTime(text: string): ParsedTime | null {
   if (matchHalf) {
     const referenceHour = parseInt(matchHalf[1], 10);
     // "half X" means 30 minutes before X o'clock
-    return { hours: normalizeHour(referenceHour - 1), minutes: 30 };
+    const baseHour = dutchHourTo24(referenceHour);
+    return { hours: normalizeHour(baseHour - 1), minutes: 30 };
   }
 
-  // "N over X" - e.g., "10 over 3" = 3:10
+  // "N over X" - e.g., "10 over 3" = 15:10
   const matchOver = text.match(DUTCH_OVER);
   if (matchOver) {
     const minutes = parseInt(matchOver[1], 10);
     const hours = parseInt(matchOver[2], 10);
-    return { hours: normalizeHour(hours), minutes };
+    return { hours: dutchHourTo24(hours), minutes };
   }
 
-  // "N voor X" - e.g., "10 voor 4" = 3:50
+  // "N voor X" - e.g., "10 voor 4" = 15:50
   const matchVoor = text.match(DUTCH_VOOR);
   if (matchVoor) {
     const minutes = parseInt(matchVoor[1], 10);
     const referenceHour = parseInt(matchVoor[2], 10);
-    return { hours: normalizeHour(referenceHour - 1), minutes: 60 - minutes };
+    const baseHour = dutchHourTo24(referenceHour);
+    return { hours: normalizeHour(baseHour - 1), minutes: 60 - minutes };
   }
 
   return null;

@@ -1,8 +1,7 @@
 import { eq, and, sql } from 'drizzle-orm';
 import { db } from '../db';
-import { items, type Item, type NewItem } from '../db/schema';
-import { extractTime, timeToDate, calculateDuration } from '@tododay/shared';
-import { extractDuration } from '@tododay/shared';
+import { items, type Item } from '../db/schema';
+import { extractTime, timeToDate, calculateDuration, extractDuration } from '@tododay/shared';
 
 export interface ParsedItemInput {
   text: string;
@@ -27,7 +26,7 @@ export function parseItemText(
   baseDate: Date,
   defaultDuration: number = 30
 ): ParsedItemResult {
-  let { text, type, priority } = input;
+  let { text, type } = input;
 
   // Extract time information
   const timeResult = extractTime(text);

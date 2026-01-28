@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { arcPath, calculateSegment, type SpiralConfig } from '@tododay/shared';
 import type { ScheduledItem } from '@tododay/shared';
 
@@ -10,7 +11,7 @@ interface SpiralSegmentProps {
   onHover?: (hovered: boolean) => void;
 }
 
-export function SpiralSegment({
+export const SpiralSegment = memo(function SpiralSegment({
   scheduledItem,
   config,
   color,
@@ -49,4 +50,4 @@ export function SpiralSegment({
       />
     </g>
   );
-}
+});

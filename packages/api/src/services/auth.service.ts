@@ -1,9 +1,8 @@
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
-import { eq, and, gt } from 'drizzle-orm';
+import { eq, and, lt, gt } from 'drizzle-orm';
 import { db } from '../db';
-import { users, sessions, userSettings, type User, type NewUser, type Session } from '../db/schema';
-import { env } from '../config/env';
+import { users, sessions, userSettings, type User, type Session } from '../db/schema';
 
 const SALT_ROUNDS = 12;
 const ACCESS_TOKEN_EXPIRY_MS = 15 * 60 * 1000; // 15 minutes
@@ -182,7 +181,7 @@ export async function rotateRefreshToken(
 export async function cleanupExpiredSessions(): Promise<number> {
   const result = await db
     .delete(sessions)
-    .where(gt(new Date(), sessions.expiresAt))
+    .where(lt(sessions.expiresAt, new Date()))
     .returning();
 
   return result.length;
@@ -209,8 +208,8 @@ export function getCookieOptions(isProduction: boolean) {
   return {
     httpOnly: true,
     secure: isProduction,
-    sameSite: isProduction ? 'none' : 'lax',
+    sameSite: 'strict' as const,
     path: '/',
     maxAge: REFRESH_TOKEN_EXPIRY_MS,
-  } as const;
+  };
 }
