@@ -23,7 +23,7 @@ export function SpiralCanvas({ onItemClick }: SpiralCanvasProps) {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
 
-  const { currentDate } = useDayStore();
+  const currentDate = useDayStore((state) => state.currentDate);
   const { data: scheduleData, isLoading: scheduleLoading } = useSchedule(currentDate);
   const { data: settingsData } = useSettings();
 

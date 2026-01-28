@@ -4,7 +4,8 @@ import { useAuthStore } from '@/stores/auth';
 
 export function RegisterPage() {
   const navigate = useNavigate();
-  const { register, isLoading } = useAuthStore();
+  const register = useAuthStore((state) => state.register);
+  const isLoading = useAuthStore((state) => state.isLoading);
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');

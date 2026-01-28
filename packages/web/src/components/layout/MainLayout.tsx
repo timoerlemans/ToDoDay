@@ -17,7 +17,8 @@ export function MainLayout() {
 
 function Header({ currentPath }: { currentPath: string }) {
   const navigate = useNavigate();
-  const { user, logout } = useAuthStore();
+  const user = useAuthStore((state) => state.user);
+  const logout = useAuthStore((state) => state.logout);
 
   const handleLogout = async () => {
     await logout();
