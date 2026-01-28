@@ -13,15 +13,17 @@ export function SettingsPage() {
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   // Sync form state with loaded settings
+  // Using settingsData?.data as dependency to avoid re-running when query status changes
+  const settings = settingsData?.data;
   useEffect(() => {
-    if (settingsData?.data) {
-      setWorkdayStart(settingsData.data.workdayStart);
-      setWorkdayEnd(settingsData.data.workdayEnd);
-      setDefaultDuration(settingsData.data.defaultDuration);
-      setTimestampFormat(settingsData.data.timestampFormat);
-      setColorScheme(settingsData.data.colorScheme);
+    if (settings) {
+      setWorkdayStart(settings.workdayStart);
+      setWorkdayEnd(settings.workdayEnd);
+      setDefaultDuration(settings.defaultDuration);
+      setTimestampFormat(settings.timestampFormat);
+      setColorScheme(settings.colorScheme);
     }
-  }, [settingsData]);
+  }, [settings]);
 
   const handleSave = async () => {
     setMessage(null);
